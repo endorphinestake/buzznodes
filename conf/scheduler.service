@@ -1,0 +1,19 @@
+[Unit]
+Description="Monitoring Scheduler Service"
+
+[Service]
+ExecStart=/var/www/monitoring/venv/bin/python /var/www/monitoring/back/manage.py scheduler
+TimeoutStartSec=3600
+User=www-data
+Group=www-data
+Restart=on-failure
+KillSignal=SIGQUIT
+Type=simple
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
+
+# cp scheduler.service /etc/systemd/system/monitoring-scheduler.service && systemctl enable monitoring-scheduler
+# journalctl -u monitoring-scheduler.service -f

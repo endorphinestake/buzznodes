@@ -1,0 +1,30 @@
+[Unit]
+Description="Monitoring Backend Service"
+
+[Service]
+EnvironmentFile=/var/www/monitoring/back/.env
+ExecStart=/usr/local/bin/uwsgi --enable-threads --chdir=/var/www/monitoring/back \
+    --module=main.wsgi:application \
+    --env DJANGO_SETTINGS_MODULE=main.settings \
+    --master \
+    --pidfile=/tmp/monitoring_backend.pid \
+    --socket=127.0.0.1:49150 \
+    --processes=5 \
+    --max-requests=5000 \
+    --buffer-size=65535 \
+    --vacuum \
+    --home=/var/www/monitoring/venv
+TimeoutStartSec=3600
+User=www-data
+Group=www-data
+Restart=on-failure
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
+
+# cp back.service /etc/systemd/system/monitoring-back.service && systemctl enable monitoring-back
+# journalctl -u monitoring-back.service -f
