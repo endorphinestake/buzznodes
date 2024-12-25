@@ -21,7 +21,7 @@ const SelectExample = (props: IProps) => {
         placeholder: label || "example select",
       }}
     >
-      <MenuItem value={"test"}>-----</MenuItem>
+      <MenuItem>-----</MenuItem>
     </TextField>
   );
 };

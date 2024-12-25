@@ -1,15 +1,15 @@
 // ** React Imports
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect } from "react";
 
 // ** Next Imports
-import Link from 'next/link';
-import Head from 'next/head';
-import { useRouter } from 'next/router';
+import Link from "next/link";
+import Head from "next/head";
+import { useRouter } from "next/router";
 
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 // ** Configs
-import themeConfig from 'src/configs/themeConfig';
+import themeConfig from "src/configs/themeConfig";
 
 // ** Mui Imports
 import {
@@ -20,37 +20,36 @@ import {
   FormControl,
   InputLabel,
   FormHelperText,
-} from '@mui/material';
-import { LoadingButton } from '@mui/lab';
-import MuiLink from '@mui/material/Link';
-import MuiCard, { CardProps } from '@mui/material/Card';
-import { styled, useTheme } from '@mui/material/styles';
+} from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import MuiCard, { CardProps } from "@mui/material/Card";
+import { styled, useTheme } from "@mui/material/styles";
 
 // ** Icons Imports
-import ChevronLeft from 'mdi-material-ui/ChevronLeft';
+import ChevronLeft from "mdi-material-ui/ChevronLeft";
 
 // ** Component Imports
-import BlankLayout from 'src/@core/layouts/BlankLayout';
-import FooterIllustrationsV1 from '@layouts/components/footer/FooterIllustrationsV1';
-import Logo from '@layouts/components/Logo';
+import BlankLayout from "src/@core/layouts/BlankLayout";
+import FooterIllustrationsV1 from "@layouts/components/footer/FooterIllustrationsV1";
+import Logo from "@layouts/components/Logo";
 
 // ** Shared Components Imports
-import Notify from '@modules/shared/utils/Notify';
+import Notify from "@modules/shared/utils/Notify";
 
 // ** Shared Components Imports
-import PasswordInput from '@modules/shared/components/PasswordInput';
+import PasswordInput from "@modules/shared/components/PasswordInput";
 
 // ** Yup Imports
-import * as yup from 'yup';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from "yup";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 // ** Hooks
-import { useUserService } from '@hooks/useUserService';
+import { useUserService } from "@hooks/useUserService";
 
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
-  [theme.breakpoints.up('sm')]: { width: '33rem' },
+  [theme.breakpoints.up("sm")]: { width: "33rem" },
 }));
 
 interface IFormProps {
@@ -73,12 +72,15 @@ const ResetPasswordConfirmPage = () => {
   } = useUserService();
 
   const schema = yup.object().shape({
-    password: yup.string().required(t('Password is required')).min(6, t(`Password must be at least {{n}} characters`, {'n': 6})),
+    password: yup
+      .string()
+      .required(t("Password is required"))
+      .min(6, t(`Password must be at least {{n}} characters`, { n: 6 })),
 
     passwordConfirm: yup
       .string()
-      .min(6, t(`Password must be at least {{n}} characters`, {'n': 6}))
-      .oneOf([yup.ref('password'), null], t(`Passwords must match`)),
+      .min(6, t(`Password must be at least {{n}} characters`, { n: 6 }))
+      .oneOf([yup.ref("password"), null], t(`Passwords must match`)),
   });
 
   // ** Vars
@@ -90,10 +92,10 @@ const ResetPasswordConfirmPage = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      password: '',
-      passwordConfirm: '',
+      password: "",
+      passwordConfirm: "",
     },
-    mode: 'onBlur',
+    mode: "onBlur",
     resolver: yupResolver(schema),
   });
 
@@ -111,26 +113,27 @@ const ResetPasswordConfirmPage = () => {
   useEffect(() => {
     // isError
     if (isResetPasswordConfirmError) {
-      Notify('error', t(`Confirmation code is incorrect or has expired!`));
+      Notify("error", t(`Confirmation code is incorrect or has expired!`));
       dispatch(resetResetPasswordConfirmState());
     }
 
     // isSuccess
     if (isResetPasswordConfirmLoaded) {
       Notify(
-        'success',
+        "success",
         t(`Your password has been changed! You can now log into into account`)
       );
       dispatch(resetResetPasswordConfirmState());
-      router.push('/login');
+      router.push("/login");
     }
   }, [isResetPasswordConfirmError, isResetPasswordConfirmLoaded]);
 
   return (
-    <Box className='content-center'>
-
+    <Box className="content-center">
       <Head>
-        <title>{themeConfig.templateName} - {t(`Password recovery`)}</title>
+        <title>
+          {themeConfig.templateName} - {t(`Password recovery`)}
+        </title>
       </Head>
 
       <Card sx={{ zIndex: 1 }}>
@@ -140,9 +143,9 @@ const ResetPasswordConfirmPage = () => {
           <Box
             sx={{
               mb: 8,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <Logo />
@@ -150,23 +153,23 @@ const ResetPasswordConfirmPage = () => {
 
           <Box sx={{ mb: 6 }}>
             <Typography
-              variant='h5'
-              sx={{ mb: 1.5, letterSpacing: '0.18px', fontWeight: 600 }}
+              variant="h5"
+              sx={{ mb: 1.5, letterSpacing: "0.18px", fontWeight: 600 }}
             >
               {t(`Reset Password`)} 🔒
             </Typography>
-            <Typography variant='body2'>
+            <Typography variant="body2">
               {t(`Please specify your new password for the account`)}.
             </Typography>
           </Box>
 
-          <form noValidate autoComplete='off' onSubmit={handleSubmit(onSubmit)}>
+          <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
             <FormControl fullWidth sx={{ mb: 4 }}>
               <InputLabel error={Boolean(errors.password)}>
                 {t(`New Password`)}
               </InputLabel>
               <Controller
-                name='password'
+                name="password"
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
@@ -179,7 +182,7 @@ const ResetPasswordConfirmPage = () => {
                 )}
               />
               {errors.password && (
-                <FormHelperText sx={{ color: 'error.main' }}>
+                <FormHelperText sx={{ color: "error.main" }}>
                   {errors.password.message}
                 </FormHelperText>
               )}
@@ -190,7 +193,7 @@ const ResetPasswordConfirmPage = () => {
                 {t(`Confirm Password`)}
               </InputLabel>
               <Controller
-                name='passwordConfirm'
+                name="passwordConfirm"
                 control={control}
                 rules={{ required: true }}
                 render={({ field: { value, onChange } }) => (
@@ -203,7 +206,7 @@ const ResetPasswordConfirmPage = () => {
                 )}
               />
               {errors.passwordConfirm && (
-                <FormHelperText sx={{ color: 'error.main' }}>
+                <FormHelperText sx={{ color: "error.main" }}>
                   {errors.passwordConfirm.message}
                 </FormHelperText>
               )}
@@ -212,37 +215,36 @@ const ResetPasswordConfirmPage = () => {
             <LoadingButton
               fullWidth
               loading={isResetPasswordConfirmLoading}
-              size='large'
-              type='submit'
-              variant='contained'
+              size="large"
+              type="submit"
+              variant="contained"
               sx={{ mb: 7 }}
             >
               {t(`Set New Password`)}
             </LoadingButton>
 
-            <Typography
+            <Box
               sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <Link passHref href='/login'>
+              <Link passHref href="/login">
                 <Typography
-                  component={MuiLink}
+                  className="link"
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    color: 'primary.main',
-                    justifyContent: 'center',
+                    display: "flex",
+                    alignItems: "center",
+                    color: "primary.main",
+                    justifyContent: "center",
                   }}
                 >
-                  <ChevronLeft sx={{ mr: 1.5, fontSize: '2rem' }} />
-                  <span>{t(`Back to login`)}</span>
-
+                  <ChevronLeft sx={{ mr: 1.5, fontSize: "2rem" }} />
+                  {t(`Back to login`)}
                 </Typography>
               </Link>
-            </Typography>
+            </Box>
           </form>
         </CardContent>
       </Card>
@@ -257,4 +259,6 @@ const ResetPasswordConfirmPage = () => {
 export default ResetPasswordConfirmPage;
 
 ResetPasswordConfirmPage.guestGuard = true;
-ResetPasswordConfirmPage.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>;
+ResetPasswordConfirmPage.getLayout = (page: ReactNode) => (
+  <BlankLayout>{page}</BlankLayout>
+);
