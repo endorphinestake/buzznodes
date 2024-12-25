@@ -12,11 +12,11 @@ migrate:
 
 .PHONY: front
 front:
-	. nodeenv22.3.0/bin/activate && cd front && npm run dev
+	. .nodeenv22.3.0/bin/activate && cd front && npm run dev
 
 .PHONY: build
 build:
-	cd front && npm run build
+	. .nodeenv22.3.0/bin/activate && cd front && npm run build
 
 .PHONY: po
 po:
