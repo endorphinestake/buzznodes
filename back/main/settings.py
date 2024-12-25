@@ -38,10 +38,12 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://buzznodes.com",
+    "https://account.buzznodes.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "https://buzznodes.com",
+    "https://account.buzznodes.com",
 ]
 
 INSTALLED_APPS = [
@@ -53,8 +55,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
+    "django_rq",
     "main.apps.MainConfig",
     "users.apps.UsersConfig",
+    "mails.apps.MailsConfig",
+    "logs.apps.LogsConfig",
 ]
 
 MIDDLEWARE = [
@@ -101,6 +106,37 @@ DATABASES = {
         },
         # 'CONN_MAX_AGE': 600,
     }
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+    }
+}
+
+RQ_QUEUES = {
+    "submit_voice": {
+        "HOST": "localhost",
+        "PORT": 6379,
+        "DB": 0,
+        "PASSWORD": "",
+        "DEFAULT_TIMEOUT": 360,
+    },
+    "submit_sms": {
+        "HOST": "localhost",
+        "PORT": 6379,
+        "DB": 1,
+        "PASSWORD": "",
+        "DEFAULT_TIMEOUT": 360,
+    },
+    "submit_email": {
+        "HOST": "localhost",
+        "PORT": 6379,
+        "DB": 2,
+        "PASSWORD": "",
+        "DEFAULT_TIMEOUT": 360,
+    },
 }
 
 AUTH_USER_MODEL = "users.User"
