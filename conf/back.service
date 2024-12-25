@@ -13,7 +13,7 @@ ExecStart=/usr/local/bin/uwsgi --enable-threads --chdir=/var/www/monitoring/back
     --max-requests=5000 \
     --buffer-size=65535 \
     --vacuum \
-    --home=/var/www/monitoring/venv
+    --home=/var/www/monitoring/.venv
 TimeoutStartSec=3600
 User=www-data
 Group=www-data
