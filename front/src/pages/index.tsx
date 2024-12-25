@@ -15,9 +15,20 @@ import UserLayout from "@layouts/UserLayout";
 
 // ** Shared Components
 import styles from "@styles/Home.module.css";
+import CollapsedCard from "@modules/shared/components/CollapsedCard";
+import SelectExample from "@modules/shared/components/SelectExample";
 
 // ** Mui Imports
-import { Grid, Card, Box, CardHeader, Typography, Button } from "@mui/material";
+import {
+  Grid,
+  Card,
+  Box,
+  CardHeader,
+  CardContent,
+  Typography,
+  Button,
+  Select,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
 const HomePage = () => {
@@ -60,29 +71,46 @@ const HomePage = () => {
                   </Button>
                 }
               />
-              <Box
-                sx={{
-                  p: 3,
-                  width: "100%",
-                  display: "flex",
-                  flexWrap: "wrap",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
+
+              <CardContent>
                 <Grid container spacing={3}>
                   <Grid item sm={4} xs={12}>
-                    filter 1
+                    <SelectExample label="filter 1" />
                   </Grid>
                   <Grid item sm={4} xs={12}>
-                    filter 2
+                    <SelectExample label="filter 2" />
                   </Grid>
                   <Grid item sm={4} xs={12}>
-                    filter 3
+                    <SelectExample label="filter 3" />
                   </Grid>
                 </Grid>
-              </Box>
-              content...
+
+                <Box
+                  sx={{
+                    mt: 10,
+                    width: "100%",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Grid container spacing={3}>
+                    <Grid item sm={6} xs={12}>
+                      <CollapsedCard>scheme 1</CollapsedCard>
+                    </Grid>
+                    <Grid item sm={6} xs={12}>
+                      <CollapsedCard>scheme 2</CollapsedCard>
+                    </Grid>
+                    <Grid item sm={6} xs={12}>
+                      <CollapsedCard>scheme 3</CollapsedCard>
+                    </Grid>
+                    <Grid item sm={6} xs={12}>
+                      <CollapsedCard>scheme 4</CollapsedCard>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </CardContent>
             </Card>
           </Grid>
         </Grid>
