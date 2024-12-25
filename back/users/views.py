@@ -30,8 +30,6 @@ from mails.tasks import (
 )
 
 import requests
-from requests_oauthlib import OAuth1, OAuth1Session
-from urllib.parse import parse_qs
 
 
 class LoginView(views.APIView):

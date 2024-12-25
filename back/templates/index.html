@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin: 0;
+            color: #f9ca24;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin: 10px 0 30px;
+        }
+
+        .rocket {
+            animation: float 3s infinite ease-in-out;
+            width: 150px;
+            margin-bottom: 20px;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .countdown {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <img src="https://cdn-icons-png.flaticon.com/512/3212/3212138.png" alt="Rocket" class="rocket">
+    <h1>We Are Launching Soon!</h1>
+    <p>Our website is under construction, but we're preparing something amazing for you. Stay tuned!</p>
+    <div class="countdown" id="countdown">Launching in: --:--:--</div>
+
+    <script>
+        // Countdown timer script
+        const launchDate = new Date().getTime() + (50 * 24 * 60 * 60 * 1000); // 50 days from now
+
+        function updateCountdown () {
+            const now = new Date().getTime();
+            const remainingTime = launchDate - now;
+
+            if (remainingTime <= 0) {
+                document.getElementById("countdown").innerHTML = "We're live now!";
+                return;
+            }
+
+            const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown").innerHTML =
+                `Launching in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+
+</html>

@@ -56,6 +56,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "django_rq",
+    "rosetta",
+    "django_ckeditor_5",
     "main.apps.MainConfig",
     "users.apps.UsersConfig",
     "mails.apps.MailsConfig",
