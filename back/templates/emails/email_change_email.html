@@ -1,0 +1,25 @@
+{% extends "emails/email_base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<p>
+  {% translate "Hello esteemed client!" %}<br />
+  {% translate "A email change was requested for your account" %}.
+</p>
+
+<p>
+  {% translate "To change the account email, please click on the following link" %}:
+
+  <p>
+    <a href="{{ BACKEND_URL }}{{ reset_link }}" target="_blank">{{ BACKEND_URL }}{{ reset_link }}</a>
+  </p>
+</p>
+
+<p><i>* {% translate "This link is good until for 30 minutes and can only be used once" %}.</i></p>
+
+<p>
+  {% translate "If you didn't request this, you can ignore this email or let us know. Your email won't change until you confirm a new email." %}
+</p>
+
+{% endblock %}

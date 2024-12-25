@@ -1,0 +1,22 @@
+{% extends "emails/email_base.html" %}
+{% load i18n %}
+
+{% block content %}
+<p>{% translate "Hello esteemed client!" %}</p>
+<p>
+  {% translate "This email is sent to inform you that your registration was successful." %}
+</p>
+<p>
+  {% translate "Email" %}: {{ email }}<br />
+  {% translate "Password" %}: {{ password }}
+</p>
+<p>
+  {% translate "Please click the link below to verify your email address:" %}
+
+  <p>
+    <a href="{{ confirm_link }}" target="_blank" style="display: inline-block; background-color: #4f4cf0; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold;">{% translate "Confirm Email" %}</a>
+  </p>
+</p>
+
+<p>* {% translate "If you have received this email in error or you are not the intended recipient, please ignore and delete it." %}</p>
+{% endblock %}
