@@ -1,0 +1,21 @@
+[Unit]
+Description="Monitoring SubmitVoice Service"
+
+[Service]
+ExecStart=/var/www/monitoring/.venv/bin/python /var/www/monitoring/back/manage.py rqworker submit_voice
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+TimeoutStartSec=3600
+User=www-data
+Group=www-data
+Restart=on-failure
+KillSignal=SIGQUIT
+Type=simple
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
+
+# cp voice.service /etc/systemd/system/monitoring-voice.service && systemctl enable monitoring-voice
+# journalctl -u monitoring-voice.service -f

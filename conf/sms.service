@@ -1,0 +1,21 @@
+[Unit]
+Description="Monitoring SubmitSMS Service"
+
+[Service]
+ExecStart=/var/www/monitoring/.venv/bin/python /var/www/monitoring/back/manage.py rqworker submit_sms
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+TimeoutStartSec=3600
+User=www-data
+Group=www-data
+Restart=on-failure
+KillSignal=SIGQUIT
+Type=simple
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
+
+# cp sms.service /etc/systemd/system/monitoring-sms.service && systemctl enable monitoring-sms
+# journalctl -u monitoring-sms.service -f
