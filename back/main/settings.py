@@ -37,11 +37,11 @@ CSRF_COOKIE_DOMAIN = env.str("SESSION_COOKIE_DOMAIN")
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://37.27.90.63",
+    "https://buzznodes.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
-    "http://37.27.90.63",
+    "https://buzznodes.com",
 ]
 
 INSTALLED_APPS = [
