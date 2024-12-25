@@ -22,6 +22,12 @@ build:
 build_local:
 	. .nodeenv22.3.0/bin/activate && cd front && npm run build
 
+.PHONY: rq
+rq:
+	.venv/bin/python back/manage.py rqworker submit_voice & \
+	.venv/bin/python back/manage.py rqworker submit_sms & \
+	.venv/bin/python back/manage.py rqworker submit_email
+
 .PHONY: po
 po:
 	. .venv/bin/activate && \
