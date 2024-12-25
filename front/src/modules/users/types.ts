@@ -9,5 +9,6 @@ export type TUser = {
   locale: string;
   first_name?: string;
   last_name?: string;
+  avatar?: string;
   groups: TGroup[];
 };

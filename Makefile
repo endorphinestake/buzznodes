@@ -16,6 +16,10 @@ front:
 
 .PHONY: build
 build:
+	cd front && sudo -u www-data npm run build
+
+.PHONY: build_local
+build_local:
 	. .nodeenv22.3.0/bin/activate && cd front && npm run build
 
 .PHONY: po
