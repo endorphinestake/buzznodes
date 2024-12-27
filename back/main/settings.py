@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 import environ
 from pathlib import Path
+from datetime import timedelta
 
 env = environ.Env(DEBUG=(bool, False))
 
@@ -211,6 +212,8 @@ REST_FRAMEWORK = {
 }
 
 DEFAULT_PAGE_SIZE = 25
+
+EXPIRED_LOGS_PERIOD = timedelta(days=30)
 
 if not DEBUG:
     REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = (

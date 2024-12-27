@@ -14,7 +14,9 @@ class Log(models.Model):
         choices=LogLevel.choices, default=LogLevel.INFO, verbose_name=_("Log Level")
     )
     text = models.TextField()
-    created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
+    created = models.DateTimeField(
+        db_index=True, auto_now_add=True, verbose_name=_("Created")
+    )
 
     def __str__(self) -> str:
         return self.level
