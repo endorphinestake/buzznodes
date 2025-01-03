@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "mails.apps.MailsConfig",
     "logs.apps.LogsConfig",
+    "blockchains.apps.BlockchainsConfig",
 ]
 
 MIDDLEWARE = [
