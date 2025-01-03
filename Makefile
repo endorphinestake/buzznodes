@@ -10,6 +10,10 @@ back:
 migrate:
 	.venv/bin/python back/manage.py migrate
 
+.PHONY: requirements
+requirements:
+	.venv/bin/pip install -r  back/requirements.txt
+
 .PHONY: front
 front:
 	. .nodeenv22.3.0/bin/activate && cd front && npm run dev
