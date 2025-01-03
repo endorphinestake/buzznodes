@@ -38,7 +38,7 @@ class BlockchainUrl(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
 
     def __str__(self):
-        return f"{self.url} ({self.status})"
+        return f"{self.url}"
 
     class Meta:
         ordering = ["priority"]
@@ -67,12 +67,11 @@ class BlockchainValidator(models.Model):
         null=True, blank=True, max_length=256, verbose_name=_("Security Contact")
     )
     details = models.TextField(null=True, blank=True, verbose_name=_("Details"))
-    status = models.BooleanField(default=True, verbose_name=_("Status"))
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
 
     def __str__(self):
-        return f"{self.moniker} ({self.status})"
+        return f"{self.moniker} ({self.blockchain})"
 
     class Meta:
         verbose_name = _("Blockchain Validator")
