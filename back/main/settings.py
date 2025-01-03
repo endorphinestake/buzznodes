@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "django_rq",
     "rosetta",
     "django_ckeditor_5",
+    "adminsortable2",
     "main.apps.MainConfig",
     "users.apps.UsersConfig",
     "mails.apps.MailsConfig",
