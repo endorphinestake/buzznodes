@@ -217,6 +217,8 @@ DEFAULT_PAGE_SIZE = 25
 
 EXPIRED_LOGS_PERIOD = timedelta(days=30)
 
+METRICS_ALLOWED_IPS = ["127.0.0.1", "37.27.90.63"]
+
 if not DEBUG:
     REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = (
         "rest_framework.renderers.JSONRenderer",

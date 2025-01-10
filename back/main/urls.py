@@ -7,10 +7,12 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 
 from users import urls as users_urls
+from blockchains import urls as blockchains_urls
 
 
 urlpatterns = [
     path("api/users/", include(users_urls)),
+    path("api/blockchains/", include(blockchains_urls)),
 ]
 
 urlpatterns += i18n_patterns(
