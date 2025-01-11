@@ -9,7 +9,7 @@ class Blockchain(models.Model):
     btype = models.SlugField(
         choices=Type.choices, default=Type.COSMOS, verbose_name=_("Type")
     )
-    status = models.BooleanField(default=True, verbose_name=_("Status"))
+    status = models.BooleanField(db_index=True, default=True, verbose_name=_("Status"))
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
 
@@ -28,9 +28,15 @@ class BlockchainUrl(models.Model):
         related_name="blockchain_urls",
         verbose_name=_("Blockchain"),
     )
-    url = models.URLField(verbose_name=_("API URL"))
+    name = models.CharField(
+        max_length=256, null=True, blank=True, verbose_name=_("Domain Name")
+    )
+    rpc_url = models.URLField(verbose_name=_("RPC URL"))
+    validators_url = models.URLField(verbose_name=_("Validators URL"))
+    infos_url = models.URLField(verbose_name=_("Signing Infos URL"))
     priority = models.PositiveIntegerField(db_index=True)
     status = models.BooleanField(default=True, verbose_name=_("Status"))
+    total_called = models.PositiveBigIntegerField(verbose_name=_("Number of launches"))
     last_sync = models.DateTimeField(
         null=True, blank=True, verbose_name=_("Last Sync date")
     )
@@ -38,7 +44,7 @@ class BlockchainUrl(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
 
     def __str__(self):
-        return f"{self.url}"
+        return f"{self.name}"
 
     class Meta:
         ordering = ["priority"]

@@ -5,11 +5,14 @@ from django.contrib import admin
 from blockchains.models import Blockchain, BlockchainUrl, BlockchainValidator
 
 
-class BlockchainUrlInline(SortableInlineAdminMixin, admin.TabularInline):
+class BlockchainUrlInline(SortableInlineAdminMixin, admin.StackedInline):
     model = BlockchainUrl
     extra = 0
     fields = (
-        "url",
+        "name",
+        "rpc_url",
+        "validators_url",
+        "infos_url",
         "priority",
         "status",
         "last_sync",

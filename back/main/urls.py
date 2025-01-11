@@ -17,7 +17,7 @@ urlpatterns = [
 
 urlpatterns += i18n_patterns(
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
-    path("administration/", admin.site.urls),
+    path("admin/", admin.site.urls),
     path("django-rq/", include("django_rq.urls")),
     path("rosetta/", include("rosetta.urls")),
     path("ckeditor5/", include("django_ckeditor_5.urls")),

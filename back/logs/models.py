@@ -23,16 +23,17 @@ class Log(models.Model):
 
     @staticmethod
     def info(text: str):
+        print(f"INFO: {text}")
         return Log.objects.create(level=Log.LogLevel.INFO, text=text)
 
     @staticmethod
     def warning(text: str):
-        print("WARNING: ", text)
+        print(f"WARNING: {text}")
         return Log.objects.create(level=Log.LogLevel.WARNING, text=text)
 
     @staticmethod
     def error(text: str):
-        print("ERROR: ", text)
+        print(f"ERROR: {text}")
         return Log.objects.create(level=Log.LogLevel.ERROR, text=text)
 
     @staticmethod
