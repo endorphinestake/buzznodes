@@ -3,33 +3,32 @@ import httpx
 from logs.models import Log
 
 
-async def cosmos_fetch_rpc_url(urls, timeout):
+async def cosmos_fetch_validators_url(urls, timeout):
     for url in urls:
         try:
             results = []
             page = 1
-            per_page = 100
+            page_key = ""
+            per_page = 500
             max_pages = 10
 
             async with httpx.AsyncClient(timeout=timeout) as client:
                 while True:
-                    page_url = f"{url}?per_page={per_page}&page={page}"
+                    page_url = (
+                        f"{url}?pagination.limit={per_page}&pagination.key={page_key}"
+                    )
                     resp = await client.get(page_url)
                     resp.raise_for_status()
 
                     data = resp.json()
-                    if (
-                        "result" not in data
-                        or "validators" not in data["result"]
-                        or int(data["result"]["count"]) < 1
-                    ):
+                    if "validators" not in data or "pagination" not in data:
                         raise ValueError(f"Invalid response format for {page_url}")
 
                     page += 1
-                    results.extend(data["result"]["validators"])
-                    total = int(data["result"]["total"])
+                    page_key = data["pagination"]["next_key"]
+                    results.extend(data["validators"])
 
-                    if len(results) >= total or page > max_pages:
+                    if not page_key or page > max_pages:
                         return results
 
         except httpx.TimeoutException as e:

@@ -1,5 +1,4 @@
 import asyncio
-import httpx
 
 from django.conf import settings
 from rest_framework import views, response, status
@@ -7,6 +6,7 @@ from rest_framework import views, response, status
 from blockchains.models import Blockchain
 from blockchains.permissions import IsPrometheusUserAgent
 from blockchains.utils.cosmos_fetch_rpc_url import cosmos_fetch_rpc_url
+from blockchains.utils.cosmos_fetch_validators_url import cosmos_fetch_validators_url
 from logs.models import Log
 
 
@@ -19,7 +19,10 @@ class BlockchainMetrics(views.APIView):
                 urls=rpc_urls,
                 timeout=settings.METRICS_TIMEOUT_SECONDS,
             ),
-            # cosmos_fetch_validators_urls(validators_urls),
+            cosmos_fetch_validators_url(
+                urls=validators_urls,
+                timeout=settings.METRICS_TIMEOUT_SECONDS,
+            ),
             # cosmos_fetch_infos_url(infos_urls),
             return_exceptions=True,
         )
