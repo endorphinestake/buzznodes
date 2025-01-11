@@ -7,6 +7,7 @@ from blockchains.models import Blockchain
 from blockchains.permissions import IsPrometheusUserAgent
 from blockchains.utils.cosmos_fetch_rpc_url import cosmos_fetch_rpc_url
 from blockchains.utils.cosmos_fetch_validators_url import cosmos_fetch_validators_url
+from blockchains.utils.cosmos_fetch_infos_url import cosmos_fetch_infos_url
 from logs.models import Log
 
 
@@ -23,7 +24,10 @@ class BlockchainMetrics(views.APIView):
                 urls=validators_urls,
                 timeout=settings.METRICS_TIMEOUT_SECONDS,
             ),
-            # cosmos_fetch_infos_url(infos_urls),
+            cosmos_fetch_infos_url(
+                urls=infos_urls,
+                timeout=settings.METRICS_TIMEOUT_SECONDS,
+            ),
             return_exceptions=True,
         )
         return results
@@ -35,7 +39,6 @@ class BlockchainMetrics(views.APIView):
         if not blockchain:
             return response.Response(status=status.HTTP_404_NOT_FOUND)
 
-        urls_types = ["RPC", "Validators", "Infos"]
         rpc_urls, validators_urls, infos_urls = zip(
             *blockchain.blockchain_urls.order_by("priority").values_list(
                 "rpc_url", "validators_url", "infos_url"
@@ -50,12 +53,17 @@ class BlockchainMetrics(views.APIView):
             )
         )
 
+        urls_types = ["RPC", "Validators", "Infos"]
         for idx, result in enumerate(results):
             if isinstance(result, Exception):
-                print("idx: ", idx)
-                print("result: ", result)
-
                 Log.error(f"Can't fetching {urls_types[idx]}: {result}")
                 return response.Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-        return response.Response(results, status=status.HTTP_200_OK)
+        return response.Response(
+            {
+                "rpc-data": results[0],
+                "validators-data": results[1],
+                "infos-data": results[2],
+            },
+            status=status.HTTP_200_OK,
+        )
