@@ -53,6 +53,12 @@ class BlockchainUrl(models.Model):
 
 
 class BlockchainValidator(models.Model):
+    class Status(models.TextChoices):
+        BOND_STATUS_UNSPECIFIED = "BOND_STATUS_UNSPECIFIED", "BOND_STATUS_UNSPECIFIED"
+        BOND_STATUS_BONDED = "BOND_STATUS_BONDED", "BOND_STATUS_BONDED"
+        BOND_STATUS_UNBONDED = "BOND_STATUS_UNBONDED", "BOND_STATUS_UNBONDED"
+        BOND_STATUS_UNBONDING = "BOND_STATUS_UNBONDING", "BOND_STATUS_UNBONDING"
+
     blockchain = models.ForeignKey(
         Blockchain,
         on_delete=models.CASCADE,
@@ -62,7 +68,14 @@ class BlockchainValidator(models.Model):
     operator_address = models.CharField(
         db_index=True, max_length=255, verbose_name=_("Operator Address")
     )
+    pubkey_type = models.CharField(
+        max_length=255, verbose_name=_("Consensus pubkey @type")
+    )
+    pubkey_key = models.CharField(
+        max_length=255, verbose_name=_("Consensus pubkey key")
+    )
     moniker = models.CharField(db_index=True, max_length=255, verbose_name=_("Moniker"))
+    jailed = models.BooleanField(default=False)
     identity = models.CharField(
         null=True, blank=True, max_length=256, verbose_name=_("Identity")
     )
@@ -73,6 +86,9 @@ class BlockchainValidator(models.Model):
         null=True, blank=True, max_length=256, verbose_name=_("Security Contact")
     )
     details = models.TextField(null=True, blank=True, verbose_name=_("Details"))
+    status = models.SlugField(
+        max_length=25, choices=Status.choices, default=Status.BOND_STATUS_BONDED
+    )
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
 
