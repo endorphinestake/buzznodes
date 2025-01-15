@@ -44,3 +44,24 @@ class BlockchainValidatorSerializer(serializers.Serializer):
     unbonding_time = serializers.DateTimeField()
     commission = CommissionSerializer()
     min_self_delegation = serializers.IntegerField()
+
+
+class RpcPubKeySerializer(serializers.Serializer):
+    type = serializers.CharField()
+    value = serializers.CharField()
+
+
+class RpcValidatorSerializer(serializers.Serializer):
+    address = serializers.CharField()
+    pub_key = RpcPubKeySerializer()
+    voting_power = serializers.IntegerField()
+    proposer_priority = serializers.IntegerField()
+
+
+class InfosValidatorSerializer(serializers.Serializer):
+    address = serializers.CharField()
+    start_height = serializers.IntegerField()
+    index_offset = serializers.IntegerField()
+    jailed_until = serializers.DateTimeField()
+    tombstoned = serializers.BooleanField()
+    missed_blocks_counter = serializers.IntegerField()

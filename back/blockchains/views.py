@@ -6,7 +6,11 @@ from django.db import transaction
 from rest_framework import views, response, status
 
 from blockchains.models import Blockchain, BlockchainValidator
-from blockchains.serilazers import BlockchainValidatorSerializer
+from blockchains.serilazers import (
+    RpcValidatorSerializer,
+    BlockchainValidatorSerializer,
+    InfosValidatorSerializer,
+)
 from blockchains.permissions import IsPrometheusUserAgent
 from blockchains.utils.cosmos_fetch_rpc_url import cosmos_fetch_rpc_url
 from blockchains.utils.cosmos_fetch_validators_url import cosmos_fetch_validators_url
@@ -62,6 +66,14 @@ class BlockchainMetrics(views.APIView):
                 Log.error(f"Can't fetching {urls_types[idx]}: {result}")
                 return response.Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
+        # Validate Data
+        rpc_serializer = RpcValidatorSerializer(data=results[0], many=True)
+        if not rpc_serializer.is_valid():
+            return response.Response(
+                rpc_serializer.errors,
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            )
+
         validators_serializer = BlockchainValidatorSerializer(
             data=results[1], many=True
         )
@@ -71,7 +83,14 @@ class BlockchainMetrics(views.APIView):
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
 
-        # TODO: move to RQ "update_validators"
+        infos_serializer = InfosValidatorSerializer(data=results[2], many=True)
+        if not infos_serializer.is_valid():
+            return response.Response(
+                infos_serializer.errors,
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            )
+
+        # Get local data
         validators_local = {
             item.operator_address: item
             for item in blockchain.blockchain_validators.all()
@@ -109,6 +128,7 @@ class BlockchainMetrics(views.APIView):
                     validators_to_update.append((validator, updated_fields))
 
             else:
+                # Create Validator if not exists
                 BlockchainValidator.objects.create(
                     blockchain=blockchain,
                     operator_address=row["operator_address"],
