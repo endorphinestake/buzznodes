@@ -201,7 +201,7 @@ class BlockchainMetrics(views.APIView):
                     wallet_address=wallet_address,
                     jailed=jailed,
                     tombstoned=tombstoned,
-                    status=status,
+                    status=validator_status,
                 )
 
         # Update Validators (TODO: RQ Task)
