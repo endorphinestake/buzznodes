@@ -213,11 +213,17 @@ class BlockchainMetrics(views.APIView):
                         **updated_fields
                     )
 
+        # return response.Response(
+        #     {
+        #         "rpc-data": results[0],
+        #         "validators-data": results[1],
+        #         "infos-data": results[2],
+        #     },
+        #     status=status.HTTP_200_OK,
+        # )
+
         return response.Response(
-            {
-                "rpc-data": results[0],
-                "validators-data": results[1],
-                "infos-data": results[2],
-            },
+            "# Metrics collection is temporarily disabled\n",
+            content_type="text/plain",
             status=status.HTTP_200_OK,
         )
