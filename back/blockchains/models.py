@@ -74,8 +74,9 @@ class BlockchainValidator(models.Model):
     pubkey_key = models.CharField(
         max_length=255, verbose_name=_("Consensus pubkey key")
     )
-    moniker = models.CharField(db_index=True, max_length=255, verbose_name=_("Moniker"))
-    jailed = models.BooleanField(default=False)
+    moniker = models.CharField(
+        db_index=True, null=True, blank=True, max_length=255, verbose_name=_("Moniker")
+    )
     identity = models.CharField(
         null=True, blank=True, max_length=256, verbose_name=_("Identity")
     )
@@ -86,8 +87,27 @@ class BlockchainValidator(models.Model):
         null=True, blank=True, max_length=256, verbose_name=_("Security Contact")
     )
     details = models.TextField(null=True, blank=True, verbose_name=_("Details"))
+    voting_power = models.IntegerField(verbose_name=_("Voting Power"))
+    commision_rate = models.DecimalField(max_digits=20, decimal_places=18)
+    commision_max_rate = models.DecimalField(max_digits=20, decimal_places=18)
+    commision_max_change_rate = models.DecimalField(max_digits=20, decimal_places=18)
+    missed_blocks_counter = models.IntegerField()
+    hex_address = models.CharField(
+        max_length=255, null=True, blank=True, verbose_name=_("HEX Address")
+    )
+    valcons_address = models.CharField(
+        max_length=255, null=True, blank=True, verbose_name=_("Valcons Address")
+    )
+    wallet_address = models.CharField(
+        max_length=255, null=True, blank=True, verbose_name=_("Wallet Address")
+    )
+    jailed = models.BooleanField(default=False, verbose_name=_("Jailed"))
+    tombstoned = models.BooleanField(default=False, verbose_name=_("Tombstoned status"))
     status = models.SlugField(
-        max_length=25, choices=Status.choices, default=Status.BOND_STATUS_BONDED
+        max_length=25,
+        choices=Status.choices,
+        default=Status.BOND_STATUS_BONDED,
+        verbose_name=_("Status"),
     )
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))

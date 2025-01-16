@@ -15,6 +15,8 @@ from blockchains.permissions import IsPrometheusUserAgent
 from blockchains.utils.cosmos_fetch_rpc_url import cosmos_fetch_rpc_url
 from blockchains.utils.cosmos_fetch_validators_url import cosmos_fetch_validators_url
 from blockchains.utils.cosmos_fetch_infos_url import cosmos_fetch_infos_url
+from blockchains.utils.hex_to_celestiavalcons import hex_to_celestiavalcons
+from blockchains.utils.convert_valoper_to_wallet import convert_valoper_to_wallet
 from logs.models import Log
 
 
@@ -90,62 +92,121 @@ class BlockchainMetrics(views.APIView):
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
 
+        # Format Data
+        rpc_data = {
+            item["pub_key"]["value"]: item for item in rpc_serializer.validated_data
+        }
+        infos_data = {item["address"]: item for item in infos_serializer.validated_data}
+
         # Get local data
         validators_local = {
             item.operator_address: item
-            for item in blockchain.blockchain_validators.all()
+            for item in blockchain.blockchain_validators.iterator()
         }
 
         validators_to_update = []
-        for row in validators_serializer.validated_data:
-            validator = validators_local.get(row["operator_address"])
+        for validator_row in validators_serializer.validated_data:
+            operator_address = validator_row["operator_address"]
+            validator = validators_local.get(operator_address)
+
+            pubkey_type = validator_row["consensus_pubkey"]["type"]
+            pubkey_key = validator_row["consensus_pubkey"]["key"]
+            moniker = validator_row["description"].get("moniker")
+            identity = validator_row["description"].get("identity")
+            website = validator_row["description"].get("website")
+            contact = validator_row["description"].get("security_contact")
+            details = validator_row["description"].get("details")
+            rpc_row = rpc_data.get(validator_row["consensus_pubkey"]["key"], {})
+            wallet_address = convert_valoper_to_wallet(operator_address)
+            hex_address = rpc_row.get("address")
+            valcons_address = hex_to_celestiavalcons(hex_address)
+            infos_row = infos_data.get(valcons_address, {})
+            voting_power = rpc_row.get("voting_power", 0)
+            commision_rate = validator_row["commission"]["commission_rates"]["rate"]
+            commision_max_rate = validator_row["commission"]["commission_rates"][
+                "max_rate"
+            ]
+            commision_max_change_rate = validator_row["commission"]["commission_rates"][
+                "max_change_rate"
+            ]
+            missed_blocks_counter = infos_row.get("missed_blocks_counter", 0)
+            jailed = validator_row["jailed"]
+            tombstoned = infos_row.get("tombstoned", False)
+            validator_status = validator_row["status"]
 
             if validator:
                 updated_fields = {}
-
-                if validator.pubkey_type != row["consensus_pubkey"]["type"]:
-                    updated_fields["pubkey_type"] = row["consensus_pubkey"]["type"]
-                if validator.pubkey_key != row["consensus_pubkey"]["key"]:
-                    updated_fields["pubkey_key"] = row["consensus_pubkey"]["key"]
-                if validator.moniker != row["description"].get("moniker"):
-                    updated_fields["moniker"] = row["description"].get("moniker")
-                if validator.jailed != row["jailed"]:
-                    updated_fields["jailed"] = row["jailed"]
-                if validator.identity != row["description"].get("identity"):
-                    updated_fields["identity"] = row["description"].get("identity")
-                if validator.website != row["description"].get("website"):
-                    updated_fields["website"] = row["description"].get("website")
-                if validator.contact != row["description"].get("security_contact"):
-                    updated_fields["contact"] = row["description"].get(
-                        "security_contact"
+                if validator.pubkey_type != pubkey_type:
+                    updated_fields["pubkey_type"] = pubkey_type
+                if validator.pubkey_key != pubkey_key:
+                    updated_fields["pubkey_key"] = pubkey_key
+                if validator.moniker != moniker:
+                    updated_fields["moniker"] = moniker
+                if validator.identity != identity:
+                    updated_fields["identity"] = identity
+                if validator.website != website:
+                    updated_fields["website"] = website
+                if validator.contact != contact:
+                    updated_fields["contact"] = contact
+                if validator.details != details:
+                    updated_fields["details"] = details
+                if validator.wallet_address != wallet_address:
+                    updated_fields["wallet_address"] = wallet_address
+                if validator.hex_address != hex_address:
+                    updated_fields["hex_address"] = hex_address
+                if validator.valcons_address != valcons_address:
+                    updated_fields["valcons_address"] = valcons_address
+                if validator.voting_power != voting_power:
+                    updated_fields["voting_power"] = voting_power
+                if validator.commision_rate != commision_rate:
+                    updated_fields["commision_rate"] = commision_rate
+                if validator.commision_max_rate != commision_max_rate:
+                    updated_fields["commision_max_rate"] = commision_max_rate
+                if validator.commision_max_change_rate != commision_max_change_rate:
+                    updated_fields["commision_max_change_rate"] = (
+                        commision_max_change_rate
                     )
-                if validator.details != row["description"].get("details"):
-                    updated_fields["details"] = row["description"].get("details")
-                if validator.status != row["status"]:
-                    updated_fields["status"] = row["status"]
+                if validator.missed_blocks_counter != missed_blocks_counter:
+                    updated_fields["missed_blocks_counter"] = missed_blocks_counter
+                if validator.jailed != jailed:
+                    updated_fields["jailed"] = jailed
+                if validator.tombstoned != tombstoned:
+                    updated_fields["tombstoned"] = tombstoned
+                if validator.status != validator_status:
+                    updated_fields["status"] = validator_status
 
                 if updated_fields:
                     validators_to_update.append((validator, updated_fields))
 
             else:
-                # Create Validator if not exists
+                # Create Validator (if not exists)
+                print("INFO: Creating BlockchainValidator: ", operator_address)
                 BlockchainValidator.objects.create(
                     blockchain=blockchain,
-                    operator_address=row["operator_address"],
-                    pubkey_type=row["consensus_pubkey"]["type"],
-                    pubkey_key=row["consensus_pubkey"]["key"],
-                    moniker=row["description"].get("moniker"),
-                    jailed=row["jailed"],
-                    identity=row["description"].get("identity"),
-                    website=row["description"].get("website"),
-                    contact=row["description"].get("security_contact"),
-                    details=row["description"].get("details"),
-                    status=row["status"],
+                    operator_address=operator_address,
+                    pubkey_type=pubkey_type,
+                    pubkey_key=pubkey_key,
+                    moniker=moniker,
+                    identity=identity,
+                    website=website,
+                    contact=contact,
+                    details=details,
+                    voting_power=voting_power,
+                    commision_rate=commision_rate,
+                    commision_max_rate=commision_max_rate,
+                    commision_max_change_rate=commision_max_change_rate,
+                    missed_blocks_counter=missed_blocks_counter,
+                    hex_address=hex_address,
+                    valcons_address=valcons_address,
+                    wallet_address=wallet_address,
+                    jailed=jailed,
+                    tombstoned=tombstoned,
+                    status=status,
                 )
 
-        # Update Validators
-        print("validators_to_update: ", validators_to_update)
+        # Update Validators (TODO: RQ Task)
         if validators_to_update:
+            print("INFO: Updating BlockchainValidator: ", validators_to_update)
             with transaction.atomic():
                 for validator, updated_fields in validators_to_update:
                     BlockchainValidator.objects.filter(id=validator.id).update(
