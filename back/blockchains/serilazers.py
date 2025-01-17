@@ -3,6 +3,23 @@ from rest_framework import serializers
 from blockchains.models import BlockchainValidator
 
 
+class BlockchainValidatorModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlockchainValidator
+        fields = (
+            "id",
+            "blockchain_id",
+            "operator_address",
+            "moniker",
+            "identity",
+            "voting_power",
+            "commision_rate",
+            "uptime",
+            "status",
+            "updated",
+        )
+
+
 class ConsensusPubKeySerializer(serializers.Serializer):
     key = serializers.CharField()
     type = serializers.CharField()

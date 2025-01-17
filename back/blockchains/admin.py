@@ -66,6 +66,10 @@ class BlockchainValidatorAdmin(admin.ModelAdmin):
     search_fields = (
         "operator_address",
         "moniker",
+        "pubkey_key",
+        "hex_address",
+        "valcons_address",
+        "wallet_address",
     )
 
     def has_change_permission(self, request, obj=None):

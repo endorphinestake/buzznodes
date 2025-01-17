@@ -1,8 +1,9 @@
 from django.urls import path
 
-from blockchains.views import BlockchainMetrics
+from blockchains.views import BlockchainMetricsView, BlockchainValidatorsView
 
 
 urlpatterns = [
-    path("metrics/", BlockchainMetrics.as_view()),
+    path("metrics/", BlockchainMetricsView.as_view()),
+    path("list/", BlockchainValidatorsView.as_view()),
 ]

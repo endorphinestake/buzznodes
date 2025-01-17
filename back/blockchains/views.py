@@ -2,16 +2,19 @@ import asyncio
 
 from django.conf import settings
 from django.db import transaction
+from django.utils.timezone import now
 
-from rest_framework import views, response, status
+from rest_framework import views, permissions, response, status
 
 from blockchains.models import Blockchain, BlockchainValidator
 from blockchains.serilazers import (
+    BlockchainValidatorModelSerializer,
     RpcValidatorSerializer,
     BlockchainValidatorSerializer,
     InfosValidatorSerializer,
 )
 from blockchains.permissions import IsPrometheusUserAgent
+from blockchains.filters import BlockchainValidatorFilter
 from blockchains.utils.cosmos_fetch_rpc_url import cosmos_fetch_rpc_url
 from blockchains.utils.cosmos_fetch_validators_url import cosmos_fetch_validators_url
 from blockchains.utils.cosmos_fetch_infos_url import cosmos_fetch_infos_url
@@ -21,7 +24,7 @@ from blockchains.utils.calculate_uptime import calculate_uptime
 from logs.models import Log
 
 
-class BlockchainMetrics(views.APIView):
+class BlockchainMetricsView(views.APIView):
     permission_classes = (IsPrometheusUserAgent,)
 
     async def _process_urls(self, rpc_urls, validators_urls, infos_urls):
@@ -212,26 +215,32 @@ class BlockchainMetrics(views.APIView):
                     status=validator_status,
                 )
 
-        # Update Validators (TODO: RQ Task)
         if validators_to_update:
             print("INFO: Updating BlockchainValidator: ", validators_to_update)
             with transaction.atomic():
                 for validator, updated_fields in validators_to_update:
                     BlockchainValidator.objects.filter(id=validator.id).update(
-                        **updated_fields
+                        **updated_fields,
+                        updated=now(),
                     )
-
-        # return response.Response(
-        #     {
-        #         "rpc-data": results[0],
-        #         "validators-data": results[1],
-        #         "infos-data": results[2],
-        #     },
-        #     status=status.HTTP_200_OK,
-        # )
 
         return response.Response(
             "# Metrics collection is temporarily disabled\n",
             content_type="text/plain",
             status=status.HTTP_200_OK,
         )
+
+
+class BlockchainValidatorsView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    filterset_class = BlockchainValidatorFilter
+
+    def get(self, request):
+        validators_filter = self.filterset_class(
+            request.GET,
+            request=request,
+            queryset=BlockchainValidator.objects.all().select_related("blockchain"),
+        )
+
+        serializer = BlockchainValidatorModelSerializer(validators_filter.qs, many=True)
+        return response.Response(serializer.data, status=status.HTTP_200_OK)

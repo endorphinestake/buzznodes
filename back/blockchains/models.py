@@ -95,7 +95,10 @@ class BlockchainValidator(models.Model):
     commision_max_change_rate = models.DecimalField(max_digits=20, decimal_places=18)
     missed_blocks_counter = models.IntegerField()
     uptime = models.DecimalField(
-        max_digits=5, decimal_places=2, default=Decimal("100.00")
+        max_digits=5,
+        decimal_places=2,
+        default=Decimal("100.00"),
+        verbose_name=_("Uptime, %"),
     )
     hex_address = models.CharField(
         max_length=255, null=True, blank=True, verbose_name=_("HEX Address")
