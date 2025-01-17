@@ -17,6 +17,7 @@ from blockchains.utils.cosmos_fetch_validators_url import cosmos_fetch_validator
 from blockchains.utils.cosmos_fetch_infos_url import cosmos_fetch_infos_url
 from blockchains.utils.hex_to_celestiavalcons import hex_to_celestiavalcons
 from blockchains.utils.convert_valoper_to_wallet import convert_valoper_to_wallet
+from blockchains.utils.calculate_uptime import calculate_uptime
 from logs.models import Log
 
 
@@ -129,10 +130,14 @@ class BlockchainMetrics(views.APIView):
             commision_max_change_rate = validator_row["commission"]["commission_rates"][
                 "max_change_rate"
             ]
-            missed_blocks_counter = infos_row.get("missed_blocks_counter", 0)
             jailed = validator_row["jailed"]
             tombstoned = infos_row.get("tombstoned", False)
             validator_status = validator_row["status"]
+            missed_blocks_counter = infos_row.get("missed_blocks_counter", 0)
+            uptime = calculate_uptime(
+                missed_blocks_counter=missed_blocks_counter,
+                validator_status=validator_status,
+            )
 
             if validator:
                 updated_fields = {}
@@ -168,6 +173,8 @@ class BlockchainMetrics(views.APIView):
                     )
                 if validator.missed_blocks_counter != missed_blocks_counter:
                     updated_fields["missed_blocks_counter"] = missed_blocks_counter
+                if validator.uptime != uptime:
+                    updated_fields["uptime"] = uptime
                 if validator.jailed != jailed:
                     updated_fields["jailed"] = jailed
                 if validator.tombstoned != tombstoned:
@@ -196,6 +203,7 @@ class BlockchainMetrics(views.APIView):
                     commision_max_rate=commision_max_rate,
                     commision_max_change_rate=commision_max_change_rate,
                     missed_blocks_counter=missed_blocks_counter,
+                    uptime=uptime,
                     hex_address=hex_address,
                     valcons_address=valcons_address,
                     wallet_address=wallet_address,

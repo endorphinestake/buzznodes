@@ -39,34 +39,40 @@ class BlockchainAdmin(SortableAdminBase, admin.ModelAdmin):
     list_filter = ("btype",)
 
 
-# @admin.register(BlockchainUrl)
-# class BlockchainUrlAdmin(SortableAdminMixin, admin.ModelAdmin):
-#     list_display = (
-#         "blockchain",
-#         "url",
-#         "priority",
-#         "status",
-#         "last_sync",
-#         "updated",
-#         "created",
-#     )
-#     list_filter = ("blockchain",)
-#     ordering = ("priority",)
-
-
 @admin.register(BlockchainValidator)
 class BlockchainValidatorAdmin(admin.ModelAdmin):
     list_display = (
-        "blockchain",
-        "operator_address",
         "moniker",
+        "status",
+        "voting_power",
+        "uptime",
+        "missed_blocks_counter",
+        "commision_rate",
+        "commision_max_rate",
+        "commision_max_change_rate",
         "website",
         "contact",
+        "jailed",
+        "tombstoned",
         "updated",
         "created",
     )
-    list_filter = ("blockchain",)
+    list_filter = (
+        "blockchain",
+        "status",
+        "jailed",
+        "tombstoned",
+    )
     search_fields = (
         "operator_address",
         "moniker",
     )
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
