@@ -82,6 +82,9 @@ class BlockchainValidator(models.Model):
     identity = models.CharField(
         null=True, blank=True, max_length=256, verbose_name=_("Identity")
     )
+    picture = models.CharField(
+        null=True, blank=True, max_length=256, verbose_name=_("Picture")
+    )
     website = models.CharField(
         null=True, blank=True, max_length=256, verbose_name=_("Website")
     )

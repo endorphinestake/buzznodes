@@ -82,3 +82,17 @@ class InfosValidatorSerializer(serializers.Serializer):
     jailed_until = serializers.DateTimeField()
     tombstoned = serializers.BooleanField()
     missed_blocks_counter = serializers.IntegerField()
+
+
+class PrimaryPictureSerializer(serializers.Serializer):
+    url = serializers.URLField()
+    source = serializers.CharField(allow_null=True, required=False)
+
+
+class PicturesSerializer(serializers.Serializer):
+    primary = PrimaryPictureSerializer()
+
+
+class ValidatorPictureSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    pictures = PicturesSerializer()
