@@ -1,4 +1,4 @@
-import { EBlockchainValidatorStatus } from "@modules/blockchain/enums";
+import { EBlockchainValidatorStatus } from "@modules/blockchains/enums";
 
 export type TBlockchainValidator = {
   id: number;
