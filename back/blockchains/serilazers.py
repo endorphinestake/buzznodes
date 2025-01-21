@@ -11,7 +11,7 @@ class BlockchainValidatorModelSerializer(serializers.ModelSerializer):
             "blockchain_id",
             "operator_address",
             "moniker",
-            "identity",
+            "picture",
             "voting_power",
             "commision_rate",
             "uptime",

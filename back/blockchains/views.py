@@ -2,6 +2,7 @@ import asyncio
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import Sum
 from django.utils.timezone import now
 
 from rest_framework import views, permissions, response, status
@@ -244,11 +245,27 @@ class BlockchainValidatorsView(views.APIView):
             .order_by("-voting_power"),
         )
 
+        total_voting_power = (
+            BlockchainValidator.objects.all().aggregate(
+                total_voting_power=Sum("voting_power")
+            )["total_voting_power"]
+            or 0
+        )
+
         queryset = validators_filter.qs
         serializer = BlockchainValidatorModelSerializer(queryset, many=True)
 
         data_with_rank = [
-            {**item, "rank": index + 1} for index, item in enumerate(serializer.data)
+            {
+                **item,
+                "rank": index + 1,
+                "voting_power_percentage": (
+                    (item["voting_power"] / total_voting_power) * 100
+                    if total_voting_power > 0
+                    else 0
+                ),
+            }
+            for index, item in enumerate(serializer.data)
         ]
 
         return response.Response(data_with_rank, status=status.HTTP_200_OK)

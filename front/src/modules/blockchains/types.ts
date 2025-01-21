@@ -5,11 +5,12 @@ export type TBlockchainValidator = {
   blockchain_id: number;
   operator_address: string;
   moniker?: string;
-  identity?: string;
+  picture?: string;
   voting_power: number;
   commision_rate: number;
   uptime: number;
   status: EBlockchainValidatorStatus;
   updated: Date;
   rank: number;
+  voting_power_percentage: number;
 };

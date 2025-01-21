@@ -1,9 +1,9 @@
 // ** React Imports
-import { memo, useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { format } from "date-fns";
 
 // ** NextJS Imports
-import Head from "next/head";
+import defaultValidatorIcon from "public/images/defaultValidatorIcon.webp";
 
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,6 @@ import {
 } from "@modules/blockchains/interfaces";
 
 // ** Shared Components
-import styles from "@styles/Home.module.css";
 
 // ** MUI Imports
 import { Box, Card, CardHeader, Grid, Typography, Button } from "@mui/material";
@@ -38,8 +37,8 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
   // ** Vars
   const columns = [
     {
-      flex: 0.1,
-      minWidth: 170,
+      flex: 0.03,
+      minWidth: 50,
       field: "rank",
       sortable: true,
       headerName: t(`Rank`),
@@ -51,30 +50,67 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
       sortable: true,
       headerName: t(`Validator`),
       renderCell: ({ row }: IValidatorsTableRow) => {
-        return row.moniker;
-        // return Number(row.amount).toFixed(2).toString();
+        return (
+          <Fragment>
+            <img
+              loading="lazy"
+              width="25"
+              src={
+                row.picture && row.picture !== "default"
+                  ? row.picture
+                  : "/images/defaultValidatorIcon.webp"
+              }
+              alt="validator icon"
+              style={{
+                borderRadius: "50%",
+                objectFit: "cover",
+              }}
+            />
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.primary",
+                fontWeight: 500,
+                lineHeight: "22px",
+                ml: 2,
+              }}
+            >
+              {row.moniker ?? "-----"}
+            </Typography>
+          </Fragment>
+        );
       },
     },
-    // {
-    //   flex: 0.1,
-    //   minWidth: 150,
-    //   field: "currency",
-    //   sortable: true,
-    //   headerName: t(`Currency`),
-    //   renderCell: ({ row }: IValidatorsTableRow) => {
-    //     return row.currency;
-    //   },
-    // },
-    // {
-    //   flex: 0.1,
-    //   minWidth: 150,
-    //   field: "status",
-    //   sortable: true,
-    //   headerName: t(`Status`),
-    //   renderCell: ({ row }: IValidatorsTableRow) => {
-    //     return <RenderPayStatus payment={row} />;
-    //   },
-    // },
+    {
+      flex: 0.1,
+      minWidth: 150,
+      field: "voting_power",
+      sortable: true,
+      headerName: t(`Voting Power`),
+      renderCell: ({ row }: IValidatorsTableRow) => {
+        return (
+          <Box>
+            {Intl.NumberFormat("ru-RU").format(row.voting_power)}
+            <Box>
+              <Typography variant="caption">
+                {Number(row.voting_power_percentage).toFixed(2).toString()}%
+              </Typography>
+            </Box>
+          </Box>
+        );
+      },
+    },
+    {
+      flex: 0.1,
+      minWidth: 150,
+      field: "commision_rate",
+      sortable: true,
+      headerName: t(`Comission`),
+      renderCell: ({ row }: IValidatorsTableRow) => {
+        const commissionRate = row.commision_rate * 100;
+        return `${commissionRate.toFixed(2)}%`;
+      },
+    },
     // {
     //   flex: 0.1,
     //   minWidth: 150,
@@ -129,6 +165,11 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
       disableColumnMenu
       localeText={{
         noRowsLabel: t(`No rows`),
+      }}
+      initialState={{
+        sorting: {
+          sortModel: [{ field: "rank", sort: "desc" }],
+        },
       }}
     />
   );
