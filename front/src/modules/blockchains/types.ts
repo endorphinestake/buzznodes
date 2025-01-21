@@ -11,4 +11,5 @@ export type TBlockchainValidator = {
   uptime: number;
   status: EBlockchainValidatorStatus;
   updated: Date;
+  rank: number;
 };

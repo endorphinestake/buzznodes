@@ -239,8 +239,16 @@ class BlockchainValidatorsView(views.APIView):
         validators_filter = self.filterset_class(
             request.GET,
             request=request,
-            queryset=BlockchainValidator.objects.all().select_related("blockchain"),
+            queryset=BlockchainValidator.objects.all()
+            .select_related("blockchain")
+            .order_by("-voting_power"),
         )
 
-        serializer = BlockchainValidatorModelSerializer(validators_filter.qs, many=True)
-        return response.Response(serializer.data, status=status.HTTP_200_OK)
+        queryset = validators_filter.qs
+        serializer = BlockchainValidatorModelSerializer(queryset, many=True)
+
+        data_with_rank = [
+            {**item, "rank": index + 1} for index, item in enumerate(serializer.data)
+        ]
+
+        return response.Response(data_with_rank, status=status.HTTP_200_OK)

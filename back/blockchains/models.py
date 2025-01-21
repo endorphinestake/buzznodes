@@ -92,7 +92,7 @@ class BlockchainValidator(models.Model):
         null=True, blank=True, max_length=256, verbose_name=_("Security Contact")
     )
     details = models.TextField(null=True, blank=True, verbose_name=_("Details"))
-    voting_power = models.IntegerField(verbose_name=_("Voting Power"))
+    voting_power = models.IntegerField(db_index=True, verbose_name=_("Voting Power"))
     commision_rate = models.DecimalField(max_digits=20, decimal_places=18)
     commision_max_rate = models.DecimalField(max_digits=20, decimal_places=18)
     commision_max_change_rate = models.DecimalField(max_digits=20, decimal_places=18)
