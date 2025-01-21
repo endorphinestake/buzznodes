@@ -18,9 +18,21 @@ import {
 // ** Shared Components
 
 // ** MUI Imports
-import { Box, Card, CardHeader, Grid, Typography, Button } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardHeader,
+  Grid,
+  Typography,
+  IconButton,
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
+import {
+  BellAlertOutline,
+  BellPlusOutline,
+  ChartAreaspline,
+} from "mdi-material-ui";
 
 const ValidatorsTable = (props: IValidatorsTableProps) => {
   // ** Props
@@ -37,7 +49,7 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
   // ** Vars
   const columns = [
     {
-      flex: 0.03,
+      flex: 0.05,
       minWidth: 50,
       field: "rank",
       sortable: true,
@@ -111,44 +123,35 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
         return `${commissionRate.toFixed(2)}%`;
       },
     },
-    // {
-    //   flex: 0.1,
-    //   minWidth: 150,
-    //   field: "created",
-    //   sortable: true,
-    //   headerName: t(`Created`),
-    //   renderCell: ({ row }: IValidatorsTableRow) => {
-    //     return (
-    //       <Box>
-    //         {format(new Date(row.created), "d MMM, yyyy")}
-    //         <Box>
-    //           <Typography variant="caption">
-    //             {format(new Date(row.created), "H:mm:s")}
-    //           </Typography>
-    //         </Box>
-    //       </Box>
-    //     );
-    //   },
-    // },
-    // {
-    //   flex: 0.1,
-    //   minWidth: 150,
-    //   field: "updated",
-    //   sortable: true,
-    //   headerName: t(`Updated`),
-    //   renderCell: ({ row }: IValidatorsTableRow) => {
-    //     return (
-    //       <Box>
-    //         {format(new Date(row.updated), "d MMM, yyyy")}
-    //         <Box>
-    //           <Typography variant="caption">
-    //             {format(new Date(row.updated), "H:mm:s")}
-    //           </Typography>
-    //         </Box>
-    //       </Box>
-    //     );
-    //   },
-    // },
+    {
+      flex: 0.1,
+      minWidth: 150,
+      field: "uptime",
+      sortable: true,
+      headerName: t(`Uptime`),
+      renderCell: ({ row }: IValidatorsTableRow) => {
+        return `${row.uptime}%`;
+      },
+    },
+    {
+      flex: 0.05,
+      minWidth: 55,
+      field: "actions",
+      sortable: false,
+      headerName: "",
+      renderCell: ({ row }: IValidatorsTableRow) => {
+        return (
+          <Fragment>
+            <IconButton aria-label="capture screenshot" color="primary">
+              <ChartAreaspline />
+            </IconButton>
+            <IconButton aria-label="capture screenshot" color="primary">
+              <BellPlusOutline />
+            </IconButton>
+          </Fragment>
+        );
+      },
+    },
   ];
 
   return (
@@ -168,7 +171,7 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
       }}
       initialState={{
         sorting: {
-          sortModel: [{ field: "rank", sort: "desc" }],
+          sortModel: [{ field: "rank", sort: "asc" }],
         },
       }}
     />

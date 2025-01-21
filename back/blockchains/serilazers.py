@@ -4,6 +4,13 @@ from blockchains.models import BlockchainValidator
 
 
 class BlockchainValidatorModelSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["commision_rate"] = float(representation["commision_rate"])
+        representation["uptime"] = float(representation["uptime"])
+
+        return representation
+
     class Meta:
         model = BlockchainValidator
         fields = (

@@ -27,7 +27,8 @@ import ValidatorsTable from "@modules/blockchains/components/ValidatorsTable";
 
 // ** Mui Imports
 import { Grid, Card, Box, CardHeader, Typography, Button } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+// import AddIcon from "@mui/icons-material/Add";
+import { BellCog } from "mdi-material-ui";
 
 const HomePage = () => {
   // ** Hooks
@@ -67,7 +68,12 @@ const HomePage = () => {
         clearInterval(interval);
       }
     };
-  }, [autorefresh]);
+  }, [autorefresh, validatorStatus]);
+
+  // Refresh when status changed
+  useEffect(() => {
+    dispatch(getBlockchainValidators({ status: validatorStatus }));
+  }, [validatorStatus]);
 
   var filteredValidators: TBlockchainValidator[] = [];
 
@@ -76,9 +82,9 @@ const HomePage = () => {
     filteredValidators = blockchainValidators.filter((item) => {
       switch (validatorStatus) {
         case EBlockchainValidatorStatus.BOND_STATUS_BONDED:
-          return item === EBlockchainValidatorStatus.BOND_STATUS_BONDED;
+          return item.status === EBlockchainValidatorStatus.BOND_STATUS_BONDED;
         case EBlockchainValidatorStatus.BOND_STATUS_UNBONDED:
-          return item !== EBlockchainValidatorStatus.BOND_STATUS_BONDED;
+          return item.status !== EBlockchainValidatorStatus.BOND_STATUS_BONDED;
       }
     });
   }
@@ -87,7 +93,7 @@ const HomePage = () => {
   if (search.length > 0) {
     filteredValidators = blockchainValidators.filter((item) => {
       return (
-        item.moniker.toLowerCase().includes(search.toLowerCase()) ||
+        (item.moniker ?? "").toLowerCase().includes(search.toLowerCase()) ||
         item.operator_address.toLowerCase().includes(search.toLowerCase())
       );
     });
@@ -115,7 +121,8 @@ const HomePage = () => {
                       console.log("click");
                     }}
                   >
-                    <AddIcon /> {t(`Create`)}
+                    <BellCog fontSize="small" sx={{ mb: 1, mr: 2 }} />
+                    {t(`Manage Alerts`)}
                   </Button>
                 }
               />
@@ -131,14 +138,14 @@ const HomePage = () => {
                 }}
               >
                 <Grid container spacing={3}>
-                  <Grid item sm={6} xs={12}>
+                  <Grid item sm={4} xs={12}>
                     <SelectValidatorStatus
                       value={validatorStatus}
                       setValue={setValidatorStatus}
                       label={t(`Status`)}
                     />
                   </Grid>
-                  <Grid item sm={6} xs={12}>
+                  <Grid item sm={8} xs={12}>
                     <TextSearchOutline
                       setValue={setSearch}
                       placeholder={t(`Moniker / Valoper`)}
