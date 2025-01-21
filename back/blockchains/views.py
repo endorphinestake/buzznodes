@@ -1,9 +1,11 @@
 import asyncio
+from prometheus_client import Gauge, generate_latest
 
 from django.conf import settings
 from django.db import transaction
 from django.db.models import Sum
 from django.utils.timezone import now
+from django.http import HttpResponse
 
 from rest_framework import views, permissions, response, status
 
@@ -25,8 +27,24 @@ from blockchains.utils.calculate_uptime import calculate_uptime
 from logs.models import Log
 
 
-class BlockchainMetricsView(views.APIView):
+class CosmosBlockchainMetricsView(views.APIView):
     permission_classes = (IsPrometheusUserAgent,)
+
+    voting_power_metric = Gauge(
+        f"{Blockchain.Type.COSMOS}_validator_voting_power",
+        "Voting power of the validator",
+        ["validator_id", "moniker"],
+    )
+    commission_rate_metric = Gauge(
+        f"{Blockchain.Type.COSMOS}_validator_commission_rate",
+        "Commission rate of the validator",
+        ["validator_id", "moniker"],
+    )
+    uptime_metric = Gauge(
+        f"{Blockchain.Type.COSMOS}_validator_uptime",
+        "Uptime of the validator",
+        ["validator_id", "moniker"],
+    )
 
     async def _process_urls(self, rpc_urls, validators_urls, infos_urls):
         results = await asyncio.gather(
@@ -192,7 +210,7 @@ class BlockchainMetricsView(views.APIView):
             else:
                 # Create Validator (if not exists)
                 print("INFO: Creating BlockchainValidator: ", operator_address)
-                BlockchainValidator.objects.create(
+                validator = BlockchainValidator.objects.create(
                     blockchain=blockchain,
                     operator_address=operator_address,
                     pubkey_type=pubkey_type,
@@ -216,6 +234,20 @@ class BlockchainMetricsView(views.APIView):
                     status=validator_status,
                 )
 
+            # Prometheus metrics
+            self.voting_power_metric.labels(
+                validator_id=validator.id,
+                moniker=moniker,
+            ).set(voting_power)
+            self.commission_rate_metric.labels(
+                validator_id=validator.id,
+                moniker=moniker,
+            ).set(commision_rate)
+            self.uptime_metric.labels(
+                validator_id=validator.id,
+                moniker=moniker,
+            ).set(uptime)
+
         if validators_to_update:
             print("INFO: Updating BlockchainValidator: ", validators_to_update)
             with transaction.atomic():
@@ -225,9 +257,9 @@ class BlockchainMetricsView(views.APIView):
                         updated=now(),
                     )
 
-        return response.Response(
-            "# Metrics collection is temporarily disabled\n",
-            content_type="text/plain",
+        return HttpResponse(
+            generate_latest(),
+            content_type="text/plain; version=0.0.4; charset=utf-8",
             status=status.HTTP_200_OK,
         )
 
