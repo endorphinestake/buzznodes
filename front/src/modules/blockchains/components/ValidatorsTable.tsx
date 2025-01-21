@@ -3,7 +3,7 @@ import { Fragment, useState, useEffect } from "react";
 import { format } from "date-fns";
 
 // ** NextJS Imports
-import defaultValidatorIcon from "public/images/defaultValidatorIcon.webp";
+import Link from "next/link";
 
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
@@ -142,9 +142,11 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
       renderCell: ({ row }: IValidatorsTableRow) => {
         return (
           <Fragment>
-            <IconButton aria-label="capture screenshot" color="primary">
-              <ChartAreaspline />
-            </IconButton>
+            <Link href={`/charts/${row.id}`} passHref>
+              <IconButton aria-label="capture screenshot" color="primary">
+                <ChartAreaspline />
+              </IconButton>
+            </Link>
             <IconButton aria-label="capture screenshot" color="primary">
               <BellPlusOutline />
             </IconButton>
