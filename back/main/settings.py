@@ -107,11 +107,11 @@ DATABASES = {
         **env.db_url(var="DATABASE_URL"),
         "OPTIONS": {
             "charset": "utf8mb4",
-            # 'connect_timeout': 10,
-            # 'read_timeout': 10,
-            # 'write_timeout': 10,
+            "connect_timeout": 10,
+            "read_timeout": 10,
+            "write_timeout": 10,
         },
-        # 'CONN_MAX_AGE': 600,
+        "CONN_MAX_AGE": 600,
     }
 }
 
