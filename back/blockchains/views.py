@@ -1,4 +1,5 @@
 import asyncio
+import requests
 from prometheus_client import Gauge, generate_latest
 
 from django.conf import settings
@@ -6,6 +7,7 @@ from django.db import transaction
 from django.db.models import Sum
 from django.utils.timezone import now
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 
 from rest_framework import views, permissions, response, status
 
@@ -301,3 +303,41 @@ class BlockchainValidatorsView(views.APIView):
         ]
 
         return response.Response(data_with_rank, status=status.HTTP_200_OK)
+
+
+class BlockchainChartView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, validator_id):
+        validator = get_object_or_404(BlockchainValidator, pk=validator_id)
+
+        headers = {
+            "Authorization": f"Bearer {settings.GRAFANA_SERVICE_TOKEN}",
+        }
+
+        query_params = {
+            "orgId": 1,
+            "timezone": "browser",
+            "var-moniker": validator.moniker,
+            "refresh": "5s",
+            "panelId": settings.GRAFANA_PANEL_UPTIME_ID,
+            "from": "now-1h",
+            "to": "now",
+            "theme": "light",
+        }
+
+        response_chart = requests.get(
+            f"{settings.GRAFANA_BASE_URL}/d-solo/{settings.GRAFANA_DASHBOARD_UID}/blockchain-metrics",
+            params=query_params,
+            timeout=10,
+            headers=headers,
+        )
+
+        print(f"Grafana response status: {response_chart.status_code}")
+        print(f"Grafana response content: {response_chart.content[:100]}...")
+
+        return HttpResponse(
+            content=response_chart.content,
+            status=response_chart.status_code,
+            content_type=response_chart.headers.get("Content-Type"),
+        )
