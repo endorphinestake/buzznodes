@@ -1,4 +1,7 @@
-import { EBlockchainValidatorStatus } from "@modules/blockchains/enums";
+import {
+  EBlockchainValidatorStatus,
+  EValidatorChartType,
+} from "@modules/blockchains/enums";
 
 export type TBlockchainValidator = {
   id: number;
@@ -13,4 +16,10 @@ export type TBlockchainValidator = {
   updated: Date;
   rank: number;
   voting_power_percentage: number;
+};
+
+export type TValidatorChart = {
+  [key in EValidatorChartType]: {
+    [validatorId: string]: [timestamp: string, uptime: string][];
+  };
 };

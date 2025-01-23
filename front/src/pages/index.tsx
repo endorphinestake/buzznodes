@@ -33,7 +33,7 @@ import { BellCog } from "mdi-material-ui";
 const HomePage = () => {
   // ** Hooks
   const { t } = useTranslation();
-  const { dispatch, getBlockchainValidators, blockchainValidators } =
+  const { dispatch, fetchBlockchainValidators, blockchainValidators } =
     useBlockchainService();
 
   // ** State
@@ -49,7 +49,7 @@ const HomePage = () => {
   useEffect(() => {
     if (!isInit) {
       setIsInit(true);
-      dispatch(getBlockchainValidators({ status: validatorStatus }));
+      dispatch(fetchBlockchainValidators({ status: validatorStatus }));
     }
   }, []);
 
@@ -59,7 +59,7 @@ const HomePage = () => {
 
     if (autorefresh > 0) {
       interval = setInterval(() => {
-        dispatch(getBlockchainValidators({ status: validatorStatus }));
+        dispatch(fetchBlockchainValidators({ status: validatorStatus }));
       }, autorefresh * 1000);
     }
 
@@ -72,7 +72,7 @@ const HomePage = () => {
 
   // Refresh when status changed
   useEffect(() => {
-    dispatch(getBlockchainValidators({ status: validatorStatus }));
+    dispatch(fetchBlockchainValidators({ status: validatorStatus }));
   }, [validatorStatus]);
 
   var filteredValidators: TBlockchainValidator[] = [];

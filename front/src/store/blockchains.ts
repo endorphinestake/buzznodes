@@ -5,24 +5,39 @@ import { createSlice, SerializedError } from "@reduxjs/toolkit";
 import { BlockchainService } from "@modules/blockchains/services";
 
 // ** Types & Interfaces
-import { TBlockchainValidator } from "@modules/blockchains/types";
+import {
+  TBlockchainValidator,
+  TValidatorChart,
+} from "@modules/blockchains/types";
 
 export type TBlockchainValidatorState = {
-  getBlockchainValidators: Function;
+  fetchBlockchainValidators: Function;
+  fetchValidatorCharts: Function;
 
   isBlockchainValidatorsLoading: boolean;
   isBlockchainValidatorsLoaded: boolean;
   isBlockchainValidatorsError: any;
   blockchainValidators: TBlockchainValidator[];
+
+  isValidatorChartsLoading: boolean;
+  isValidatorChartsLoaded: boolean;
+  isValidatorChartsError: any;
+  validatorCharts: TValidatorChart;
 };
 
 const initialState: TBlockchainValidatorState = {
-  getBlockchainValidators: BlockchainService.getBlockchainValidators,
+  fetchBlockchainValidators: BlockchainService.fetchBlockchainValidators,
+  fetchValidatorCharts: BlockchainService.fetchValidatorCharts,
 
   isBlockchainValidatorsLoading: false,
   isBlockchainValidatorsLoaded: false,
   isBlockchainValidatorsError: null,
   blockchainValidators: [],
+
+  isValidatorChartsLoading: false,
+  isValidatorChartsLoaded: false,
+  isValidatorChartsError: null,
+  validatorCharts: {} as TValidatorChart,
 };
 
 export const BlockchainValidatorSlice = createSlice({
@@ -33,11 +48,15 @@ export const BlockchainValidatorSlice = createSlice({
       state.isBlockchainValidatorsLoading = false;
       state.isBlockchainValidatorsError = null;
     },
+    resetValidatorChartsState(state) {
+      state.isValidatorChartsLoading = false;
+      state.isValidatorChartsError = null;
+    },
   },
   extraReducers: (builder) => {
-    // ** getBlockchainValidators
+    // ** fetchBlockchainValidators
     builder.addCase(
-      BlockchainService.getBlockchainValidators.pending,
+      BlockchainService.fetchBlockchainValidators.pending,
       (state, action) => {
         state.isBlockchainValidatorsLoading = true;
         state.isBlockchainValidatorsLoaded = false;
@@ -45,7 +64,7 @@ export const BlockchainValidatorSlice = createSlice({
       }
     );
     builder.addCase(
-      BlockchainService.getBlockchainValidators.fulfilled,
+      BlockchainService.fetchBlockchainValidators.fulfilled,
       (state, action) => {
         state.isBlockchainValidatorsLoading = false;
         state.isBlockchainValidatorsLoaded = true;
@@ -53,11 +72,37 @@ export const BlockchainValidatorSlice = createSlice({
       }
     );
     builder.addCase(
-      BlockchainService.getBlockchainValidators.rejected,
+      BlockchainService.fetchBlockchainValidators.rejected,
       (state, action) => {
         state.isBlockchainValidatorsLoading = false;
         state.isBlockchainValidatorsError = action.payload;
         state.blockchainValidators = [];
+      }
+    );
+
+    // ** fetchValidatorCharts
+    builder.addCase(
+      BlockchainService.fetchValidatorCharts.pending,
+      (state, action) => {
+        state.isValidatorChartsLoading = true;
+        state.isValidatorChartsLoaded = false;
+        state.isValidatorChartsError = null;
+      }
+    );
+    builder.addCase(
+      BlockchainService.fetchValidatorCharts.fulfilled,
+      (state, action) => {
+        state.isValidatorChartsLoading = false;
+        state.isValidatorChartsLoaded = true;
+        state.validatorCharts = action.payload;
+      }
+    );
+    builder.addCase(
+      BlockchainService.fetchValidatorCharts.rejected,
+      (state, action) => {
+        state.isValidatorChartsLoading = false;
+        state.isValidatorChartsError = action.payload;
+        state.validatorCharts = {} as TValidatorChart;
       }
     );
   },

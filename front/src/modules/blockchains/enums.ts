@@ -8,3 +8,9 @@ export enum EBlockchainValidatorStatus {
   BOND_STATUS_UNBONDED = "BOND_STATUS_UNBONDED",
   BOND_STATUS_UNBONDING = "BOND_STATUS_UNBONDING",
 }
+
+export enum EValidatorChartType {
+  COSMOS_UPTIME = "cosmos_validator_uptime",
+  COSMOS_VOTING_POWER = "cosmos_validator_voting_power",
+  COSMOS_COMISSION = "cosmos_validator_commission_rate",
+}

@@ -34,7 +34,7 @@ const SelectValidators = (props: ISelectValidatorsProps) => {
   // ** Hooks
   const {
     dispatch,
-    getBlockchainValidators,
+    fetchBlockchainValidators,
     isBlockchainValidatorsLoading,
     isBlockchainValidatorsLoaded,
     blockchainValidators,
@@ -70,7 +70,7 @@ const SelectValidators = (props: ISelectValidatorsProps) => {
   useEffect(() => {
     // Preload validators
     if (!isBlockchainValidatorsLoaded && !(blockchainValidators || []).length) {
-      dispatch(getBlockchainValidators());
+      dispatch(fetchBlockchainValidators());
     }
   }, [isBlockchainValidatorsLoaded, blockchainValidators]);
 
