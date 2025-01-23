@@ -1,3 +1,6 @@
+from django.conf import settings
+from django.utils.timezone import now, timedelta
+
 from rest_framework import serializers
 
 from blockchains.models import BlockchainValidator
@@ -103,3 +106,31 @@ class PicturesSerializer(serializers.Serializer):
 class ValidatorPictureSerializer(serializers.Serializer):
     id = serializers.CharField()
     pictures = PicturesSerializer()
+
+
+class ValidatorChartsSerializer(serializers.Serializer):
+    validator_ids = serializers.ListField(
+        child=serializers.IntegerField(), required=True, max_length=3
+    )
+    date_start = serializers.DateTimeField(required=False)
+    date_end = serializers.DateTimeField(required=False)
+
+    def validate_date_start(self, value):
+        if value and value < now() - timedelta(days=30):
+            raise serializers.ValidationError(
+                "Start date cannot be older than 30 days."
+            )
+        return value
+
+    def validate_date_end(self, value):
+        date_start = self.initial_data.get("date_start")
+        if value and date_start:
+            if value < date_start:
+                raise serializers.ValidationError(
+                    "End date cannot be earlier than start date."
+                )
+            if value > date_start + settings.METRICS_CHART_PERIOD:
+                raise serializers.ValidationError(
+                    "End date cannot be more than 1 hour after start date."
+                )
+        return value

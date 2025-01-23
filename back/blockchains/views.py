@@ -1,5 +1,5 @@
 import asyncio
-import requests
+import pytz
 from prometheus_client import Gauge, generate_latest
 
 from django.conf import settings
@@ -7,7 +7,6 @@ from django.db import transaction
 from django.db.models import Sum
 from django.utils.timezone import now
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 
 from rest_framework import views, permissions, response, status
 
@@ -17,6 +16,7 @@ from blockchains.serilazers import (
     RpcValidatorSerializer,
     BlockchainValidatorSerializer,
     InfosValidatorSerializer,
+    ValidatorChartsSerializer,
 )
 from blockchains.permissions import IsPrometheusUserAgent
 from blockchains.filters import BlockchainValidatorFilter
@@ -26,6 +26,7 @@ from blockchains.utils.cosmos_fetch_infos_url import cosmos_fetch_infos_url
 from blockchains.utils.hex_to_celestiavalcons import hex_to_celestiavalcons
 from blockchains.utils.convert_valoper_to_wallet import convert_valoper_to_wallet
 from blockchains.utils.calculate_uptime import calculate_uptime
+from blockchains.utils.grafana_fetch_metrics import grafana_fetch_metrics
 from logs.models import Log
 
 
@@ -308,36 +309,62 @@ class BlockchainValidatorsView(views.APIView):
 class BlockchainChartView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get(self, request, validator_id):
-        validator = get_object_or_404(BlockchainValidator, pk=validator_id)
+    async def _process_urls(
+        self,
+        validator_ids: list[int],
+        start_time: int,
+        end_time: int,
+    ):
 
-        headers = {
-            "Authorization": f"Bearer {settings.GRAFANA_SERVICE_TOKEN}",
-        }
+        results = await asyncio.gather(
+            grafana_fetch_metrics(
+                chart_type=Blockchain.ChartType.COSMOS_UPTIME,
+                validator_ids=validator_ids,
+                start_time=start_time,
+                end_time=end_time,
+            ),
+            grafana_fetch_metrics(
+                chart_type=Blockchain.ChartType.COSMOS_COMISSION,
+                validator_ids=validator_ids,
+                start_time=start_time,
+                end_time=end_time,
+            ),
+            grafana_fetch_metrics(
+                chart_type=Blockchain.ChartType.COSMOS_VOTING_POWER,
+                validator_ids=validator_ids,
+                start_time=start_time,
+                end_time=end_time,
+            ),
+            return_exceptions=True,
+        )
+        return results
 
-        query_params = {
-            "orgId": 1,
-            "timezone": "browser",
-            "var-moniker": validator.moniker,
-            "refresh": "5s",
-            "panelId": settings.GRAFANA_PANEL_UPTIME_ID,
-            "from": "now-1h",
-            "to": "now",
-            "theme": "light",
-        }
+    def get(self, request):
+        serializer = ValidatorChartsSerializer(data=request.GET)
+        if not serializer.is_valid():
+            return response.Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
-        response_chart = requests.get(
-            f"{settings.GRAFANA_BASE_URL}/d-solo/{settings.GRAFANA_DASHBOARD_UID}/blockchain-metrics",
-            params=query_params,
-            timeout=10,
-            headers=headers,
+        if serializer.validated_data.get(
+            "date_start"
+        ) and serializer.validated_data.get("date_end"):
+            start_time = (
+                serializer.validated_data["date_start"].astimezone(pytz.UTC).timestamp()
+            )
+            end_time = (
+                serializer.validated_data["date_end"].astimezone(pytz.UTC).timestamp()
+            )
+        else:
+            start_time = (now() - settings.METRICS_CHART_PERIOD).timestamp()
+            end_time = now().timestamp()
+
+        results = asyncio.run(
+            self._process_urls(
+                validator_ids=serializer.validated_data["validator_ids"],
+                start_time=int(start_time),
+                end_time=int(end_time),
+            )
         )
 
-        print(f"Grafana response status: {response_chart.status_code}")
-        print(f"Grafana response content: {response_chart.content[:100]}...")
-
-        return HttpResponse(
-            content=response_chart.content,
-            status=response_chart.status_code,
-            content_type=response_chart.headers.get("Content-Type"),
-        )
+        return response.Response(results, status=status.HTTP_200_OK)

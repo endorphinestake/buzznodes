@@ -24,6 +24,7 @@ mysqlclient==2.2.6
 pillow==11.0.0
 polib==1.2.0
 prometheus_client==0.21.1
+pytz==2024.2
 redis==5.2.1
 requests==2.32.3
 rq==2.1.0

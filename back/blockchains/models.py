@@ -8,6 +8,11 @@ class Blockchain(models.Model):
     class Type(models.TextChoices):
         COSMOS = "cosmos", "Cosmos"
 
+    class ChartType(models.TextChoices):
+        COSMOS_UPTIME = "cosmos_validator_uptime", "Cosmos Uptime"
+        COSMOS_VOTING_POWER = "cosmos_validator_voting_power", "Cosmos Voting Power"
+        COSMOS_COMISSION = "cosmos_validator_commission_rate", "Cosmos Comission"
+
     btype = models.SlugField(
         choices=Type.choices, default=Type.COSMOS, verbose_name=_("Type")
     )
