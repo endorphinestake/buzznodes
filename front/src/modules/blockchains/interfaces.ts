@@ -15,3 +15,12 @@ export interface IValidatorsTableProps {
   status: EBlockchainValidatorStatus;
   onAlertEdit: (c: TBlockchainValidator) => void;
 }
+
+export interface ISelectValidatorsProps {
+  value?: TBlockchainValidator;
+  values?: TBlockchainValidator[];
+  setValue?: (value: TBlockchainValidator) => void;
+  setValues?: (value: TBlockchainValidator[]) => void;
+  label?: string;
+  size?: "small" | "medium";
+}

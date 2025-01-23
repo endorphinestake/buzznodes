@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 // ** Icon imports
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
+import { ChartAreaspline } from "mdi-material-ui";
 
 // ** Types & Interfaces imports
 import { HorizontalNavItemsType } from "src/@core/layouts/types";
@@ -14,9 +15,16 @@ const navigation = (): HorizontalNavItemsType => {
 
   return [
     {
-      title: t(`Dashboard`),
+      title: t(`Validators`),
       icon: DashboardIcon,
       path: "/",
+      action: "read",
+      subject: Permissions.ANY,
+    },
+    {
+      title: t(`Charts`),
+      icon: ChartAreaspline,
+      path: "/charts",
       action: "read",
       subject: Permissions.ANY,
     },

@@ -102,7 +102,7 @@ const HomePage = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>{t(`Dashboard`)}</title>
+        <title>{t(`Validators`)}</title>
       </Head>
 
       <main>
@@ -110,7 +110,7 @@ const HomePage = () => {
           <Grid item xs={12}>
             <Card>
               <CardHeader
-                title={t(`Dashboard`)}
+                title={t(`Validators`)}
                 subheader={t(`Blockchain Monitoring`)}
                 action={
                   <Button

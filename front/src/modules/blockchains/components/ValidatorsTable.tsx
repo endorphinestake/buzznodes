@@ -142,7 +142,7 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
       renderCell: ({ row }: IValidatorsTableRow) => {
         return (
           <Fragment>
-            <Link href={`/charts/${row.id}`} passHref>
+            <Link href={`/charts?validator_id=${row.id}`} passHref>
               <IconButton aria-label="capture screenshot" color="primary">
                 <ChartAreaspline />
               </IconButton>
