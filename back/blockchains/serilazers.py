@@ -134,3 +134,16 @@ class ValidatorChartsSerializer(serializers.Serializer):
                     "End date cannot be more than 1 hour after start date."
                 )
         return value
+
+
+class GrafanaChartMetricSerializer(serializers.Serializer):
+    __name__ = serializers.CharField(required=True)
+    moniker = serializers.CharField(required=True)
+    validator_id = serializers.IntegerField(required=True)
+
+
+class GrafanaChartSerializer(serializers.Serializer):
+    metric = GrafanaChartMetricSerializer()
+    values = serializers.ListField(
+        child=serializers.ListField(child=serializers.CharField())
+    )

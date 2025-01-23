@@ -17,6 +17,7 @@ from blockchains.serilazers import (
     BlockchainValidatorSerializer,
     InfosValidatorSerializer,
     ValidatorChartsSerializer,
+    GrafanaChartSerializer,
 )
 from blockchains.permissions import IsPrometheusUserAgent
 from blockchains.filters import BlockchainValidatorFilter
@@ -367,4 +368,29 @@ class BlockchainChartView(views.APIView):
             )
         )
 
-        return response.Response(results, status=status.HTTP_200_OK)
+        # Validate charts data
+        charts_data = {
+            Blockchain.ChartType.COSMOS_UPTIME.value: {},
+            Blockchain.ChartType.COSMOS_COMISSION.value: {},
+            Blockchain.ChartType.COSMOS_VOTING_POWER.value: {},
+        }
+        for idx, chart_type in enumerate(charts_data.keys()):
+            if isinstance(results[idx], Exception):
+                print(
+                    f"ERROR: Can't get {chart_type} charts from Grafana: {str(results[idx])}"
+                )
+                continue
+
+            chart_serializer = GrafanaChartSerializer(data=results[idx], many=True)
+            if not chart_serializer.is_valid():
+                print(
+                    f"ERROR: Can't serialize the {chart_type}: {chart_serializer.errors}"
+                )
+                continue
+
+            for data in chart_serializer.validated_data:
+                charts_data[data["metric"]["__name__"]][
+                    data["metric"]["validator_id"]
+                ] = data["values"]
+
+        return response.Response(charts_data, status=status.HTTP_200_OK)
