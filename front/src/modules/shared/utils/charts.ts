@@ -12,7 +12,7 @@ export function transformValidatorData(data: {
   );
 
   return timestamps.map((timestamp) => {
-    const formattedData: { name: string; [key: string]: number } = {
+    const formattedData: { name: string; [key: string]: number | string } = {
       name: formatTimestamp(timestamp),
     };
 
@@ -21,7 +21,7 @@ export function transformValidatorData(data: {
         ([time]) => time === timestamp
       );
       if (validatorData) {
-        formattedData[validatorId] = Number(validatorData[1]);
+        formattedData[validatorId] = Number(validatorData[1]); // uptime
       }
     });
 

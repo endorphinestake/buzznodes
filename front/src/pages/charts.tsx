@@ -51,7 +51,7 @@ const ChartsPage = () => {
   const validatorMonikersWithColors = useMemo(() => {
     return blockchainValidators.reduce((acc, validator, index) => {
       acc[validator.id] = {
-        moniker: validator.moniker,
+        moniker: validator.moniker ?? "Unknown",
         color: generateLightBlueColor(index),
       };
       return acc;
@@ -77,7 +77,6 @@ const ChartsPage = () => {
     if (validators.length) {
       const validatorIds = validators.map((validator) => validator.id);
       dispatch(fetchValidatorCharts({ validator_ids: validatorIds }));
-      console.log("selected validators: ", validatorIds);
     }
   }, [validators]);
 
