@@ -17,6 +17,7 @@ import Notify from "@modules/shared/utils/Notify";
 
 // ** Types & Interfaces
 import { ISelectValidatorsProps } from "@modules/blockchains/interfaces";
+import { EBlockchainValidatorStatus } from "@modules/blockchains/enums";
 
 // ** Mui Imports
 import {
@@ -26,6 +27,7 @@ import {
   TextField,
   Chip,
 } from "@mui/material";
+import { FlashOutline, FlashOffOutline } from "mdi-material-ui";
 
 const SelectValidators = (props: ISelectValidatorsProps) => {
   // ** Props
@@ -46,7 +48,7 @@ const SelectValidators = (props: ISelectValidatorsProps) => {
 
   // ** Vars
   const isMultiple = typeof setValues !== "undefined";
-  const MAX_SELECTABLE_VALIDATORS = 3;
+  const MAX_SELECTABLE_VALIDATORS = 5;
 
   // Event onInit
   useEffect(() => {
@@ -98,7 +100,12 @@ const SelectValidators = (props: ISelectValidatorsProps) => {
           sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
           key={option.id}
         >
-          {option.moniker ?? "Unknown"}
+          {option.status === EBlockchainValidatorStatus.BOND_STATUS_BONDED ? (
+            <FlashOutline style={{ color: "green", marginRight: 8 }} />
+          ) : (
+            <FlashOffOutline style={{ color: "red", marginRight: 8 }} />
+          )}
+          {option.moniker ?? "Unknown"}{" "}
         </Box>
       )}
       renderInput={(params) => (

@@ -42,7 +42,8 @@ const tooltipStyles = {
 
 export const ChartTooltip = (
   data: TooltipProps<any, any>,
-  monikers: IValidatorChartProps["monikers"]
+  monikers: IValidatorChartProps["monikers"],
+  tickFormat: Function
 ) => {
   const { active, payload } = data;
 
@@ -57,7 +58,8 @@ export const ChartTooltip = (
               <Box sx={tooltipStyles.item} key={i.dataKey}>
                 <Circle sx={{ color: i.fill, mr: 2.5, fontSize: "0.6rem" }} />
                 <span style={tooltipStyles.text}>
-                  {monikers[i.dataKey].moniker} : {i.payload[i.dataKey]}
+                  {monikers[i.dataKey].moniker} :{" "}
+                  {tickFormat(i.payload[i.dataKey])}
                 </span>
               </Box>
             );

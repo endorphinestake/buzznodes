@@ -1,13 +1,18 @@
 export const generateLightBlueColor = (index: number): string => {
-  const baseColor = [115, 103, 240];
-  const step = 5;
+  const baseRed = 100;
+  const baseGreen = 150;
+  const baseBlueStart = 220;
+  const baseBlueEnd = 255;
 
-  const opacity = Math.random() * 0.8 + 0.2;
+  const step = 255 / 500;
 
-  const color = baseColor.map((value, idx) => {
-    const variation = (index + idx) * step;
-    return Math.min(value + variation, 255);
-  });
+  const opacity = Math.random() * 0.5 + 0.5;
 
-  return `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${opacity})`;
+  const blue = Math.min(baseBlueStart + index * step, baseBlueEnd);
+
+  const green = Math.min(baseGreen + ((index * 0.3) % 40), 200);
+
+  const red = baseRed;
+
+  return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
 };

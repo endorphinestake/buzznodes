@@ -110,7 +110,7 @@ class ValidatorPictureSerializer(serializers.Serializer):
 
 class ValidatorChartsSerializer(serializers.Serializer):
     validator_ids = serializers.ListField(
-        child=serializers.IntegerField(), required=True, max_length=3
+        child=serializers.IntegerField(), required=True, max_length=5
     )
     date_start = serializers.DateTimeField(required=False)
     date_end = serializers.DateTimeField(required=False)

@@ -18,14 +18,14 @@ import UserLayout from "@layouts/UserLayout";
 // ** Shared Components
 import styles from "@styles/Home.module.css";
 import SelectValidators from "@modules/blockchains/components/SelectValidators";
-import ValidatorVotingPowerChart from "@modules/blockchains/components/ValidatorsVotingPowerChart";
+import ValidatorsChart from "@modules/blockchains/components/ValidatorsChart";
 import { generateLightBlueColor } from "@modules/shared/utils/colors";
 
 // ** Types & Interfaces Imports
 import { TBlockchainValidator } from "@modules/blockchains/types";
 
 // ** MUI Imports
-import { Box, Card, CardHeader, Grid } from "@mui/material";
+import { Box, Card, CardHeader, Grid, CircularProgress } from "@mui/material";
 import { EValidatorChartType } from "@modules/blockchains/enums";
 
 const ChartsPage = () => {
@@ -80,6 +80,9 @@ const ChartsPage = () => {
     }
   }, [validators]);
 
+  // Check if the monikers are ready before using them
+  const isMonikersLoaded = !!Object.keys(validatorMonikersWithColors).length;
+
   return (
     <div className={styles.container}>
       <Head>
@@ -117,12 +120,49 @@ const ChartsPage = () => {
               </Box>
             </Card>
           </Grid>
+
+          {/* Voting Power Chart */}
           <Grid item xs={12}>
-            {validatorCharts &&
+            {isMonikersLoaded &&
+            validatorCharts &&
             validatorCharts[EValidatorChartType.COSMOS_VOTING_POWER] ? (
-              <ValidatorVotingPowerChart
+              <ValidatorsChart
+                chartTitle={t(`Voting Power`)}
                 data={validatorCharts[EValidatorChartType.COSMOS_VOTING_POWER]}
                 monikers={validatorMonikersWithColors}
+                tickFormat={(value) => `${value}`}
+              />
+            ) : null}
+          </Grid>
+
+          {/* Uptime Chart */}
+          <Grid item xs={12}>
+            {isMonikersLoaded &&
+            validatorCharts &&
+            validatorCharts[EValidatorChartType.COSMOS_UPTIME] ? (
+              <ValidatorsChart
+                chartTitle={t(`Uptime`)}
+                data={validatorCharts[EValidatorChartType.COSMOS_UPTIME]}
+                monikers={validatorMonikersWithColors}
+                dataMin={0}
+                dataMax={100}
+                tickFormat={(value) => `${value}%`}
+              />
+            ) : null}
+          </Grid>
+
+          {/* Comission Chart */}
+          <Grid item xs={12}>
+            {isMonikersLoaded &&
+            validatorCharts &&
+            validatorCharts[EValidatorChartType.COSMOS_COMISSION] ? (
+              <ValidatorsChart
+                chartTitle={t(`Comission`)}
+                data={validatorCharts[EValidatorChartType.COSMOS_COMISSION]}
+                monikers={validatorMonikersWithColors}
+                dataMin={0}
+                dataMax={1}
+                tickFormat={(value) => `${value * 100}%`}
               />
             ) : null}
           </Grid>

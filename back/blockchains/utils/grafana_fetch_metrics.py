@@ -16,7 +16,7 @@ async def grafana_fetch_metrics(
         "query": f'{chart_type}{{validator_id=~"{"|".join(map(str, validator_ids))}"}}',
         "start": start_time,
         "end": end_time,
-        "step": "5s",
+        "step": settings.METRICS_CHART_STEP,
     }
 
     try:

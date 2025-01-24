@@ -21,7 +21,7 @@ export function transformValidatorData(data: {
         ([time]) => time === timestamp
       );
       if (validatorData) {
-        formattedData[validatorId] = Number(validatorData[1]); // uptime
+        formattedData[validatorId] = Number(validatorData[1]);
       }
     });
 

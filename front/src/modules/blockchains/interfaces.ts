@@ -32,8 +32,12 @@ export interface ISelectValidatorsProps {
 }
 
 export interface IValidatorChartProps {
+  chartTitle: string;
   data: {
     [validatorId: string]: [timestamp: string, uptime: string][];
   };
   monikers: Record<string, { moniker: string; color: string }>;
+  dataMin?: number;
+  dataMax?: number;
+  tickFormat: Function;
 }
