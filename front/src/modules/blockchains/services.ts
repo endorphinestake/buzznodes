@@ -2,6 +2,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 // ** Axios Imports
+import qs from "qs";
 import axiosInstance from "@configs/axios";
 
 // ** Types & Interfaces
@@ -39,6 +40,8 @@ export class BlockchainService {
           url: `/api/blockchains/charts/`,
           method: "GET",
           params,
+          paramsSerializer: (params) =>
+            qs.stringify(params, { arrayFormat: "repeat" }),
         });
 
         return data;

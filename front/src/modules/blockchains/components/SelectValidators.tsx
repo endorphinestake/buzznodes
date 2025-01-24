@@ -9,7 +9,7 @@ import {
 } from "react";
 
 // ** Hooks
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import { useBlockchainService } from "@hooks/useBlockchainService";
 
 // ** Shared Components
@@ -32,20 +32,29 @@ const SelectValidators = (props: ISelectValidatorsProps) => {
   const { value, values, setValue, setValues, label, size } = props;
 
   // ** Hooks
+  const { t } = useTranslation();
   const {
     dispatch,
     fetchBlockchainValidators,
     isBlockchainValidatorsLoading,
-    isBlockchainValidatorsLoaded,
     blockchainValidators,
   } = useBlockchainService();
 
   // ** State
+  const [isInit, setIsInit] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
 
   // ** Vars
   const isMultiple = typeof setValues !== "undefined";
   const MAX_SELECTABLE_VALIDATORS = 3;
+
+  // Event onInit
+  useEffect(() => {
+    if (!isInit) {
+      setIsInit(true);
+      dispatch(fetchBlockchainValidators());
+    }
+  }, []);
 
   const handleChange = useCallback(
     (event: SyntheticEvent, value: any) => {
@@ -66,13 +75,6 @@ const SelectValidators = (props: ISelectValidatorsProps) => {
     },
     [isMultiple, setValues, setValue]
   );
-
-  useEffect(() => {
-    // Preload validators
-    if (!isBlockchainValidatorsLoaded && !(blockchainValidators || []).length) {
-      dispatch(fetchBlockchainValidators());
-    }
-  }, [isBlockchainValidatorsLoaded, blockchainValidators]);
 
   return (
     <Autocomplete

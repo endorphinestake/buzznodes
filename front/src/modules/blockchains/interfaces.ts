@@ -30,3 +30,11 @@ export interface ISelectValidatorsProps {
   label?: string;
   size?: "small" | "medium";
 }
+
+
+export interface IValidatorChartProps {
+  data: {
+    [validatorId: string]: [timestamp: string, uptime: string][];
+  };
+  monikers: Record<string, { moniker: string; color: string };
+}

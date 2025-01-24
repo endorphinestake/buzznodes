@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState, useEffect, useMemo } from "react";
 
 // ** NextJS Imports
 import Head from "next/head";
@@ -18,23 +18,45 @@ import UserLayout from "@layouts/UserLayout";
 // ** Shared Components
 import styles from "@styles/Home.module.css";
 import SelectValidators from "@modules/blockchains/components/SelectValidators";
+import ValidatorVotingPowerChart from "@modules/blockchains/components/ValidatorsVotingPowerChart";
+import { generateLightBlueColor } from "@modules/shared/utils/colors";
 
 // ** Types & Interfaces Imports
 import { TBlockchainValidator } from "@modules/blockchains/types";
 
 // ** MUI Imports
 import { Box, Card, CardHeader, Grid } from "@mui/material";
+import { EValidatorChartType } from "@modules/blockchains/enums";
 
 const ChartsPage = () => {
   // ** Hooks
   const { t } = useTranslation();
   const router = useRouter();
   // ** Hooks
-  const { isBlockchainValidatorsLoading, blockchainValidators } =
-    useBlockchainService();
+  const {
+    dispatch,
+    fetchValidatorCharts,
+    isBlockchainValidatorsLoading,
+    blockchainValidators,
+    isValidatorChartsLoading,
+    isValidatorChartsLoaded,
+    isValidatorChartsError,
+    validatorCharts,
+  } = useBlockchainService();
 
   // ** State
   const [validators, setValidators] = useState<TBlockchainValidator[]>([]);
+
+  // ** Vars
+  const validatorMonikersWithColors = useMemo(() => {
+    return blockchainValidators.reduce((acc, validator, index) => {
+      acc[validator.id] = {
+        moniker: validator.moniker,
+        color: generateLightBlueColor(index),
+      };
+      return acc;
+    }, {} as Record<string, { moniker: string; color: string }>);
+  }, [blockchainValidators]);
 
   // Autoselect Validator from URL
   useEffect(() => {
@@ -49,6 +71,15 @@ const ChartsPage = () => {
       }
     }
   }, [router.query, blockchainValidators, isBlockchainValidatorsLoading]);
+
+  // Event on Validator(s) selected
+  useEffect(() => {
+    if (validators.length) {
+      const validatorIds = validators.map((validator) => validator.id);
+      dispatch(fetchValidatorCharts({ validator_ids: validatorIds }));
+      console.log("selected validators: ", validatorIds);
+    }
+  }, [validators]);
 
   return (
     <div className={styles.container}>
@@ -86,6 +117,15 @@ const ChartsPage = () => {
                 </Grid>
               </Box>
             </Card>
+          </Grid>
+          <Grid item xs={12}>
+            {validatorCharts &&
+            validatorCharts[EValidatorChartType.COSMOS_VOTING_POWER] ? (
+              <ValidatorVotingPowerChart
+                data={validatorCharts[EValidatorChartType.COSMOS_VOTING_POWER]}
+                monikers={validatorMonikersWithColors}
+              />
+            ) : null}
           </Grid>
         </Grid>
       </main>
