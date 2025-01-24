@@ -39,5 +39,5 @@ export interface IValidatorChartProps {
   monikers: Record<string, { moniker: string; color: string }>;
   dataMin?: number;
   dataMax?: number;
-  tickFormat: Function;
+  tickFormat: (value: any, index: number) => string;
 }

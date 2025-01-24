@@ -46,8 +46,8 @@ const ValidatorsChart = (props: IValidatorChartProps) => {
 
   // Autoscale min/max Y
   if (!dataMin && !dataMax) {
-    dataMin = Math.min(...allValues);
-    dataMax = Math.max(...allValues);
+    dataMin = Math.min(...allValues.map((value) => Number(value)));
+    dataMax = Math.max(...allValues.map((value) => Number(value)));
 
     if (dataMin === dataMax) {
       const fixedPadding = 5;
@@ -90,11 +90,12 @@ const ValidatorsChart = (props: IValidatorChartProps) => {
             <YAxis
               type="number"
               tick={{ fontSize: 10 }}
-              domain={[dataMin, dataMax]}
+              domain={[dataMin ?? 0, dataMax ?? 100]}
               tickCount={15}
               allowDataOverflow={true}
               tickFormatter={tickFormat}
             />
+
             <Tooltip
               content={(props) => ChartTooltip(props, monikers, tickFormat)}
             />

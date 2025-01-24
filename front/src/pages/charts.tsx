@@ -130,7 +130,7 @@ const ChartsPage = () => {
                 chartTitle={t(`Voting Power`)}
                 data={validatorCharts[EValidatorChartType.COSMOS_VOTING_POWER]}
                 monikers={validatorMonikersWithColors}
-                tickFormat={(value) => `${value}`}
+                tickFormat={(value: any, index: number) => `${value}`}
               />
             ) : null}
           </Grid>
@@ -146,7 +146,7 @@ const ChartsPage = () => {
                 monikers={validatorMonikersWithColors}
                 dataMin={0}
                 dataMax={100}
-                tickFormat={(value) => `${value}%`}
+                tickFormat={(value: any, index: number) => `${value}%`}
               />
             ) : null}
           </Grid>
@@ -162,7 +162,7 @@ const ChartsPage = () => {
                 monikers={validatorMonikersWithColors}
                 dataMin={0}
                 dataMax={1}
-                tickFormat={(value) => `${value * 100}%`}
+                tickFormat={(value: any, index: number) => `${value * 100}%`}
               />
             ) : null}
           </Grid>
