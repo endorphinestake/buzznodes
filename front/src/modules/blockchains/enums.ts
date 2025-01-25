@@ -14,3 +14,10 @@ export enum EValidatorChartType {
   COSMOS_VOTING_POWER = "cosmos_validator_voting_power",
   COSMOS_COMISSION = "cosmos_validator_commission_rate",
 }
+
+export enum EValidatorChartPeriod {
+  H1 = "h1",
+  H24 = "24h",
+  D7 = "7d",
+  D30 = "30d",
+}

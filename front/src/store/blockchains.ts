@@ -9,6 +9,7 @@ import {
   TBlockchainValidator,
   TValidatorChart,
 } from "@modules/blockchains/types";
+import { EValidatorChartPeriod } from "@modules/blockchains/enums";
 
 export type TBlockchainValidatorState = {
   fetchBlockchainValidators: Function;
@@ -23,6 +24,8 @@ export type TBlockchainValidatorState = {
   isValidatorChartsLoaded: boolean;
   isValidatorChartsError: any;
   validatorCharts: TValidatorChart;
+
+  period: EValidatorChartPeriod;
 };
 
 const initialState: TBlockchainValidatorState = {
@@ -38,6 +41,8 @@ const initialState: TBlockchainValidatorState = {
   isValidatorChartsLoaded: false,
   isValidatorChartsError: null,
   validatorCharts: {} as TValidatorChart,
+
+  period: EValidatorChartPeriod.H24,
 };
 
 export const BlockchainValidatorSlice = createSlice({
@@ -51,6 +56,9 @@ export const BlockchainValidatorSlice = createSlice({
     resetValidatorChartsState(state) {
       state.isValidatorChartsLoading = false;
       state.isValidatorChartsError = null;
+    },
+    setPeriod(state, action) {
+      state.period = action.payload;
     },
   },
   extraReducers: (builder) => {

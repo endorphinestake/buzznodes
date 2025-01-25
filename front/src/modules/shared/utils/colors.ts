@@ -1,4 +1,5 @@
 export const generateLightBlueColor = (index: number): string => {
+  return "rgba(115, 103, 240, .5)";
   const baseRed = 100;
   const baseGreen = 150;
   const baseBlueStart = 220;
