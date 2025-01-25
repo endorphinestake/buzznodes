@@ -15,7 +15,7 @@ import {
 } from "recharts";
 
 // ** Hooks Imports
-import { useTranslation } from "react-i18next";
+import { useBlockchainService } from "@hooks/useBlockchainService";
 
 // ** Utils imports
 import { transformValidatorData } from "@modules/shared/utils/charts";
@@ -36,10 +36,10 @@ const ValidatorsChart = (props: IValidatorChartProps) => {
   let { chartTitle, data, monikers, dataMin, dataMax, tickFormat } = props;
 
   // ** Hooks
-  const { t } = useTranslation();
+  const { period } = useBlockchainService();
 
   // ** Vars
-  const transformedData = transformValidatorData(data);
+  const transformedData = transformValidatorData(data, period);
   const allValues = transformedData.flatMap((d) =>
     Object.values(d).filter((value) => typeof value === "number")
   );

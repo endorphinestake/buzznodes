@@ -1,8 +1,12 @@
-import { formatTimestamp } from "@modules/shared/utils/datetimes";
+import { formatChartTime } from "@modules/shared/utils/datetimes";
+import { EValidatorChartPeriod } from "@modules/blockchains/enums";
 
-export function transformValidatorData(data: {
-  [validatorId: string]: [string, string][];
-}) {
+export function transformValidatorData(
+  data: {
+    [validatorId: string]: [string, string][];
+  },
+  period: EValidatorChartPeriod
+) {
   const timestamps = Array.from(
     new Set(
       Object.values(data)
@@ -13,7 +17,7 @@ export function transformValidatorData(data: {
 
   return timestamps.map((timestamp) => {
     const formattedData: { name: string; [key: string]: number | string } = {
-      name: formatTimestamp(timestamp),
+      name: formatChartTime(timestamp, period),
     };
 
     Object.keys(data).forEach((validatorId) => {
