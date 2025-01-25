@@ -8,6 +8,7 @@ from blockchains.models import Blockchain
 async def grafana_fetch_metrics(
     chart_type: Blockchain.ChartType,
     validator_ids: list[int],
+    step: str,
     start_time: int,
     end_time: int,
 ):
@@ -16,7 +17,7 @@ async def grafana_fetch_metrics(
         "query": f'{chart_type}{{validator_id=~"{"|".join(map(str, validator_ids))}"}}',
         "start": start_time,
         "end": end_time,
-        "step": settings.METRICS_CHART_STEP,
+        "step": step,
     }
 
     try:

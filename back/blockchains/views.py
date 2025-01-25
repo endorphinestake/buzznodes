@@ -10,6 +10,7 @@ from django.http import HttpResponse
 
 from rest_framework import views, permissions, response, status
 
+from blockchains.constants import CHART_PERIODS
 from blockchains.models import Blockchain, BlockchainValidator
 from blockchains.serilazers import (
     BlockchainValidatorModelSerializer,
@@ -313,6 +314,7 @@ class BlockchainChartView(views.APIView):
     async def _process_urls(
         self,
         validator_ids: list[int],
+        step: str,
         start_time: int,
         end_time: int,
     ):
@@ -321,18 +323,21 @@ class BlockchainChartView(views.APIView):
             grafana_fetch_metrics(
                 chart_type=Blockchain.ChartType.COSMOS_UPTIME,
                 validator_ids=validator_ids,
+                step=step,
                 start_time=start_time,
                 end_time=end_time,
             ),
             grafana_fetch_metrics(
                 chart_type=Blockchain.ChartType.COSMOS_COMISSION,
                 validator_ids=validator_ids,
+                step=step,
                 start_time=start_time,
                 end_time=end_time,
             ),
             grafana_fetch_metrics(
                 chart_type=Blockchain.ChartType.COSMOS_VOTING_POWER,
                 validator_ids=validator_ids,
+                step=step,
                 start_time=start_time,
                 end_time=end_time,
             ),
@@ -357,12 +362,15 @@ class BlockchainChartView(views.APIView):
                 serializer.validated_data["date_end"].astimezone(pytz.UTC).timestamp()
             )
         else:
-            start_time = (now() - settings.METRICS_CHART_PERIOD).timestamp()
+            start_time = (
+                now() - CHART_PERIODS[serializer.validated_data["period"]]["delta"]
+            ).timestamp()
             end_time = now().timestamp()
 
         results = asyncio.run(
             self._process_urls(
                 validator_ids=serializer.validated_data["validator_ids"],
+                step=CHART_PERIODS[serializer.validated_data["period"]]["step"],
                 start_time=int(start_time),
                 end_time=int(end_time),
             )

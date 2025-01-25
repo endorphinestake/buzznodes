@@ -3,7 +3,7 @@ from django.utils.timezone import now, timedelta
 
 from rest_framework import serializers
 
-from blockchains.models import BlockchainValidator
+from blockchains.models import Blockchain, BlockchainValidator
 
 
 class BlockchainValidatorModelSerializer(serializers.ModelSerializer):
@@ -112,6 +112,7 @@ class ValidatorChartsSerializer(serializers.Serializer):
     validator_ids = serializers.ListField(
         child=serializers.IntegerField(), required=True, max_length=5
     )
+    period = serializers.ChoiceField(choices=Blockchain.ChartPeriod.choices)
     date_start = serializers.DateTimeField(required=False)
     date_end = serializers.DateTimeField(required=False)
 
@@ -129,7 +130,7 @@ class ValidatorChartsSerializer(serializers.Serializer):
                 raise serializers.ValidationError(
                     "End date cannot be earlier than start date."
                 )
-            if value > date_start + settings.METRICS_CHART_PERIOD:
+            if value > date_start + settings.METRICS_CHART_MAX_PERIOD:
                 raise serializers.ValidationError(
                     "End date cannot be more than 1 hour after start date."
                 )

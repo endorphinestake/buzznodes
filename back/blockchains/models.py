@@ -13,6 +13,12 @@ class Blockchain(models.Model):
         COSMOS_VOTING_POWER = "cosmos_validator_voting_power", "Cosmos Voting Power"
         COSMOS_COMISSION = "cosmos_validator_commission_rate", "Cosmos Comission"
 
+    class ChartPeriod(models.TextChoices):
+        H1 = "h1", _("1 Hour")
+        H24 = "24h", _("1 Day")
+        D7 = "7d", _("7 Days")
+        D30 = "30d", _("1 Month")
+
     btype = models.SlugField(
         choices=Type.choices, default=Type.COSMOS, verbose_name=_("Type")
     )

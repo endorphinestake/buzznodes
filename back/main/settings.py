@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 import environ
 from pathlib import Path
-from datetime import timedelta
+from django.utils.timezone import timedelta
 
 env = environ.Env(DEBUG=(bool, False))
 
@@ -217,8 +217,7 @@ REST_FRAMEWORK = {
 DEFAULT_PAGE_SIZE = 25
 
 EXPIRED_LOGS_PERIOD = timedelta(days=30)
-METRICS_CHART_PERIOD = timedelta(hours=24)
-METRICS_CHART_STEP = "10m"
+METRICS_CHART_MAX_PERIOD = timedelta(days=30)
 
 METRICS_ALLOWED_IPS = ["127.0.0.1", "37.27.90.63", "65.21.148.247"]
 
