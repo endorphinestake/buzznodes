@@ -12,6 +12,10 @@ from alerts.models import (
 
 
 class SMSBase(models.Model):
+    class Provider(models.TextChoices):
+        MAIN = "MAIN", _("Main (Hicell)")
+        RESERVE1 = "RESERVE1", _("Reserve (Bird)")
+
     class Status(models.TextChoices):
         SENT = "SENT", _("Sent")
         DELIVERED = "DELIVERED", _("Delivered")
@@ -27,8 +31,22 @@ class SMSBase(models.Model):
         blank=True,
         verbose_name=_("Phone Number"),
     )
+    sms_id = models.CharField(
+        db_index=True,
+        max_length=255,
+        null=True,
+        blank=True,
+        verbose_name=_("Provider SMS ID"),
+    )
     sent_text = models.TextField(verbose_name=_("SMS Text"))
-    status = models.SlugField(
+    provider = models.CharField(
+        choices=Status.choices,
+        max_length=25,
+        default=Provider.MAIN,
+        verbose_name=_("SMS Provider"),
+    )
+    status = models.CharField(
+        db_index=True,
         choices=Status.choices,
         max_length=25,
         default=Status.SENT,
