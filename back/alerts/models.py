@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-from users.models import User, UserPhone
+from users.models import User
 from blockchains.models import BlockchainValidator
 
 
@@ -249,60 +249,3 @@ class UserAlertSettingTombstonedStatus(UserAlertSettingBase):
             "user",
             "blockchain_validator",
         )
-
-
-# class AlertBase(models.Model):
-#     class Meta:
-#         abstract = True
-
-#     class AType(models.TextChoices):
-#         CONFIRM_NUMBER = "CONFIRM_NUMBER", _("Confirm Number")
-#         VOTING_POWER = "VOTING_POWER", _("Voting Power Alert")
-#         UPTIME = "UPTIME", _("Uptime Alert")
-#         JAILED_STATUS = "JAILED_STATUS", _("Jailed Status Alert")
-#         TOMBSTONED_STATUS = "TOMBSTONED_STATUS", _("Tombstoned Status Alert")
-#         COMISSION = "COMISSION", _("Comission")
-
-#     class SMSStatus(models.TextChoices):
-#         SENT = "SENT", _("Sent")
-#         DELIVERED = "DELIVERED", _("Delivered")
-#         UNDELIVRED = "UNDELIVRED", _("Undelivered")
-#         REJECTED = "REJECTED", _("Rejected")
-#         ERROR = "ERROR", _("Error")
-
-# class SMSAlert(AlertBase):
-#     atype = models.SlugField(
-#         choices=AlertBase.AType.choices,
-#         max_length=100,
-#         default=AlertBase.AType.CONFIRM_NUMBER,
-#         verbose_name=_("Alert Type"),
-#     )
-#     phone = models.ForeignKey(
-#         UserPhone,
-#         on_delete=models.SET_NULL,
-#         null=True,
-#         blank=True,
-#         verbose_name=_("Phone Number"),
-#     )
-#     text = models.TextField(verbose_name=_("SMS Text"))
-#     code = models.CharField(
-#         max_length=25, blank=True, null=True, verbose_name=_("Confirmation Code")
-#     )
-#     status = models.SlugField(
-#         choices=AlertBase.SMSStatus.choices,
-#         max_length=25,
-#         default=AlertBase.SMSStatus.SENT,
-#         verbose_name=_("Status"),
-#     )
-#     err = models.CharField(
-#         max_length=256, null=True, blank=True, verbose_name=_("Error Details")
-#     )
-#     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
-#     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
-
-#     def __str__(self):
-#         return f"{self.phone} - {self.atype}"
-
-#     class Meta:
-#         verbose_name = _("SMS Alert")
-#         verbose_name_plural = _("SMS Alerts")

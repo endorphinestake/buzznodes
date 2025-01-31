@@ -66,6 +66,8 @@ INSTALLED_APPS = [
     "logs.apps.LogsConfig",
     "blockchains.apps.BlockchainsConfig",
     "alerts.apps.AlertsConfig",
+    "sms.apps.SmsConfig",
+    "voip.apps.VoipConfig",
 ]
 
 MIDDLEWARE = [
