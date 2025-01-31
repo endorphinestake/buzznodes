@@ -69,3 +69,23 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class UserPhone(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="user_phones",
+        verbose_name=_("User"),
+    )
+    phone = models.CharField(max_length=15, verbose_name=_("Phone Number"))
+    status = models.BooleanField(default=False, verbose_name=_("Confirmed"))
+    updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
+    created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
+
+    def __str__(self):
+        return f"{self.phone}"
+
+    class Meta:
+        verbose_name = _("User Phone")
+        verbose_name_plural = _("User Phones")

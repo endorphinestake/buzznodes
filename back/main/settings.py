@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "mails.apps.MailsConfig",
     "logs.apps.LogsConfig",
     "blockchains.apps.BlockchainsConfig",
+    "alerts.apps.AlertsConfig",
 ]
 
 MIDDLEWARE = [
