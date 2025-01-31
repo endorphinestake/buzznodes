@@ -70,7 +70,6 @@ class SMSAlert(models.Model):
         verbose_name=_("User Alert Setting Tombstoned Status"),
     )
     sent_text = models.TextField(verbose_name=_("SMS Text"))
-
     status = models.SlugField(
         choices=Status.choices,
         max_length=25,
