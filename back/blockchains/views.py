@@ -7,6 +7,7 @@ from django.db import transaction
 from django.db.models import Sum
 from django.utils.timezone import now
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 
 from rest_framework import views, permissions, response, status
 
@@ -69,17 +70,17 @@ class CosmosBlockchainMetricsView(views.APIView):
         )
         return results
 
-    def get(self, request):
-        blockchain = Blockchain.objects.filter(
-            btype=Blockchain.Type.COSMOS, status=True
-        ).first()
-        if not blockchain:
+    def get(self, request, blockchain_id):
+        blockchain = get_object_or_404(
+            Blockchain, pk=blockchain_id, btype=Blockchain.Type.COSMOS, status=True
+        )
+        blockchain_urls = blockchain.blockchain_urls.order_by("priority")
+
+        if not blockchain_urls.count():
             return response.Response(status=status.HTTP_404_NOT_FOUND)
 
         rpc_urls, validators_urls, infos_urls = zip(
-            *blockchain.blockchain_urls.order_by("priority").values_list(
-                "rpc_url", "validators_url", "infos_url"
-            )
+            *blockchain_urls.values_list("rpc_url", "validators_url", "infos_url")
         )
 
         results = asyncio.run(

@@ -30,7 +30,7 @@ class Blockchain(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
 
     def __str__(self):
-        return f"{self.btype}"
+        return f"{self.name}"
 
     class Meta:
         verbose_name = _("Blockchain")

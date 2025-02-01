@@ -31,6 +31,7 @@ class BlockchainUrlInline(SortableInlineAdminMixin, admin.StackedInline):
 class BlockchainAdmin(SortableAdminBase, admin.ModelAdmin):
     inlines = (BlockchainUrlInline,)
     list_display = (
+        "name",
         "btype",
         "status",
         "updated",
