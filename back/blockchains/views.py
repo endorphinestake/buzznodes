@@ -39,17 +39,17 @@ class CosmosBlockchainMetricsView(views.APIView):
     voting_power_metric = Gauge(
         f"{Blockchain.Type.COSMOS}_validator_voting_power",
         "Voting power of the validator",
-        ["validator_id", "moniker"],
+        ["blockchain_id", "validator_id", "moniker"],
     )
     commission_rate_metric = Gauge(
         f"{Blockchain.Type.COSMOS}_validator_commission_rate",
         "Commission rate of the validator",
-        ["validator_id", "moniker"],
+        ["blockchain_id", "validator_id", "moniker"],
     )
     uptime_metric = Gauge(
         f"{Blockchain.Type.COSMOS}_validator_uptime",
         "Uptime of the validator",
-        ["validator_id", "moniker"],
+        ["blockchain_id", "validator_id", "moniker"],
     )
 
     async def _process_urls(self, rpc_urls, validators_urls, infos_urls):
@@ -242,14 +242,17 @@ class CosmosBlockchainMetricsView(views.APIView):
 
             # Prometheus metrics
             self.voting_power_metric.labels(
+                blockchain_id=blockchain_id,
                 validator_id=validator.id,
                 moniker=moniker,
             ).set(voting_power)
             self.commission_rate_metric.labels(
+                blockchain_id=blockchain_id,
                 validator_id=validator.id,
                 moniker=moniker,
             ).set(commision_rate)
             self.uptime_metric.labels(
+                blockchain_id=blockchain_id,
                 validator_id=validator.id,
                 moniker=moniker,
             ).set(uptime)
