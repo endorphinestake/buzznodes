@@ -40,7 +40,7 @@ class SMSBase(models.Model):
     )
     sent_text = models.TextField(verbose_name=_("SMS Text"))
     provider = models.CharField(
-        choices=Status.choices,
+        choices=Provider.choices,
         max_length=25,
         default=Provider.MAIN,
         verbose_name=_("SMS Provider"),
