@@ -30,52 +30,83 @@ class AlertSettingBase(models.Model):
 
 
 class AlertSettingVotingPower(AlertSettingBase):
-    value = models.IntegerField(
+    value_from = models.IntegerField(
         validators=[
             MinValueValidator(100000),
             MaxValueValidator(5000000),
         ],
-        verbose_name=_("Value"),
+        verbose_name=_("Value from"),
+    )
+    value_to = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[
+            MinValueValidator(100000),
+            MaxValueValidator(5000000),
+        ],
+        verbose_name=_("Value to"),
     )
 
     class Meta:
         verbose_name = _("Voting Power Alert Settings")
         verbose_name_plural = _("Voting Power Alerts Settings")
-        ordering = ("value",)
+        ordering = ("value_from",)
 
 
 class AlertSettingUptime(AlertSettingBase):
-    value = models.DecimalField(
+    value_from = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         validators=[
             MinValueValidator(0.01),
             MaxValueValidator(100),
         ],
-        verbose_name=_("Value, %"),
+        verbose_name=_("Value from, %"),
+    )
+    value_to = models.DecimalField(
+        null=True,
+        blank=True,
+        max_digits=5,
+        decimal_places=2,
+        validators=[
+            MinValueValidator(0.01),
+            MaxValueValidator(100),
+        ],
+        verbose_name=_("Value to, %"),
     )
 
     class Meta:
         verbose_name = _("Uptime Alert Settings")
         verbose_name_plural = _("Uptime Alerts Settings")
-        ordering = ("value",)
+        ordering = ("value_from",)
 
 
 class AlertSettingComission(AlertSettingBase):
-    value = models.DecimalField(
+    value_from = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         validators=[
             MinValueValidator(0.01),
             MaxValueValidator(100),
         ],
-        verbose_name=_("Value, %"),
+        verbose_name=_("Value from, %"),
+    )
+    value_to = models.DecimalField(
+        null=True,
+        blank=True,
+        max_digits=5,
+        decimal_places=2,
+        validators=[
+            MinValueValidator(0.01),
+            MaxValueValidator(100),
+        ],
+        verbose_name=_("Value to, %"),
     )
 
     class Meta:
         verbose_name = _("Comission Alert Settings")
         verbose_name_plural = _("Comission Alerts Settings")
-        ordering = ("value",)
+        ordering = ("value_from",)
 
 
 class AlertSettingJailedStatus(AlertSettingBase):

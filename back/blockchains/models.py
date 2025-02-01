@@ -22,6 +22,9 @@ class Blockchain(models.Model):
     btype = models.SlugField(
         choices=Type.choices, default=Type.COSMOS, verbose_name=_("Type")
     )
+    name = models.CharField(
+        max_length=256, default="Celestia Mainnet", verbose_name=_("Blockchain Name")
+    )
     status = models.BooleanField(db_index=True, default=True, verbose_name=_("Status"))
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
@@ -49,7 +52,6 @@ class BlockchainUrl(models.Model):
     infos_url = models.URLField(verbose_name=_("Signing Infos URL"))
     priority = models.PositiveIntegerField(db_index=True)
     status = models.BooleanField(default=True, verbose_name=_("Status"))
-    total_called = models.PositiveBigIntegerField(verbose_name=_("Number of launches"))
     last_sync = models.DateTimeField(
         null=True, blank=True, verbose_name=_("Last Sync date")
     )
