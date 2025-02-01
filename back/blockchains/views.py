@@ -274,19 +274,25 @@ class BlockchainValidatorsView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
     filterset_class = BlockchainValidatorFilter
 
-    def get(self, request):
+    def get(self, request, blockchain_id):
+        blockchain = get_object_or_404(
+            Blockchain, pk=blockchain_id, btype=Blockchain.Type.COSMOS, status=True
+        )
+
+        blockchain_validators = blockchain.blockchain_validators.all()
+
         validators_filter = self.filterset_class(
             request.GET,
             request=request,
-            queryset=BlockchainValidator.objects.all()
-            .select_related("blockchain")
-            .order_by("-voting_power"),
+            queryset=blockchain_validators.select_related("blockchain").order_by(
+                "-voting_power"
+            ),
         )
 
         total_voting_power = (
-            BlockchainValidator.objects.all().aggregate(
-                total_voting_power=Sum("voting_power")
-            )["total_voting_power"]
+            blockchain_validators.aggregate(total_voting_power=Sum("voting_power"))[
+                "total_voting_power"
+            ]
             or 0
         )
 
