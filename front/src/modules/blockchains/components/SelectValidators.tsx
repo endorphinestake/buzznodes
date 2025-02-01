@@ -11,6 +11,7 @@ import {
 // ** Hooks
 import { useTranslation } from "react-i18next";
 import { useBlockchainService } from "@hooks/useBlockchainService";
+import { useDomain } from "@context/DomainContext";
 
 // ** Shared Components
 import Notify from "@modules/shared/utils/Notify";
@@ -35,6 +36,7 @@ const SelectValidators = (props: ISelectValidatorsProps) => {
 
   // ** Hooks
   const { t } = useTranslation();
+  const { blockchainId } = useDomain();
   const {
     dispatch,
     fetchBlockchainValidators,
@@ -54,7 +56,7 @@ const SelectValidators = (props: ISelectValidatorsProps) => {
   useEffect(() => {
     if (!isInit) {
       setIsInit(true);
-      dispatch(fetchBlockchainValidators());
+      dispatch(fetchBlockchainValidators({ blockchainId: blockchainId }));
     }
   }, []);
 
