@@ -4,7 +4,7 @@ pull:
 
 .PHONY: back
 back:
-	.venv/bin/python back/manage.py runserver localhost:8000
+	.venv/bin/python back/manage.py runserver local.com:8000
 
 .PHONY: migrate
 migrate:

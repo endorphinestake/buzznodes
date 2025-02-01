@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H celestia-testnet.local.com",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

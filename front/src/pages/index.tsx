@@ -10,6 +10,7 @@ import { Permissions } from "@configs/acl";
 // ** Hooks
 import { useTranslation } from "react-i18next";
 import { useBlockchainService } from "@hooks/useBlockchainService";
+import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces
 import { TBlockchainValidator } from "@modules/blockchains/types";
@@ -33,6 +34,7 @@ import { BellCog } from "mdi-material-ui";
 const HomePage = () => {
   // ** Hooks
   const { t } = useTranslation();
+  const { blockchainId } = useDomain();
   const { dispatch, fetchBlockchainValidators, blockchainValidators } =
     useBlockchainService();
 
@@ -49,7 +51,12 @@ const HomePage = () => {
   useEffect(() => {
     if (!isInit) {
       setIsInit(true);
-      dispatch(fetchBlockchainValidators({ status: validatorStatus }));
+      dispatch(
+        fetchBlockchainValidators({
+          blockchainId: blockchainId,
+          status: validatorStatus,
+        })
+      );
     }
   }, []);
 
@@ -59,7 +66,12 @@ const HomePage = () => {
 
     if (autorefresh > 0) {
       interval = setInterval(() => {
-        dispatch(fetchBlockchainValidators({ status: validatorStatus }));
+        dispatch(
+          fetchBlockchainValidators({
+            blockchainId: blockchainId,
+            status: validatorStatus,
+          })
+        );
       }, autorefresh * 1000);
     }
 
@@ -72,7 +84,12 @@ const HomePage = () => {
 
   // Refresh when status changed
   useEffect(() => {
-    dispatch(fetchBlockchainValidators({ status: validatorStatus }));
+    dispatch(
+      fetchBlockchainValidators({
+        blockchainId: blockchainId,
+        status: validatorStatus,
+      })
+    );
   }, [validatorStatus]);
 
   var filteredValidators: TBlockchainValidator[] = [];

@@ -19,7 +19,7 @@ export class BlockchainService {
     async (params: IBlockchainValidatorsFilter, redux: IRedux) => {
       try {
         const { data } = await axiosInstance({
-          url: `/api/blockchains/list/`,
+          url: `/api/blockchains/list/${params.blockchainId}/`,
           method: "GET",
           params,
         });

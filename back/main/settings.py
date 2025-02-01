@@ -37,13 +37,19 @@ SESSION_COOKIE_DOMAIN = env.str("SESSION_COOKIE_DOMAIN")
 CSRF_COOKIE_DOMAIN = env.str("SESSION_COOKIE_DOMAIN")
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    "http://celestia.local.com:3000",
+    "http://celestia-testnet.local.com:3000",
     "https://buzznodes.com",
+    "https://celestia.buzznodes.com",
+    "https://celestia-testnet.buzznodes.com",
     "https://account.buzznodes.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
+    "http://celestia.local.com:3000",
+    "http://celestia-testnet.local.com:3000",
     "https://buzznodes.com",
+    "https://celestia.buzznodes.com",
+    "https://celestia-testnet.buzznodes.com",
     "https://account.buzznodes.com",
 ]
 
