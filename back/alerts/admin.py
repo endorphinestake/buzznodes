@@ -18,6 +18,7 @@ class AlertSettingVotingPowerAdmin(admin.ModelAdmin):
         "__str__",
         "formatted_values",
         "users_count",
+        "sms_count",
         "status",
         "updated",
         "created",
@@ -27,7 +28,10 @@ class AlertSettingVotingPowerAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.annotate(
-            users_count=Count("alert_setting_voting_power_user_settings")
+            users_count=Count("alert_setting_voting_power_user_settings"),
+            sms_count=Count(
+                "alert_setting_voting_power_user_settings__user_alert_setting_voting_power_sms"
+            ),
         )
 
     @admin.display(description=_("Values"))
@@ -37,9 +41,13 @@ class AlertSettingVotingPowerAdmin(admin.ModelAdmin):
         values = f"{value_from} – {value_to}"
         return format_html('<span style="white-space: nowrap;">{}</span>', values)
 
-    @admin.display(description=_("Users"))
+    @admin.display(description=_("Uses Users"))
     def users_count(self, obj):
         return obj.users_count
+
+    @admin.display(description=_("Sent SMS"))
+    def sms_count(self, obj):
+        return obj.sms_count
 
 
 @admin.register(AlertSettingUptime)
@@ -48,6 +56,7 @@ class AlertSettingUptimeAdmin(admin.ModelAdmin):
         "__str__",
         "formatted_values",
         "users_count",
+        "sms_count",
         "status",
         "updated",
         "created",
@@ -57,7 +66,10 @@ class AlertSettingUptimeAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.annotate(
-            users_count=Count("alert_setting_uptime_user_settings")
+            users_count=Count("alert_setting_uptime_user_settings"),
+            sms_count=Count(
+                "alert_setting_uptime_user_settings__user_alert_setting_uptime_sms"
+            ),
         )
 
     @admin.display(description=_("Values"))
@@ -67,9 +79,13 @@ class AlertSettingUptimeAdmin(admin.ModelAdmin):
         values = f"{value_from} – {value_to}"
         return format_html('<span style="white-space: nowrap;">{}</span>', values)
 
-    @admin.display(description=_("Users"))
+    @admin.display(description=_("Uses Users"))
     def users_count(self, obj):
         return obj.users_count
+
+    @admin.display(description=_("Sent SMS"))
+    def sms_count(self, obj):
+        return obj.sms_count
 
 
 @admin.register(AlertSettingComission)
@@ -78,6 +94,7 @@ class AlertSettingComissionAdmin(admin.ModelAdmin):
         "__str__",
         "formatted_values",
         "users_count",
+        "sms_count",
         "status",
         "updated",
         "created",
@@ -87,7 +104,10 @@ class AlertSettingComissionAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.annotate(
-            users_count=Count("alert_setting_comission_user_settings")
+            users_count=Count("alert_setting_comission_user_settings"),
+            sms_count=Count(
+                "alert_setting_comission_user_settings__user_alert_setting_comission_sms"
+            ),
         )
 
     @admin.display(description=_("Values"))
@@ -97,9 +117,13 @@ class AlertSettingComissionAdmin(admin.ModelAdmin):
         values = f"{value_from} – {value_to}"
         return format_html('<span style="white-space: nowrap;">{}</span>', values)
 
-    @admin.display(description=_("Users"))
+    @admin.display(description=_("Uses Users"))
     def users_count(self, obj):
         return obj.users_count
+
+    @admin.display(description=_("Sent SMS"))
+    def sms_count(self, obj):
+        return obj.sms_count
 
 
 @admin.register(AlertSettingJailedStatus)
@@ -109,6 +133,7 @@ class AlertSettingJailedAdmin(admin.ModelAdmin):
         "false_to_true",
         "true_to_false",
         "users_count",
+        "sms_count",
         "status",
         "updated",
         "created",
@@ -118,12 +143,19 @@ class AlertSettingJailedAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.annotate(
-            users_count=Count("alert_setting_jailed_status_user_settings")
+            users_count=Count("alert_setting_jailed_status_user_settings"),
+            sms_count=Count(
+                "alert_setting_jailed_status_user_settings__user_alert_setting_jailed_status_sms"
+            ),
         )
 
-    @admin.display(description=_("Users"))
+    @admin.display(description=_("Uses Users"))
     def users_count(self, obj):
         return obj.users_count
+
+    @admin.display(description=_("Sent SMS"))
+    def sms_count(self, obj):
+        return obj.sms_count
 
 
 @admin.register(AlertSettingTombstonedStatus)
@@ -132,6 +164,7 @@ class AlertSettingTombstonedAdmin(admin.ModelAdmin):
         "__str__",
         "false_to_true",
         "users_count",
+        "sms_count",
         "status",
         "updated",
         "created",
@@ -141,9 +174,16 @@ class AlertSettingTombstonedAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.annotate(
-            users_count=Count("alert_setting_tombstoned_status_user_settings")
+            users_count=Count("alert_setting_tombstoned_status_user_settings"),
+            sms_count=Count(
+                "alert_setting_tombstoned_status_user_settings__user_alert_setting_tombstoned_status_sms"
+            ),
         )
 
-    @admin.display(description=_("Users"))
+    @admin.display(description=_("Uses Users"))
     def users_count(self, obj):
         return obj.users_count
+
+    @admin.display(description=_("Sent SMS"))
+    def sms_count(self, obj):
+        return obj.sms_count
