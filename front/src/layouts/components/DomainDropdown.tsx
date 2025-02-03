@@ -60,7 +60,7 @@ const DomainDropdown = () => {
             <MenuItem
               key={domainName}
               onClick={() => {
-                window.location.href = `https://${domainName}`;
+                window.location.href = `https://${domainData.domain}`;
               }}
             >
               <ListItemIcon>
