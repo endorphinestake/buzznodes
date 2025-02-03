@@ -10,6 +10,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   env: {
+    DEBUG: Boolean(process.env.DEBUG),
     API_URL: process.env.API_URL || "https://buzznodes.com",
   },
 };

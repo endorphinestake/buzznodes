@@ -8,6 +8,7 @@ import { Settings } from "src/@core/context/settingsContext";
 import ModeToggler from "src/@core/layouts/components/shared-components/ModeToggler";
 import UserDropdown from "./UserDropdown";
 import LanguageDropdown from "./LanguageDropdown";
+import DomainDropdown from "./DomainDropdown";
 
 interface Props {
   hidden: boolean;
@@ -21,6 +22,7 @@ const HorizontalAppBarContent = (props: Props) => {
 
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
+      <DomainDropdown />
       <LanguageDropdown settings={settings} saveSettings={saveSettings} />
       <ModeToggler settings={settings} saveSettings={saveSettings} />
       <UserDropdown settings={settings} />

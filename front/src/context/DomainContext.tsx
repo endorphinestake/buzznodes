@@ -1,50 +1,72 @@
+import { ComponentType } from "react";
+
 import { createContext, useContext, useEffect, useState } from "react";
 import CelestiaLogo from "@modules/shared/icons/celestia";
 
-type DomainKey = keyof typeof DOMAINS;
-
-const DEFAULT_DOMAIN: DomainKey = "account.buzznodes.com";
+type DomainValue = {
+  blockchainId: number;
+  logo: ComponentType<any>;
+  domain: string;
+};
 
 const DEV_DOMAINS = {
   "celestia.local.com": {
     blockchainId: 2,
     logo: CelestiaLogo,
+    domain: "celestia.local.com",
+    name: "Celestia Mainnet",
   },
   "celestia-testnet.local.com": {
     blockchainId: 3,
     logo: CelestiaLogo,
+    domain: "celestia-testnet.local.com",
+    name: "Celestia Testnet",
   },
-};
+} as const as Record<string, DomainValue>;
 
 const PROD_DOMAINS = {
-  "account.buzznodes.com": {
-    blockchainId: 1,
-    logo: CelestiaLogo,
-  },
   "celestia.buzznodes.com": {
     blockchainId: 1,
     logo: CelestiaLogo,
+    domain: "celestia.buzznodes.com",
+    name: "Celestia Mainnet",
   },
   "celestia-testnet.buzznodes.com": {
     blockchainId: 2,
     logo: CelestiaLogo,
+    domain: "celestia-testnet.buzznodes.com",
+    name: "Celestia Testnet",
   },
-};
+} as const as Record<string, DomainValue>;
 
-const DomainContext = createContext(PROD_DOMAINS[DEFAULT_DOMAIN]);
+type DomainConfig = typeof DEV_DOMAINS | typeof PROD_DOMAINS;
+const DOMAINS: DomainConfig = process.env.DEBUG ? DEV_DOMAINS : PROD_DOMAINS;
+
+type DomainKey = keyof typeof PROD_DOMAINS;
+const DEFAULT_DOMAIN: DomainKey = "celestia.buzznodes.com";
+
+const DomainContext = createContext({
+  ...DOMAINS[DEFAULT_DOMAIN],
+  domains: DOMAINS,
+});
 
 export const DomainProvider = ({ children }: { children: React.ReactNode }) => {
-  const [domainData, setDomainData] = useState(PROD_DOMAINS[DEFAULT_DOMAIN]);
+  const [domainData, setDomainData] = useState({
+    ...DOMAINS[DEFAULT_DOMAIN],
+    domains: DOMAINS,
+  });
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const hostname = window.location.hostname as DomainKey;
+      const hostname = window.location.hostname;
       console.log("HOSTNAME: ", hostname);
-      setDomainData(
-        PROD_DOMAINS[hostname] ||
-          DEV_DOMAINS[hostname] ||
-          PROD_DOMAINS[DEFAULT_DOMAIN]
-      );
+
+      if (hostname in DOMAINS) {
+        setDomainData({
+          ...DOMAINS[hostname as DomainKey],
+          domains: DOMAINS,
+        });
+      }
     }
   }, []);
 
