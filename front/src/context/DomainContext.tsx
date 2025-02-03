@@ -5,8 +5,7 @@ type DomainKey = keyof typeof DOMAINS;
 
 const DEFAULT_DOMAIN: DomainKey = "account.buzznodes.com";
 
-const DOMAINS = {
-  /* DEV */
+const DEV_DOMAINS = {
   "celestia.local.com": {
     blockchainId: 2,
     logo: CelestiaLogo,
@@ -15,8 +14,9 @@ const DOMAINS = {
     blockchainId: 3,
     logo: CelestiaLogo,
   },
+};
 
-  /* PROD */
+const PROD_DOMAINS = {
   "account.buzznodes.com": {
     blockchainId: 1,
     logo: CelestiaLogo,
@@ -31,16 +31,20 @@ const DOMAINS = {
   },
 };
 
-const DomainContext = createContext(DOMAINS[DEFAULT_DOMAIN]);
+const DomainContext = createContext(PROD_DOMAINS[DEFAULT_DOMAIN]);
 
 export const DomainProvider = ({ children }: { children: React.ReactNode }) => {
-  const [domainData, setDomainData] = useState(DOMAINS[DEFAULT_DOMAIN]);
+  const [domainData, setDomainData] = useState(PROD_DOMAINS[DEFAULT_DOMAIN]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const hostname = window.location.hostname as DomainKey;
       console.log("HOSTNAME: ", hostname);
-      setDomainData(DOMAINS[hostname] || DOMAINS[DEFAULT_DOMAIN]);
+      setDomainData(
+        PROD_DOMAINS[hostname] ||
+          DEV_DOMAINS[hostname] ||
+          PROD_DOMAINS[DEFAULT_DOMAIN]
+      );
     }
   }, []);
 
