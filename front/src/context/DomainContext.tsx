@@ -7,6 +7,7 @@ type DomainValue = {
   blockchainId: number;
   logo: ComponentType<any>;
   domain: string;
+  name: string;
 };
 
 const DEV_DOMAINS = {
