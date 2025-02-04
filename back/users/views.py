@@ -341,6 +341,54 @@ class CreateUserPhoneView(views.APIView):
         return response.Response("OK", status=status.HTTP_200_OK)
 
 
+class SubmitUserPhoneConfirm(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, user_phone_id):
+        user_phone = get_object_or_404(
+            UserPhone, pk=user_phone_id, user=request.user, status=False
+        )
+
+        queryset = SMSConfirm.objects.filter(phone=user_phone)
+        confirm_sms_last = queryset.last()
+
+        if confirm_sms_last:
+
+            confirm_sms_count = queryset.count()
+            if confirm_sms_count > settings.MAX_RETRIES_CONFIRM_PHONE_SMS:
+                return response.Response(
+                    _("The SMS sending limit for this number has been reached"),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            time_since_last = now() - confirm_sms_last.created
+            if time_since_last < settings.RETRIES_CONFIRM_SMS_CODE_PERIOD:
+                return response.Response(
+                    _("Time limit for resending is 1 minute"),
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        code = str(random.randint(1000000, 9999999))
+
+        sms_confirm = SMSConfirm.objects.create(
+            user=request.user,
+            phone=user_phone,
+            sent_text=settings.PHONE_NUMBER_CODE_SMS_TEXT.format(code=code),
+            provider=SMSBase.Provider.MAIN,
+            code=code,
+            expire_code=now() + settings.PHONE_NUMBER_CODE_EXPIRED,
+            is_used=False,
+        )
+
+        job = submit_sms_main_provider.delay(
+            phone_number=sms_confirm.phone,
+            sms_text=sms_confirm.sent_text,
+            stype=SMSBase.SType.CONFIRM_PHONE,
+        )
+
+        return response.Response("OK", status=status.HTTP_200_OK)
+
+
 class ConfirmUserPhoneView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
     throttle_classes = (OneSecRateThrottle,)

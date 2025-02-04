@@ -220,6 +220,14 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class UserPhoneSerializer(serializers.ModelSerializer):
+    last_sent_confirm = serializers.SerializerMethodField()
+
+    def get_last_sent_confirm(self, obj):
+        if not obj.status:
+            last_sms = SMSConfirm.objects.filter(phone=obj).last()
+            return last_sms.created if last_sms else None
+        return None
+
     class Meta:
         model = UserPhone
         fields = (
@@ -227,6 +235,7 @@ class UserPhoneSerializer(serializers.ModelSerializer):
             "phone",
             "status",
             "updated",
+            "last_sent_confirm",
         )
 
 

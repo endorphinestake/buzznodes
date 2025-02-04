@@ -8,6 +8,7 @@ export type TUserPhone = {
   phone: string;
   status: boolean;
   updated: Date;
+  last_sent_confirm?: Date;
 };
 
 export type TUser = {
