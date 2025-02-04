@@ -3,6 +3,13 @@ export type TGroup = {
   name: string;
 };
 
+export type TUserPhone = {
+  id: number;
+  phone: string;
+  status: boolean;
+  updated: Date;
+};
+
 export type TUser = {
   id: number;
   email: string;
@@ -11,4 +18,5 @@ export type TUser = {
   last_name?: string;
   avatar?: string;
   groups: TGroup[];
+  phones: TUserPhone[];
 };

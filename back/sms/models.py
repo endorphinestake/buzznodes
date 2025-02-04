@@ -12,11 +12,16 @@ from alerts.models import (
 
 
 class SMSBase(models.Model):
+    class SType(models.TextChoices):
+        ALERT = "ALERT", _("Alert")
+        CONFIRM_PHONE = "CONFIRM_PHONE", _("Confirm Phone")
+
     class Provider(models.TextChoices):
         MAIN = "MAIN", _("Main (Hicell)")
         RESERVE1 = "RESERVE1", _("Reserve (Bird)")
 
     class Status(models.TextChoices):
+        NEW = "NEW", _("New")
         SENT = "SENT", _("Sent")
         DELIVERED = "DELIVERED", _("Delivered")
         UNDELIVRED = "UNDELIVRED", _("Undelivered")
@@ -49,7 +54,7 @@ class SMSBase(models.Model):
         db_index=True,
         choices=Status.choices,
         max_length=25,
-        default=Status.SENT,
+        default=Status.NEW,
         verbose_name=_("Status"),
     )
     err = models.CharField(
@@ -114,6 +119,7 @@ class SMSAlert(SMSBase):
 
 class SMSConfirm(SMSBase):
     code = models.CharField(
+        db_index=True,
         max_length=25,
         blank=True,
         null=True,

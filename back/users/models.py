@@ -78,7 +78,9 @@ class UserPhone(models.Model):
         related_name="user_phones",
         verbose_name=_("User"),
     )
-    phone = models.CharField(max_length=15, verbose_name=_("Phone Number"))
+    phone = models.CharField(
+        db_index=True, max_length=15, verbose_name=_("Phone Number")
+    )
     status = models.BooleanField(default=False, verbose_name=_("Confirmed"))
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))

@@ -1,12 +1,16 @@
+import phonenumbers
+
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.translation import gettext_lazy as _
+from django.utils.timezone import now
 
 from rest_framework import serializers, validators
 
-from users.models import User
+from users.models import User, UserPhone
+from sms.models import SMSConfirm
 
 
 class BaseTokenSerializer(serializers.Serializer):
@@ -215,8 +219,20 @@ class GroupSerializer(serializers.ModelSerializer):
         )
 
 
+class UserPhoneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserPhone
+        fields = (
+            "id",
+            "phone",
+            "status",
+            "updated",
+        )
+
+
 class UserSerializer(serializers.ModelSerializer):
     groups = GroupSerializer(many=True, read_only=True)
+    phones = UserPhoneSerializer(many=True, read_only=True, source="user_phones")
 
     class Meta:
         model = User
@@ -227,6 +243,7 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "groups",
+            "phones",
         )
 
 
@@ -244,3 +261,55 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class CreateUserPhoneSerializer(serializers.Serializer):
+    phone = serializers.CharField(required=True)
+
+    def validate_phone(self, value):
+        try:
+            parsed_number = phonenumbers.parse(value, None)
+            if not phonenumbers.is_valid_number(parsed_number):
+                raise serializers.ValidationError(
+                    _(
+                        "Invalid phone number. Please enter a valid number in international format, e.g., +1234567890."
+                    )
+                )
+        except phonenumbers.NumberParseException:
+            raise serializers.ValidationError(
+                _(
+                    "Please enter a valid number in international format, e.g., +1234567890."
+                )
+            )
+
+        new_phone = phonenumbers.format_number(
+            parsed_number, phonenumbers.PhoneNumberFormat.E164
+        )
+
+        if self.context["request"].user.user_phones.filter(phone=new_phone).exists():
+            raise serializers.ValidationError(
+                _("This phone number is already registered")
+            )
+
+        return new_phone
+
+    def create(self, validated_data: dict) -> UserPhone:
+        user_phone = UserPhone.objects.create(
+            user=self.context["request"].user,
+            phone=validated_data["phone"],
+            status=False,
+        )
+        return user_phone
+
+
+class ConfirmUserPhoneSerializer(serializers.Serializer):
+    code = serializers.CharField(required=True)
+
+    def validate_code(self, value):
+        if not SMSConfirm.objects.filter(
+            code=value, expire_code__gt=now(), is_used=False
+        ).exists():
+            raise serializers.ValidationError(
+                _("The verification code is invalid or expired")
+            )
+        return value

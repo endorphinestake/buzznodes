@@ -22,6 +22,7 @@ httpcore==1.0.7
 httpx==0.28.1
 idna==3.10
 mysqlclient==2.2.6
+phonenumbers==8.13.54
 pillow==11.0.0
 polib==1.2.0
 prometheus_client==0.21.1

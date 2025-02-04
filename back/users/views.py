@@ -1,12 +1,16 @@
+import requests
+import random
+
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
+from django.utils.timezone import now, timedelta
 from django.contrib.auth import authenticate, login, logout
 
 from rest_framework import views, response, status, permissions, utils
 
 from main.throttles import OneSecRateThrottle
-from users.models import User
+from users.models import User, UserPhone
 from users.serializers import (
     LoginSerializer,
     RegisterSerializer,
@@ -20,7 +24,10 @@ from users.serializers import (
     UpdateUserSerializer,
     ChangeEmailSerializer,
     ChangeEmailConfirmSerializer,
+    CreateUserPhoneSerializer,
+    ConfirmUserPhoneSerializer,
 )
+from sms.models import SMSBase, SMSConfirm
 from mails.tasks import (
     send_verification_mail,
     send_credentials_mail,
@@ -29,7 +36,7 @@ from mails.tasks import (
     send_change_email_mail,
 )
 
-import requests
+from sms.tasks import submit_sms_main_provider
 
 
 class LoginView(views.APIView):
@@ -297,3 +304,62 @@ class EmailChangeConfirmView(views.APIView):
         user = serializer.change_email(validated_data=serializer.validated_data)
 
         return response.Response("OK")
+
+
+class CreateUserPhoneView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    throttle_classes = (OneSecRateThrottle,)
+
+    def post(self, request):
+        serializer = CreateUserPhoneSerializer(
+            data=request.data, context={"request": request}
+        )
+        if not serializer.is_valid():
+            return response.Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user_phone = serializer.create(validated_data=serializer.validated_data)
+        code = str(random.randint(1000000, 9999999))
+
+        sms_confirm = SMSConfirm.objects.create(
+            user=request.user,
+            phone=user_phone,
+            sent_text=settings.PHONE_NUMBER_CODE_SMS_TEXT.format(code=code),
+            provider=SMSBase.Provider.MAIN,
+            code=code,
+            expire_code=now() + settings.PHONE_NUMBER_CODE_EXPIRED,
+            is_used=False,
+        )
+
+        job = submit_sms_main_provider.delay(
+            phone_number=sms_confirm.phone,
+            sms_text=sms_confirm.sent_text,
+            stype=SMSBase.SType.CONFIRM_PHONE,
+        )
+
+        return response.Response("OK", status=status.HTTP_200_OK)
+
+
+class ConfirmUserPhoneView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    throttle_classes = (OneSecRateThrottle,)
+
+    def post(self, request):
+        serializer = ConfirmUserPhoneSerializer(
+            data=request.data, context={"request": request}
+        )
+        if not serializer.is_valid():
+            return response.Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        sms_confirm = get_object_or_404(
+            SMSConfirm, code=serializer.validated_data["code"], is_used=False
+        )
+        sms_confirm.is_used = True
+        sms_confirm.phone.status = True
+        sms_confirm.save()
+        sms_confirm.phone.save()
+
+        return response.Response("OK", status=status.HTTP_200_OK)

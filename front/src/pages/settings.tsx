@@ -40,8 +40,9 @@ import {
   Switch,
   TextField,
   Typography,
+  InputAdornment,
 } from "@mui/material";
-import { AccountOutline, EmailOutline, Poll } from "mdi-material-ui";
+import { EmailOutline, Phone, AccountOutline } from "mdi-material-ui";
 import { LoadingButton } from "@mui/lab";
 
 const SettingsPage = () => {
@@ -64,6 +65,7 @@ const SettingsPage = () => {
   });
 
   // ** Vars
+  const phone = profile.phones ? profile.phones[0] : null;
   const {
     reset,
     control,
@@ -133,7 +135,7 @@ const SettingsPage = () => {
                   autoComplete="off"
                   onSubmit={handleSubmit(onSubmit)}
                 >
-                  <Box
+                  {/* <Box
                     sx={{
                       my: 5,
                       display: "flex",
@@ -144,10 +146,10 @@ const SettingsPage = () => {
                     <Typography sx={{ fontWeight: "bold" }}>
                       {t(`Profile`)}
                     </Typography>
-                  </Box>
+                  </Box> */}
 
                   <Grid container spacing={3}>
-                    <Grid item md={4} sm={6} xs={12}>
+                    <Grid item md={6} sm={6} xs={12}>
                       {/* First Name Input */}
                       <FormControl fullWidth>
                         <Controller
@@ -158,11 +160,18 @@ const SettingsPage = () => {
                             <TextField
                               autoComplete="off"
                               placeholder=""
-                              label={t(`First Name`)}
+                              label={t(`Full Name`)}
                               value={value}
                               onBlur={onBlur}
                               onChange={onChange}
                               error={Boolean(errors.first_name)}
+                              InputProps={{
+                                startAdornment: (
+                                  <InputAdornment position="start">
+                                    <AccountOutline />
+                                  </InputAdornment>
+                                ),
+                              }}
                             />
                           )}
                         />
@@ -173,32 +182,30 @@ const SettingsPage = () => {
                         )}
                       </FormControl>
                     </Grid>
+                  </Grid>
 
-                    <Grid item md={4} sm={6} xs={12}>
-                      {/* Last Name Input */}
-                      <FormControl fullWidth>
-                        <Controller
-                          name="last_name"
-                          control={control}
-                          rules={{ required: false }}
-                          render={({ field: { value, onChange, onBlur } }) => (
-                            <TextField
-                              autoComplete="off"
-                              placeholder=""
-                              label={t(`Last Name`)}
-                              value={value}
-                              onBlur={onBlur}
-                              onChange={onChange}
-                              error={Boolean(errors.last_name)}
-                            />
-                          )}
-                        />
-                        {errors.last_name && (
-                          <FormHelperText sx={{ color: "error.main" }}>
-                            {errors.last_name.message}
-                          </FormHelperText>
-                        )}
-                      </FormControl>
+                  <Grid container spacing={3} sx={{ mt: 4 }}>
+                    <Grid item md={6} sm={6} xs={12}>
+                      {/* Phone Input */}
+                      <TextField
+                        disabled={Boolean(phone)}
+                        fullWidth
+                        type="number"
+                        autoComplete="off"
+                        placeholder="+1-123-456-8790"
+                        label={t(`Phone No.`)}
+                        value={phone ? phone.phone : ""}
+                        // onBlur={onBlur}
+                        // onChange={onChange}
+                        // error={Boolean(errors.first_name)}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <Phone />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
                     </Grid>
                   </Grid>
 
