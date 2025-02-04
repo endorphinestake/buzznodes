@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 // ** NextJS Imports
 import Head from "next/head";
@@ -17,6 +17,7 @@ import UserLayout from "@layouts/UserLayout";
 // ** Shared Components
 import styles from "@styles/Home.module.css";
 import Notify from "@modules/shared/utils/Notify";
+import UserPhoneField from "@modules/users/components/UserPhoneField";
 
 // ** Yup Imports
 import * as yup from "yup";
@@ -46,6 +47,9 @@ import { EmailOutline, Phone, AccountOutline } from "mdi-material-ui";
 import { LoadingButton } from "@mui/lab";
 
 const SettingsPage = () => {
+  // ** State
+  const [phone, setPhone] = useState<string>("");
+
   // ** Hooks
   const { t } = useTranslation();
   const {
@@ -65,7 +69,6 @@ const SettingsPage = () => {
   });
 
   // ** Vars
-  const phone = profile.phones ? profile.phones[0] : null;
   const {
     reset,
     control,
@@ -83,7 +86,12 @@ const SettingsPage = () => {
   });
 
   const onSubmit = (params: IUpdateUserSerializer) => {
-    dispatch(profileUpdate(params));
+    console.log("phone: ", phone);
+    if (!phone.length) {
+      dispatch(profileUpdate(params));
+    } else {
+      console.log("phone todo...");
+    }
   };
 
   // Events UserService.fetchProfile
@@ -184,30 +192,7 @@ const SettingsPage = () => {
                     </Grid>
                   </Grid>
 
-                  <Grid container spacing={3} sx={{ mt: 4 }}>
-                    <Grid item md={6} sm={6} xs={12}>
-                      {/* Phone Input */}
-                      <TextField
-                        disabled={Boolean(phone)}
-                        fullWidth
-                        type="number"
-                        autoComplete="off"
-                        placeholder="+1-123-456-8790"
-                        label={t(`Phone No.`)}
-                        value={phone ? phone.phone : ""}
-                        // onBlur={onBlur}
-                        // onChange={onChange}
-                        // error={Boolean(errors.first_name)}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <Phone />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
+                  <UserPhoneField value={phone} setValue={setPhone} />
 
                   <Box sx={{ display: "flex", alignItems: "center", mt: 6 }}>
                     <LoadingButton

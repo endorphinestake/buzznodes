@@ -20,6 +20,9 @@ export type TUserServiceState = {
   passwordChange: Function;
   emailChange: Function;
   emailChangeConfirm: Function;
+  createUserPhone: Function;
+  resendUserPhoneConfirm: Function;
+  confirmUserPhone: Function;
 
   isLoginLoading: boolean;
   isLoginLoaded: boolean;
@@ -69,6 +72,18 @@ export type TUserServiceState = {
   isEmailChangeConfirmLoading: boolean;
   isEmailChangeConfirmLoaded: boolean;
   isEmailChangeConfirmError: any;
+
+  isCreateUserPhoneLoading: boolean;
+  isCreateUserPhoneLoaded: boolean;
+  isCreateUserPhoneError: any;
+
+  isResendUserPhoneConfirmLoading: boolean;
+  isResendUserPhoneConfirmLoaded: boolean;
+  isResendUserPhoneConfirmError: any;
+
+  isConfirmUserPhoneLoading: boolean;
+  isConfirmUserPhoneLoaded: boolean;
+  isConfirmUserPhoneError: any;
 };
 
 const initialState: TUserServiceState = {
@@ -84,6 +99,9 @@ const initialState: TUserServiceState = {
   passwordChange: UserService.passwordChange,
   emailChange: UserService.emailChange,
   emailChangeConfirm: UserService.emailChangeConfirm,
+  createUserPhone: UserService.createUserPhone,
+  resendUserPhoneConfirm: UserService.resendUserPhoneConfirm,
+  confirmUserPhone: UserService.confirmUserPhone,
 
   isLoginLoading: false,
   isLoginLoaded: false,
@@ -133,6 +151,18 @@ const initialState: TUserServiceState = {
   isEmailChangeConfirmLoading: false,
   isEmailChangeConfirmLoaded: false,
   isEmailChangeConfirmError: null,
+
+  isCreateUserPhoneLoading: false,
+  isCreateUserPhoneLoaded: false,
+  isCreateUserPhoneError: null,
+
+  isResendUserPhoneConfirmLoading: false,
+  isResendUserPhoneConfirmLoaded: false,
+  isResendUserPhoneConfirmError: null,
+
+  isConfirmUserPhoneLoading: false,
+  isConfirmUserPhoneLoaded: false,
+  isConfirmUserPhoneError: null,
 };
 
 export const UserSlice = createSlice({
@@ -182,6 +212,18 @@ export const UserSlice = createSlice({
     resetEmailChangeConfirmState(state) {
       state.isEmailChangeConfirmLoaded = false;
       state.isEmailChangeConfirmError = null;
+    },
+    resetCreateUserPhoneState(state) {
+      state.isCreateUserPhoneLoaded = false;
+      state.isCreateUserPhoneError = null;
+    },
+    resetResendUserPhoneConfirmState(state) {
+      state.isResendUserPhoneConfirmLoaded = false;
+      state.isResendUserPhoneConfirmError = null;
+    },
+    resetConfirmUserPhoneState(state) {
+      state.isConfirmUserPhoneLoaded = false;
+      state.isConfirmUserPhoneError = null;
     },
   },
   extraReducers: (builder) => {
@@ -380,6 +422,60 @@ export const UserSlice = createSlice({
         state.isEmailChangeConfirmError = action.payload;
       }
     );
+
+    // ** CreateUserPhoneView
+    builder.addCase(UserService.createUserPhone.pending, (state, action) => {
+      state.isCreateUserPhoneLoading = true;
+      state.isCreateUserPhoneLoaded = false;
+      state.isCreateUserPhoneError = null;
+    });
+    builder.addCase(UserService.createUserPhone.fulfilled, (state, action) => {
+      state.isCreateUserPhoneLoading = false;
+      state.isCreateUserPhoneLoaded = true;
+    });
+    builder.addCase(UserService.createUserPhone.rejected, (state, action) => {
+      state.isCreateUserPhoneLoading = false;
+      state.isCreateUserPhoneError = action.payload;
+    });
+
+    // ** ResendUserPhoneConfirm
+    builder.addCase(
+      UserService.resendUserPhoneConfirm.pending,
+      (state, action) => {
+        state.isResendUserPhoneConfirmLoading = true;
+        state.isResendUserPhoneConfirmLoaded = false;
+        state.isResendUserPhoneConfirmError = null;
+      }
+    );
+    builder.addCase(
+      UserService.resendUserPhoneConfirm.fulfilled,
+      (state, action) => {
+        state.isResendUserPhoneConfirmLoading = false;
+        state.isResendUserPhoneConfirmLoaded = true;
+      }
+    );
+    builder.addCase(
+      UserService.resendUserPhoneConfirm.rejected,
+      (state, action) => {
+        state.isResendUserPhoneConfirmLoading = false;
+        state.isResendUserPhoneConfirmError = action.payload;
+      }
+    );
+
+    // ** ConfirmUserPhoneView
+    builder.addCase(UserService.confirmUserPhone.pending, (state, action) => {
+      state.isConfirmUserPhoneLoading = true;
+      state.isConfirmUserPhoneLoaded = false;
+      state.isConfirmUserPhoneError = null;
+    });
+    builder.addCase(UserService.confirmUserPhone.fulfilled, (state, action) => {
+      state.isConfirmUserPhoneLoading = false;
+      state.isConfirmUserPhoneLoaded = true;
+    });
+    builder.addCase(UserService.confirmUserPhone.rejected, (state, action) => {
+      state.isConfirmUserPhoneLoading = false;
+      state.isConfirmUserPhoneError = action.payload;
+    });
   },
 });
 

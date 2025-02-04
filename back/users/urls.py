@@ -12,6 +12,9 @@ from users.views import (
     PasswordChangeView,
     EmailChangeView,
     EmailChangeConfirmView,
+    CreateUserPhoneView,
+    ResendUserPhoneConfirm,
+    ConfirmUserPhoneView,
 )
 
 
@@ -27,4 +30,7 @@ urlpatterns = [
     path("password-change/", PasswordChangeView.as_view()),
     path("email-change/", EmailChangeView.as_view()),
     path("email-change/confirm/", EmailChangeConfirmView.as_view()),
+    path("phone/create/", CreateUserPhoneView.as_view()),
+    path("phone/resend/<int:user_phone_id>/", ResendUserPhoneConfirm.as_view()),
+    path("phone/confirm/", ConfirmUserPhoneView.as_view()),
 ]

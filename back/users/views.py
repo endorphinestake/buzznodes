@@ -341,7 +341,7 @@ class CreateUserPhoneView(views.APIView):
         return response.Response("OK", status=status.HTTP_200_OK)
 
 
-class SubmitUserPhoneConfirm(views.APIView):
+class ResendUserPhoneConfirm(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, user_phone_id):

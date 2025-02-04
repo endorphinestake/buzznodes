@@ -17,6 +17,9 @@ import {
   IChangeEmailConfirmSerializer,
   IChangePasswordSerializer,
   IUpdateUserSerializer,
+  IUserPhoneCreate,
+  IResendUserPhone,
+  IConfirmUserPhone,
 } from "@modules/users/interfaces";
 
 export class UserService {
@@ -223,6 +226,59 @@ export class UserService {
       try {
         const { data } = await axiosInstance({
           url: "/api/users/email-change/confirm/",
+          method: "POST",
+          data: payload,
+        });
+
+        return data;
+      } catch (error) {
+        return redux.rejectWithValue(error);
+      }
+    }
+  );
+
+  // ** CreateUserPhoneView
+  static createUserPhone = createAsyncThunk(
+    "UserService/createUserPhone",
+    async (payload: IUserPhoneCreate, redux: IRedux) => {
+      try {
+        const { data } = await axiosInstance({
+          url: "/api/users/phone/create/",
+          method: "POST",
+          data: payload,
+        });
+
+        return data;
+      } catch (error) {
+        return redux.rejectWithValue(error);
+      }
+    }
+  );
+
+  // ** ResendUserPhoneConfirm
+  static resendUserPhoneConfirm = createAsyncThunk(
+    "UserService/resendUserPhoneConfirm",
+    async (payload: IResendUserPhone, redux: IRedux) => {
+      try {
+        const { data } = await axiosInstance({
+          url: `/api/users/phone/resend/${payload.user_phone_id}/`,
+          method: "POST",
+        });
+
+        return data;
+      } catch (error) {
+        return redux.rejectWithValue(error);
+      }
+    }
+  );
+
+  // ** ConfirmUserPhoneView
+  static confirmUserPhone = createAsyncThunk(
+    "UserService/confirmUserPhone",
+    async (payload: IConfirmUserPhone, redux: IRedux) => {
+      try {
+        const { data } = await axiosInstance({
+          url: "/api/users/phone/confirm/",
           method: "POST",
           data: payload,
         });

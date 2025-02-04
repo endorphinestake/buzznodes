@@ -55,3 +55,15 @@ export interface IUpdateUserSerializer {
   first_name?: string;
   last_name?: string;
 }
+
+export interface IUserPhoneCreate {
+  phone: string;
+}
+
+export interface IResendUserPhone {
+  user_phone_id: number;
+}
+
+export interface IConfirmUserPhone {
+  code: string;
+}
