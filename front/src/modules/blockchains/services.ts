@@ -9,6 +9,7 @@ import axiosInstance from "@configs/axios";
 import { IRedux } from "@modules/shared/interfaces";
 import {
   IBlockchainValidatorsFilter,
+  IBlockchainValidatorsDetail,
   IValidatorChartsFilter,
 } from "@modules/blockchains/interfaces";
 
@@ -20,6 +21,24 @@ export class BlockchainService {
       try {
         const { data } = await axiosInstance({
           url: `/api/blockchains/list/${params.blockchainId}/`,
+          method: "GET",
+          params,
+        });
+
+        return data;
+      } catch (error) {
+        return redux.rejectWithValue(error);
+      }
+    }
+  );
+
+  // ** fetchBlockchainValidatorDetail
+  static fetchBlockchainValidatorDetail = createAsyncThunk(
+    "BlockchainService/fetchBlockchainValidatorDetail",
+    async (params: IBlockchainValidatorsDetail, redux: IRedux) => {
+      try {
+        const { data } = await axiosInstance({
+          url: `/api/blockchains/details/${params.blockchainId}/${params.validatorId}/`,
           method: "GET",
           params,
         });

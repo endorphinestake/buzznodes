@@ -30,6 +30,27 @@ class BlockchainValidatorModelSerializer(serializers.ModelSerializer):
         )
 
 
+class BlockchainValidatorDetailModelSerializer(BlockchainValidatorModelSerializer):
+    class Meta:
+        model = BlockchainValidator
+        fields = BlockchainValidatorModelSerializer.Meta.fields + (
+            "pubkey_type",
+            "pubkey_key",
+            "identity",
+            "website",
+            "contact",
+            "details",
+            "commision_max_rate",
+            "commision_max_change_rate",
+            "missed_blocks_counter",
+            "hex_address",
+            "valcons_address",
+            "wallet_address",
+            "jailed",
+            "tombstoned",
+        )
+
+
 class ConsensusPubKeySerializer(serializers.Serializer):
     key = serializers.CharField()
     type = serializers.CharField()

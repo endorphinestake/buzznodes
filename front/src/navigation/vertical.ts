@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { ChartAreaspline } from "mdi-material-ui";
+import { AccountDetails } from "mdi-material-ui";
 
 // ** Types & Interfaces imports
 import { VerticalNavItemsType } from "src/@core/layouts/types";
@@ -18,6 +19,13 @@ const navigation = (): VerticalNavItemsType => {
       title: t(`Validators`),
       icon: DashboardIcon,
       path: "/",
+      action: "read",
+      subject: Permissions.ANY,
+    },
+    {
+      title: t(`Validator Details`),
+      icon: AccountDetails,
+      path: "/details",
       action: "read",
       subject: Permissions.ANY,
     },

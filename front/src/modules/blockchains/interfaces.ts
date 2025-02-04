@@ -6,6 +6,11 @@ export interface IBlockchainValidatorsFilter {
   status?: EBlockchainValidatorStatus;
 }
 
+export interface IBlockchainValidatorsDetail {
+  blockchainId: number;
+  validatorId: number;
+}
+
 export interface IValidatorChartsFilter {
   validator_ids: number[];
   date_start?: Date;

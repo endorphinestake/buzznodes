@@ -41,7 +41,8 @@ const PROD_DOMAINS = {
 } as const as Record<string, DomainValue>;
 
 type DomainConfig = typeof DEV_DOMAINS | typeof PROD_DOMAINS;
-const DOMAINS: DomainConfig = process.env.DEBUG ? DEV_DOMAINS : PROD_DOMAINS;
+const DOMAINS: DomainConfig =
+  process.env.DEBUG === "true" ? DEV_DOMAINS : PROD_DOMAINS;
 
 type DomainKey = keyof typeof PROD_DOMAINS;
 const DEFAULT_DOMAIN: DomainKey = "celestia.buzznodes.com";

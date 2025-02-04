@@ -15,6 +15,7 @@ from blockchains.constants import CHART_PERIODS
 from blockchains.models import Blockchain, BlockchainValidator
 from blockchains.serilazers import (
     BlockchainValidatorModelSerializer,
+    BlockchainValidatorDetailModelSerializer,
     RpcValidatorSerializer,
     BlockchainValidatorSerializer,
     InfosValidatorSerializer,
@@ -316,6 +317,21 @@ class BlockchainValidatorsView(views.APIView):
         ]
 
         return response.Response(data_with_rank, status=status.HTTP_200_OK)
+
+
+class BlockchainValidatorView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, blockchain_id, validator_id):
+        validator = get_object_or_404(
+            BlockchainValidator,
+            pk=validator_id,
+            blockchain__id=blockchain_id,
+            blockchain__status=True,
+        )
+
+        serializer = BlockchainValidatorDetailModelSerializer(validator)
+        return response.Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class BlockchainChartView(views.APIView):
