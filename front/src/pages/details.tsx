@@ -16,13 +16,15 @@ import { useDomain } from "@context/DomainContext";
 // ** Layouts
 import UserLayout from "@layouts/UserLayout";
 
+// ** Types & Interfaces Imports
+import { TBlockchainValidator } from "@modules/blockchains/types";
+
 // ** Shared Components
 import styles from "@styles/Home.module.css";
 import SelectValidators from "@modules/blockchains/components/SelectValidators";
 
 // ** MUI Imports
 import {
-  Box,
   Card,
   CardHeader,
   Grid,
@@ -31,6 +33,7 @@ import {
   CardContent,
   Divider,
 } from "@mui/material";
+import Box, { BoxProps } from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import {
   LockOpenOutline,

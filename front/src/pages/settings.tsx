@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, useRef } from "react";
 
 // ** NextJS Imports
 import Head from "next/head";
@@ -60,6 +60,9 @@ const SettingsPage = () => {
     isProfileUpdateLoading,
     isProfileUpdateLoaded,
     isProfileUpdateError,
+    isCreateUserPhoneLoading,
+    isResendUserPhoneConfirmLoading,
+    isConfirmUserPhoneLoading,
     resetProfileUpdateState,
   } = useUserService();
 
@@ -69,6 +72,7 @@ const SettingsPage = () => {
   });
 
   // ** Vars
+  const userPhoneFieldRef = useRef<any>(null);
   const {
     reset,
     control,
@@ -86,11 +90,13 @@ const SettingsPage = () => {
   });
 
   const onSubmit = (params: IUpdateUserSerializer) => {
-    console.log("phone: ", phone);
     if (!phone.length) {
       dispatch(profileUpdate(params));
     } else {
       console.log("phone todo...");
+      if (userPhoneFieldRef.current) {
+        userPhoneFieldRef.current.handleSubmit();
+      }
     }
   };
 
@@ -192,11 +198,20 @@ const SettingsPage = () => {
                     </Grid>
                   </Grid>
 
-                  <UserPhoneField value={phone} setValue={setPhone} />
+                  <UserPhoneField
+                    ref={userPhoneFieldRef}
+                    value={phone}
+                    setValue={setPhone}
+                  />
 
                   <Box sx={{ display: "flex", alignItems: "center", mt: 6 }}>
                     <LoadingButton
-                      loading={isProfileUpdateLoading}
+                      loading={
+                        isProfileUpdateLoading ||
+                        isCreateUserPhoneLoading ||
+                        isResendUserPhoneConfirmLoading ||
+                        isConfirmUserPhoneLoading
+                      }
                       size="large"
                       type="submit"
                       variant="contained"
