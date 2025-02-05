@@ -4,6 +4,9 @@ import { createSlice, SerializedError } from "@reduxjs/toolkit";
 // ** Import Services
 import { AlertService } from "@modules/alerts/services";
 
+// ** Utils Imports
+import { groupByValidatorId } from "@modules/alerts/utils";
+
 // ** Types & Interfaces & Enums
 import {
   TAlertSettingsResponse,
@@ -24,7 +27,7 @@ export type TAlertState = {
   isUserAlertSettingsLoading: boolean;
   isUserAlertSettingsLoaded: boolean;
   isUserAlertSettingsError: any;
-  userAlertSettings: TUserAlertSettingsResponse;
+  userAlertSettings: Record<number, Partial<TUserAlertSettingsResponse>>;
 
   isCreatingUserAlertSettingLoading: boolean;
   isCreatingUserAlertSettingLoaded: boolean;
@@ -49,7 +52,7 @@ const initialState: TAlertState = {
   isUserAlertSettingsLoading: false,
   isUserAlertSettingsLoaded: false,
   isUserAlertSettingsError: null,
-  userAlertSettings: {} as TUserAlertSettingsResponse,
+  userAlertSettings: {} as Record<number, Partial<TUserAlertSettingsResponse>>,
 
   isCreatingUserAlertSettingLoading: false,
   isCreatingUserAlertSettingLoaded: false,
@@ -122,7 +125,7 @@ export const AlertSlice = createSlice({
       (state, action) => {
         state.isUserAlertSettingsLoading = false;
         state.isUserAlertSettingsLoaded = true;
-        state.userAlertSettings = action.payload;
+        state.userAlertSettings = groupByValidatorId(action.payload);
       }
     );
     builder.addCase(
@@ -130,7 +133,10 @@ export const AlertSlice = createSlice({
       (state, action) => {
         state.isUserAlertSettingsLoading = false;
         state.isUserAlertSettingsError = action.payload;
-        state.userAlertSettings = {} as TUserAlertSettingsResponse;
+        state.userAlertSettings = {} as Record<
+          number,
+          Partial<TUserAlertSettingsResponse>
+        >;
       }
     );
 

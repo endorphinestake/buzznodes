@@ -10,12 +10,13 @@ import { Permissions } from "@configs/acl";
 // ** Hooks
 import { useTranslation } from "react-i18next";
 import { useBlockchainService } from "@hooks/useBlockchainService";
+import { useAlertService } from "@hooks/useAlertService";
 import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces
 import { TBlockchainValidator } from "@modules/blockchains/types";
+import { EAlertType } from "@modules/alerts/enums";
 import { EBlockchainValidatorStatus } from "@modules/blockchains/enums";
-import SelectAutorefresh from "@modules/shared/components/SelectAutorefresh";
 
 // ** Layouts
 import UserLayout from "@layouts/UserLayout";
@@ -25,10 +26,11 @@ import styles from "@styles/Home.module.css";
 import TextSearchOutline from "@modules/shared/components/TextSearchOutline";
 import SelectValidatorStatus from "@modules/blockchains/components/SelectValidatorStatus";
 import ValidatorsTable from "@modules/blockchains/components/ValidatorsTable";
+import SelectAutorefresh from "@modules/shared/components/SelectAutorefresh";
+import SelectAlertType from "@modules/alerts/components/SelectAlertType";
 
 // ** Mui Imports
 import { Grid, Card, Box, CardHeader, Typography, Button } from "@mui/material";
-// import AddIcon from "@mui/icons-material/Add";
 import { BellCog } from "mdi-material-ui";
 
 const HomePage = () => {
@@ -37,6 +39,16 @@ const HomePage = () => {
   const { blockchainId } = useDomain();
   const { dispatch, fetchBlockchainValidators, blockchainValidators } =
     useBlockchainService();
+  const {
+    fetchAlertSettings,
+    fetchUserAlertSettings,
+    isAlertSettingsLoading,
+    isAlertSettingsLoaded,
+    isUserAlertSettingsLoading,
+    isUserAlertSettingsLoaded,
+    alertSettings,
+    userAlertSettings,
+  } = useAlertService();
 
   // ** State
   const [isInit, setIsInit] = useState<boolean>(false);
@@ -45,18 +57,30 @@ const HomePage = () => {
     useState<EBlockchainValidatorStatus>(
       EBlockchainValidatorStatus.BOND_STATUS_BONDED
     );
+  const [alertType, setAlertType] = useState<EAlertType>(EAlertType.ANY);
   const [search, setSearch] = useState<string>("");
 
   // Event onInit
   useEffect(() => {
     if (!isInit) {
       setIsInit(true);
+      // Preload blockchains
       dispatch(
         fetchBlockchainValidators({
           blockchainId: blockchainId,
           status: validatorStatus,
         })
       );
+
+      // Preload AlertSettings
+      if (!isAlertSettingsLoaded) {
+        dispatch(fetchAlertSettings());
+      }
+
+      // Preload UserAlertSettings
+      if (!isUserAlertSettingsLoaded) {
+        dispatch(fetchUserAlertSettings());
+      }
     }
   }, []);
 
@@ -92,11 +116,11 @@ const HomePage = () => {
     );
   }, [validatorStatus]);
 
-  var filteredValidators: TBlockchainValidator[] = [];
+  var filteredValidators: TBlockchainValidator[] = blockchainValidators;
 
   // filter by Status
   if (blockchainValidators.length > 0) {
-    filteredValidators = blockchainValidators.filter((item) => {
+    filteredValidators = filteredValidators.filter((item) => {
       switch (validatorStatus) {
         case EBlockchainValidatorStatus.BOND_STATUS_BONDED:
           return item.status === EBlockchainValidatorStatus.BOND_STATUS_BONDED;
@@ -106,15 +130,52 @@ const HomePage = () => {
     });
   }
 
+  // filter by AlertType
+  if (blockchainValidators.length > 0) {
+    filteredValidators = filteredValidators.filter((item) => {
+      switch (alertType) {
+        case EAlertType.VOTING_POWER:
+          return (
+            userAlertSettings[item.id] &&
+            userAlertSettings[item.id][EAlertType.VOTING_POWER].length
+          );
+        case EAlertType.UPTIME:
+          return (
+            userAlertSettings[item.id] &&
+            userAlertSettings[item.id][EAlertType.UPTIME].length
+          );
+        case EAlertType.COMISSION:
+          return (
+            userAlertSettings[item.id] &&
+            userAlertSettings[item.id][EAlertType.COMISSION].length
+          );
+        case EAlertType.JAILED:
+          return (
+            userAlertSettings[item.id] &&
+            userAlertSettings[item.id][EAlertType.JAILED].length
+          );
+        case EAlertType.TOMBSTONED:
+          return (
+            userAlertSettings[item.id] &&
+            userAlertSettings[item.id][EAlertType.TOMBSTONED].length
+          );
+        default:
+          return true;
+      }
+    });
+  }
+
   // filter by Search
   if (search.length > 0) {
-    filteredValidators = blockchainValidators.filter((item) => {
+    filteredValidators = filteredValidators.filter((item) => {
       return (
         (item.moniker ?? "").toLowerCase().includes(search.toLowerCase()) ||
         item.operator_address.toLowerCase().includes(search.toLowerCase())
       );
     });
   }
+
+  console.log("userAlertSettings: ", userAlertSettings);
 
   return (
     <div className={styles.container}>
@@ -162,7 +223,16 @@ const HomePage = () => {
                       label={t(`Status`)}
                     />
                   </Grid>
-                  <Grid item sm={8} xs={12}>
+
+                  <Grid item sm={4} xs={12}>
+                    <SelectAlertType
+                      value={alertType}
+                      setValue={setAlertType}
+                      label={t(`With alerts enabled`)}
+                    />
+                  </Grid>
+
+                  <Grid item sm={4} xs={12}>
                     <TextSearchOutline
                       setValue={setSearch}
                       placeholder={t(`Moniker / Valoper`)}

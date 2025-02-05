@@ -1,4 +1,5 @@
 export enum EAlertType {
+  ANY = "",
   VOTING_POWER = "VOTING_POWER",
   UPTIME = "UPTIME",
   COMISSION = "COMISSION",
