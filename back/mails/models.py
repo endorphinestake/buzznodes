@@ -45,11 +45,11 @@ class AlertConfirmEmail(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
 
     def __str__(self):
-        return f"{self.subject}"
+        return f"{self.user} - {self.subject}"
 
     class Meta:
-        verbose_name = _("Voting Power Alert Settings")
-        verbose_name_plural = _("Voting Power Alerts Settings")
+        verbose_name = _("Alert Confirm Email")
+        verbose_name_plural = _("Alert Confirm Emails")
 
 
 class Contact(models.Model):

@@ -136,15 +136,17 @@ class UserAlertSettingTombstonedStatusSerializer(serializers.ModelSerializer):
         )
 
 
-class CreateUserAlertSettingSerializer(serializers.Serializer):
+class ManageUserAlertSettingSerializer(serializers.Serializer):
     blockchain_validator_id = serializers.PrimaryKeyRelatedField(
         queryset=BlockchainValidator.objects.all()
     )
     setting_id = serializers.IntegerField(required=True)
+    user_setting_id = serializers.IntegerField(required=False)  # for update
     channel = serializers.ChoiceField(AlertSettingBase.AlertType.choices, required=True)
 
     def validate_setting_id(self, setting_id):
-        channel = self.initial_data.get("channel")
+        setting_instance = None
+        # channel = self.initial_data.get("channel")
         setting_models = [
             AlertSettingVotingPower,
             AlertSettingUptime,
@@ -153,7 +155,6 @@ class CreateUserAlertSettingSerializer(serializers.Serializer):
             AlertSettingTombstonedStatus,
         ]
 
-        setting_instance = None
         for model in setting_models:
             try:
                 setting_instance = model.objects.get(pk=setting_id)
@@ -164,21 +165,63 @@ class CreateUserAlertSettingSerializer(serializers.Serializer):
         if not setting_instance:
             raise serializers.ValidationError(_("Unknown setting type."))
 
-        if channel not in setting_instance.channels:
-            raise serializers.ValidationError(
-                _("The alert channel is not available for this setting.")
-            )
+        # if channel not in setting_instance.channels:
+        #     raise serializers.ValidationError(
+        #         _("The alert channel is not available for this setting.")
+        #     )
 
         self.context["setting"] = setting_instance
         return setting_id
 
+    def validate_user_setting_id(self, user_setting_id):
+        user_setting_instance = None
+        if user_setting_id:
+            user_setting_models = [
+                UserAlertSettingVotingPower,
+                UserAlertSettingUptime,
+                UserAlertSettingComission,
+                UserAlertSettingJailedStatus,
+                UserAlertSettingTombstonedStatus,
+            ]
+
+            for model in user_setting_models:
+                try:
+                    setting_instance = model.objects.get(
+                        pk=user_setting_id, user=self.context["request"].user
+                    )
+                    break
+                except model.DoesNotExist:
+                    continue
+
+            if not user_setting_instance:
+                raise serializers.ValidationError(_("Unknown user setting type."))
+
+        self.context["user_setting"] = user_setting_instance
+        return user_setting_id
+
+    def validate_channel(self, channel):
+        if channel not in self.context["setting"].channels:
+            raise serializers.ValidationError(
+                _("The alert channel is not available for this setting.")
+            )
+        return channel
+
     def create(self, validated_data: dict):
-        blockchain_validator = BlockchainValidator.objects.get(
-            id=validated_data["blockchain_validator_id"]
-        )
+        # blockchain_validator = BlockchainValidator.objects.get(
+        #     id=validated_data["blockchain_validator_id"]
+        # )
+        blockchain_validator = self.initial_data["blockchain_validator_id"]
         setting_instance = self.context["setting"]
 
         if isinstance(setting_instance, AlertSettingVotingPower):
+            if (
+                self.context["request"]
+                .user.user_alert_settings_voting_power.filter(
+                    blockchain_validator=blockchain_validator
+                )
+                .exists()
+            ):
+                raise serializers.ValidationError(_("The Alert already exists!"))
             return UserAlertSettingVotingPower.objects.create(
                 user=self.context["request"].user,
                 channels=validated_data["channel"],
@@ -187,6 +230,14 @@ class CreateUserAlertSettingSerializer(serializers.Serializer):
                 current_value=blockchain_validator.voting_power,
             )
         elif isinstance(setting_instance, AlertSettingUptime):
+            if (
+                self.context["request"]
+                .user.user_alert_settings_uptime.filter(
+                    blockchain_validator=blockchain_validator
+                )
+                .exists()
+            ):
+                raise serializers.ValidationError(_("The Alert already exists!"))
             return UserAlertSettingUptime.objects.create(
                 user=self.context["request"].user,
                 channels=validated_data["channel"],
@@ -195,6 +246,14 @@ class CreateUserAlertSettingSerializer(serializers.Serializer):
                 current_value=blockchain_validator.uptime,
             )
         elif isinstance(setting_instance, AlertSettingComission):
+            if (
+                self.context["request"]
+                .user.user_alert_settings_comission.filter(
+                    blockchain_validator=blockchain_validator
+                )
+                .exists()
+            ):
+                raise serializers.ValidationError(_("The Alert already exists!"))
             return UserAlertSettingComission.objects.create(
                 user=self.context["request"].user,
                 channels=validated_data["channel"],
@@ -203,6 +262,14 @@ class CreateUserAlertSettingSerializer(serializers.Serializer):
                 current_value=blockchain_validator.commision_rate,
             )
         elif isinstance(setting_instance, AlertSettingJailedStatus):
+            if (
+                self.context["request"]
+                .user.user_alert_settings_jailed_status.filter(
+                    blockchain_validator=blockchain_validator
+                )
+                .exists()
+            ):
+                raise serializers.ValidationError(_("The Alert already exists!"))
             return UserAlertSettingJailedStatus.objects.create(
                 user=self.context["request"].user,
                 channels=validated_data["channel"],
@@ -211,6 +278,14 @@ class CreateUserAlertSettingSerializer(serializers.Serializer):
                 current_value=blockchain_validator.jailed,
             )
         elif isinstance(setting_instance, AlertSettingTombstonedStatus):
+            if (
+                self.context["request"]
+                .user.user_alert_settings_tombstoned_status.filter(
+                    blockchain_validator=blockchain_validator
+                )
+                .exists()
+            ):
+                raise serializers.ValidationError(_("The Alert already exists!"))
             return UserAlertSettingTombstonedStatus.objects.create(
                 user=self.context["request"].user,
                 channels=validated_data["channel"],
@@ -221,10 +296,15 @@ class CreateUserAlertSettingSerializer(serializers.Serializer):
         else:
             raise serializers.ValidationError(_("Unknown setting type."))
 
+    def update(self, validated_data: dict):
+        setting_instance = self.context["setting"]
+        user_setting_instance = self.context["user_setting"]
 
-class UpdateUserAlertSettingSerializer(serializers.Serializer):
-    user_setting_id = serializers.IntegerField(required=True)
-    setting_id = serializers.IntegerField(required=True)
+        if not user_setting_instance:
+            return None
 
-    def validate_setting_id(self, setting_id):
-        pass
+        user_setting_instance.setting = setting_instance
+        user_setting_instance.channels = validated_data.get(
+            "channel", user_setting_instance.channels
+        )
+        user_setting_instance.save()
