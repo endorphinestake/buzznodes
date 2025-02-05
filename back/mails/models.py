@@ -23,7 +23,9 @@ class AlertConfirmEmail(models.Model):
         related_name="user_alert_confirm_emails",
         verbose_name=_("User"),
     )
-    user_alert_setting_id = models.IntegerField(verbose_name=_("User Alert Setting ID"))
+    user_alert_setting_id = models.IntegerField(
+        db_index=True, verbose_name=_("User Alert Setting ID")
+    )
     subject = models.CharField(max_length=256, verbose_name=_("Email Subject"))
     email_html = CKEditor5Field(verbose_name=_("Email content"))
     code = models.CharField(

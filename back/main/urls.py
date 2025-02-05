@@ -9,12 +9,14 @@ from django.views.generic import TemplateView
 from users import urls as users_urls
 from blockchains import urls as blockchains_urls
 from mails import urls as mails_urls
+from alerts import urls as alerts_urls
 
 
 urlpatterns = [
     path("api/users/", include(users_urls)),
     path("api/blockchains/", include(blockchains_urls)),
     path("api/mails/", include(mails_urls)),
+    path("api/alerts/", include(alerts_urls)),
 ]
 
 urlpatterns += i18n_patterns(

@@ -10,6 +10,13 @@ from blockchains.models import BlockchainValidator
 
 
 class AlertSettingBase(models.Model):
+    class AlertType(models.TextChoices):
+        VOTING_POWER = "VOTING_POWER", _("Voting Power")
+        UPTIME = "UPTIME", _("Uptime")
+        COMISSION = "COMISSION", _("Comission")
+        JAILED = "JAILED", _("Jailed")
+        TOMBSTONED = "TOMBSTONED", _("Tombstoned")
+
     class Channels(models.TextChoices):
         SMS = "SMS", _("SMS")
         VOICE = "VOICE", _("Voice")

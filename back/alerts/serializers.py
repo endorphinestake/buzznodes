@@ -23,7 +23,6 @@ class AlertSettingVotingPowerSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "channels",
-            "alert_type",
             "value_from",
             "value_to",
         )
@@ -35,7 +34,6 @@ class AlertSettingUptimeSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "channels",
-            "alert_type",
             "value_from",
             "value_to",
         )
@@ -47,7 +45,6 @@ class AlertSettingComissionSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "channels",
-            "alert_type",
             "value_from",
             "value_to",
         )
@@ -59,7 +56,6 @@ class AlertSettingJailedStatusSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "channels",
-            "alert_type",
             "false_to_true",
             "true_to_false",
         )
@@ -71,7 +67,6 @@ class AlertSettingTombstonedStatusSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "channels",
-            "alert_type",
             "false_to_true",
         )
 
@@ -81,9 +76,9 @@ class UserAlertSettingVotingPowerSerializer(serializers.ModelSerializer):
         model = UserAlertSettingVotingPower
         fields = (
             "id",
-            "user_id",
             "blockchain_validator_id",
             "channels",
+            "is_confirmed",
             "setting_id",
         )
 
@@ -93,9 +88,9 @@ class UserAlertSettingUptimeSerializer(serializers.ModelSerializer):
         model = UserAlertSettingUptime
         fields = (
             "id",
-            "user_id",
             "blockchain_validator_id",
             "channels",
+            "is_confirmed",
             "setting_id",
         )
 
@@ -105,9 +100,9 @@ class UserAlertSettingComissionSerializer(serializers.ModelSerializer):
         model = UserAlertSettingComission
         fields = (
             "id",
-            "user_id",
             "blockchain_validator_id",
             "channels",
+            "is_confirmed",
             "setting_id",
         )
 
@@ -117,9 +112,9 @@ class UserAlertSettingJailedStatusSerializer(serializers.ModelSerializer):
         model = UserAlertSettingJailedStatus
         fields = (
             "id",
-            "user_id",
             "blockchain_validator_id",
             "channels",
+            "is_confirmed",
             "setting_id",
         )
 
@@ -129,9 +124,9 @@ class UserAlertSettingTombstonedStatusSerializer(serializers.ModelSerializer):
         model = UserAlertSettingTombstonedStatus
         fields = (
             "id",
-            "user_id",
             "blockchain_validator_id",
             "channels",
+            "is_confirmed",
             "setting_id",
         )
 
@@ -143,6 +138,7 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
     setting_id = serializers.IntegerField(required=True)
     user_setting_id = serializers.IntegerField(required=False)  # for update
     channel = serializers.ChoiceField(AlertSettingBase.AlertType.choices, required=True)
+    is_delete = serializers.BooleanField(required=False)
 
     def validate_setting_id(self, setting_id):
         setting_instance = None
@@ -186,7 +182,7 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
 
             for model in user_setting_models:
                 try:
-                    setting_instance = model.objects.get(
+                    user_setting_instance = model.objects.get(
                         pk=user_setting_id, user=self.context["request"].user
                     )
                     break
@@ -194,13 +190,14 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                     continue
 
             if not user_setting_instance:
-                raise serializers.ValidationError(_("Unknown user setting type."))
+                raise serializers.ValidationError(_("Unknown setting type."))
 
         self.context["user_setting"] = user_setting_instance
         return user_setting_id
 
     def validate_channel(self, channel):
-        if channel not in self.context["setting"].channels:
+        is_delete = self.initial_data.get("is_delete", False)
+        if channel not in self.context["setting"].channels and not is_delete:
             raise serializers.ValidationError(
                 _("The alert channel is not available for this setting.")
             )
@@ -296,15 +293,18 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
         else:
             raise serializers.ValidationError(_("Unknown setting type."))
 
-    def update(self, validated_data: dict):
+    def update_or_delete(self, validated_data: dict):
         setting_instance = self.context["setting"]
         user_setting_instance = self.context["user_setting"]
 
         if not user_setting_instance:
             return None
 
-        user_setting_instance.setting = setting_instance
-        user_setting_instance.channels = validated_data.get(
-            "channel", user_setting_instance.channels
-        )
-        user_setting_instance.save()
+        if validated_data.get("is_delete"):
+            user_setting_instance.delete()
+        else:
+            user_setting_instance.setting = setting_instance
+            user_setting_instance.channels = validated_data.get(
+                "channel", user_setting_instance.channels
+            )
+            user_setting_instance.save()
