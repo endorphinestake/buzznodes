@@ -237,6 +237,22 @@ METRICS_TIMEOUT_SECONDS = 1
 GRAFANA_BASE_URL = env.str("GRAFANA_BASE_URL")
 GRAFANA_SERVICE_TOKEN = env.str("GRAFANA_SERVICE_TOKEN")
 
+CKEDITOR_5_CONFIGS = {
+    "default": {
+        "toolbar": [
+            "heading",
+            "|",
+            "bold",
+            "italic",
+            "link",
+            "bulletedList",
+            "numberedList",
+            "blockQuote",
+            "imageUpload",
+        ],
+    }
+}
+
 if not DEBUG:
     REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = (
         "rest_framework.renderers.JSONRenderer",

@@ -1,3 +1,5 @@
+from django_ckeditor_5.fields import CKEditor5Field
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -23,7 +25,7 @@ class AlertConfirmEmail(models.Model):
     )
     user_alert_setting_id = models.IntegerField(verbose_name=_("User Alert Setting ID"))
     subject = models.CharField(max_length=256, verbose_name=_("Email Subject"))
-    email_html = models.TextField(verbose_name=_("Email content"))
+    email_html = CKEditor5Field(verbose_name=_("Email content"))
     code = models.CharField(
         db_index=True, max_length=255, verbose_name=_("Confirmation code")
     )
