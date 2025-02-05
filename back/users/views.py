@@ -320,7 +320,7 @@ class CreateUserPhoneView(views.APIView):
             )
 
         user_phone = serializer.create(validated_data=serializer.validated_data)
-        code = str(random.randint(1000000, 9999999))
+        code = str(random.randint(10000, 99999))
 
         sms_confirm = SMSConfirm.objects.create(
             user=request.user,
@@ -368,7 +368,7 @@ class ResendUserPhoneConfirm(views.APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        code = str(random.randint(1000000, 9999999))
+        code = str(random.randint(10000, 99999))
 
         sms_confirm = SMSConfirm.objects.create(
             user=request.user,

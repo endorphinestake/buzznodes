@@ -49,6 +49,7 @@ import { LoadingButton } from "@mui/lab";
 const SettingsPage = () => {
   // ** State
   const [phone, setPhone] = useState<string>("");
+  const [smsCode, setSmsCode] = useState<string>("");
 
   // ** Hooks
   const { t } = useTranslation();
@@ -90,10 +91,9 @@ const SettingsPage = () => {
   });
 
   const onSubmit = (params: IUpdateUserSerializer) => {
-    if (!phone.length) {
+    if (!phone.length && !smsCode.length) {
       dispatch(profileUpdate(params));
     } else {
-      console.log("phone todo...");
       if (userPhoneFieldRef.current) {
         userPhoneFieldRef.current.handleSubmit();
       }
@@ -200,8 +200,10 @@ const SettingsPage = () => {
 
                   <UserPhoneField
                     ref={userPhoneFieldRef}
-                    value={phone}
-                    setValue={setPhone}
+                    phone={phone}
+                    setPhone={setPhone}
+                    smsCode={smsCode}
+                    setSmsCode={setSmsCode}
                   />
 
                   <Box sx={{ display: "flex", alignItems: "center", mt: 6 }}>

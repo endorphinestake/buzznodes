@@ -277,6 +277,9 @@ class CreateUserPhoneSerializer(serializers.Serializer):
 
     def validate_phone(self, value):
         try:
+            if not value.startswith("+"):
+                value = f"+{value}"
+
             parsed_number = phonenumbers.parse(value, None)
             if not phonenumbers.is_valid_number(parsed_number):
                 raise serializers.ValidationError(
