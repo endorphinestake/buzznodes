@@ -13,9 +13,10 @@ import { useUserService } from "@hooks/useUserService";
 
 // ** Shared Components
 import Notify from "@modules/shared/utils/Notify";
+import { LoadingButton } from "@mui/lab";
 
 // ** Mui Imports
-import { TextField, InputAdornment, Grid } from "@mui/material";
+import { TextField, InputAdornment, Grid, Tooltip } from "@mui/material";
 import { Phone, Cellphone } from "mdi-material-ui";
 
 interface IProps {
@@ -27,6 +28,9 @@ interface IProps {
 
 const UserPhoneField = forwardRef(
   ({ phone, setPhone, smsCode, setSmsCode }: IProps, ref) => {
+    // ** State
+    const [timeLeft, setTimeLeft] = useState<number | null>(null);
+
     // ** Hooks
     const { t } = useTranslation();
     const {
@@ -34,19 +38,20 @@ const UserPhoneField = forwardRef(
       getProfile,
       createUserPhone,
       confirmUserPhone,
+      resendUserPhoneConfirm,
       profile,
-      isProfileUpdateLoading,
-      isProfileUpdateLoaded,
-      isProfileUpdateError,
       isCreateUserPhoneLoading,
       isCreateUserPhoneLoaded,
       isCreateUserPhoneError,
       isConfirmUserPhoneLoading,
       isConfirmUserPhoneLoaded,
       isConfirmUserPhoneError,
-      resetProfileUpdateState,
+      isResendUserPhoneConfirmLoading,
+      isResendUserPhoneConfirmLoaded,
+      isResendUserPhoneConfirmError,
       resetConfirmUserPhoneState,
       resetCreateUserPhoneState,
+      resetResendUserPhoneConfirmState,
     } = useUserService();
 
     const handleSubmit = () => {
@@ -77,10 +82,22 @@ const UserPhoneField = forwardRef(
       setSmsCode(event.target.value);
     };
 
+    const handleClickResend = () => {
+      if (profile?.phones[0]?.last_sent_confirm) {
+        dispatch(
+          resendUserPhoneConfirm({
+            user_phone_id: profile.phones[0].id,
+          })
+        );
+        dispatch(getProfile());
+      }
+    };
+
     // Events for createUserPhone
     useEffect(() => {
       // Success
       if (isCreateUserPhoneLoaded) {
+        Notify("info", t(`Please confirm your number via SMS code`));
         setPhone("");
         dispatch(resetCreateUserPhoneState());
         dispatch(getProfile());
@@ -110,7 +127,7 @@ const UserPhoneField = forwardRef(
       if (isConfirmUserPhoneLoaded) {
         Notify(
           "success",
-          t("Your phone number has been successfully verified, thank you!")
+          t(`Your phone number has been successfully verified, thank you!`)
         );
         setSmsCode("");
         dispatch(resetConfirmUserPhoneState());
@@ -131,9 +148,61 @@ const UserPhoneField = forwardRef(
             }
           );
         }
-        dispatch(resetCreateUserPhoneState());
+        dispatch(resetConfirmUserPhoneState());
       }
     }, [isConfirmUserPhoneLoaded, isConfirmUserPhoneError]);
+
+    // Events for resendUserPhoneConfirm
+    useEffect(() => {
+      // Success
+      if (isResendUserPhoneConfirmLoaded) {
+        Notify("success", t(`Repeated SMS with confirmation code sent`));
+        dispatch(resetResendUserPhoneConfirmState());
+        dispatch(getProfile());
+      }
+
+      // Error
+      if (
+        isResendUserPhoneConfirmError &&
+        typeof isResendUserPhoneConfirmError.response?.data === "object"
+      ) {
+        if (isResendUserPhoneConfirmError?.response?.data) {
+          Object.entries(isResendUserPhoneConfirmError.response.data).forEach(
+            ([key, value]) => {
+              if (value) {
+                Notify("error", value.toString());
+              }
+            }
+          );
+        }
+        dispatch(resetResendUserPhoneConfirmState());
+      } else if (
+        typeof isResendUserPhoneConfirmError?.response?.data === "string"
+      ) {
+        Notify("error", isResendUserPhoneConfirmError.response.data.toString());
+        dispatch(resetResendUserPhoneConfirmState());
+      }
+    }, [isResendUserPhoneConfirmLoaded, isResendUserPhoneConfirmError]);
+
+    // Timer for Resend SMS Code
+    useEffect(() => {
+      if (!profile?.phones[0]?.last_sent_confirm) return;
+
+      const lastSentTime = new Date(
+        profile.phones[0].last_sent_confirm
+      ).getTime();
+
+      const updateTimer = () => {
+        const now = Date.now();
+        const diff = Math.floor((now - lastSentTime) / 1000);
+        setTimeLeft(Math.max(60 - diff, 0)); // 60 sec.
+      };
+
+      updateTimer();
+      const interval = setInterval(updateTimer, 1000);
+
+      return () => clearInterval(interval);
+    }, [profile]);
 
     return (
       <>
@@ -151,7 +220,7 @@ const UserPhoneField = forwardRef(
               autoComplete="off"
               placeholder={
                 Boolean(profile?.phones.length)
-                  ? profile.phones[0].phone
+                  ? profile?.phones[0]?.phone
                   : phone || "+1-123-456-8790"
               }
               label={t(`Phone No.`)}
@@ -170,7 +239,7 @@ const UserPhoneField = forwardRef(
 
         {profile?.phones.length && !profile.phones[0].status ? (
           <Grid container spacing={3} sx={{ mt: 4 }}>
-            <Grid item md={6} sm={6} xs={12}>
+            <Grid item md={3} sm={3} xs={12}>
               {/* SMS Code Input */}
               <TextField
                 fullWidth
@@ -188,6 +257,34 @@ const UserPhoneField = forwardRef(
                   ),
                 }}
               />
+            </Grid>
+            <Grid item md={2} sm={2} xs={12}>
+              <Tooltip
+                title={
+                  timeLeft !== null && timeLeft > 0
+                    ? t(`You can resend the SMS code in ${timeLeft} sec.`)
+                    : t(`Didn't receive the code? Click to resend`)
+                }
+              >
+                <span>
+                  <LoadingButton
+                    loading={isResendUserPhoneConfirmLoading}
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    onClick={handleClickResend}
+                    sx={{ mt: 2 }}
+                    disabled={
+                      (timeLeft !== null && timeLeft > 0) ||
+                      isConfirmUserPhoneLoading
+                    }
+                  >
+                    {timeLeft !== null && timeLeft > 0
+                      ? `${timeLeft} sec.`
+                      : t(`Resend SMS`)}
+                  </LoadingButton>
+                </span>
+              </Tooltip>
             </Grid>
           </Grid>
         ) : null}

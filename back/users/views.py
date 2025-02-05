@@ -355,7 +355,7 @@ class ResendUserPhoneConfirm(views.APIView):
         if confirm_sms_last:
 
             confirm_sms_count = queryset.count()
-            if confirm_sms_count > settings.MAX_RETRIES_CONFIRM_PHONE_SMS:
+            if confirm_sms_count >= settings.MAX_RETRIES_CONFIRM_PHONE_SMS:
                 return response.Response(
                     _("The SMS sending limit for this number has been reached"),
                     status=status.HTTP_400_BAD_REQUEST,

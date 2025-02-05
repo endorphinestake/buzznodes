@@ -30,20 +30,16 @@ import { IUpdateUserSerializer } from "@modules/users/interfaces";
 // ** MUI Imports
 import {
   Box,
-  Button,
   Card,
   CardContent,
   CardHeader,
   FormControl,
-  FormControlLabel,
   FormHelperText,
   Grid,
-  Switch,
   TextField,
-  Typography,
   InputAdornment,
 } from "@mui/material";
-import { EmailOutline, Phone, AccountOutline } from "mdi-material-ui";
+import { AccountOutline } from "mdi-material-ui";
 import { LoadingButton } from "@mui/lab";
 
 const SettingsPage = () => {
@@ -211,7 +207,6 @@ const SettingsPage = () => {
                       loading={
                         isProfileUpdateLoading ||
                         isCreateUserPhoneLoading ||
-                        isResendUserPhoneConfirmLoading ||
                         isConfirmUserPhoneLoading
                       }
                       size="large"
