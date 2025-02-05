@@ -39,6 +39,9 @@ class BlockchainAdmin(SortableAdminBase, admin.ModelAdmin):
     )
     list_filter = ("btype",)
 
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 @admin.register(BlockchainValidator)
 class BlockchainValidatorAdmin(admin.ModelAdmin):

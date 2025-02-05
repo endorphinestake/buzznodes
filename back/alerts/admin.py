@@ -9,11 +9,42 @@ from alerts.models import (
     AlertSettingComission,
     AlertSettingJailedStatus,
     AlertSettingTombstonedStatus,
+    UserAlertSettingVotingPower,
+    UserAlertSettingUptime,
+    UserAlertSettingComission,
+    UserAlertSettingJailedStatus,
+    UserAlertSettingTombstonedStatus,
 )
+
+
+class UserAlertSettingVotingPowerInline(admin.TabularInline):
+    model = UserAlertSettingVotingPower
+    extra = 0
+
+
+class UserAlertSettingUptimeInline(admin.TabularInline):
+    model = UserAlertSettingUptime
+    extra = 0
+
+
+class UserAlertSettingComissionInline(admin.TabularInline):
+    model = UserAlertSettingComission
+    extra = 0
+
+
+class UserAlertSettingTombstonedStatusInline(admin.TabularInline):
+    model = UserAlertSettingTombstonedStatus
+    extra = 0
+
+
+class UserAlertSettingJailedStatusInline(admin.TabularInline):
+    model = UserAlertSettingJailedStatus
+    extra = 0
 
 
 @admin.register(AlertSettingVotingPower)
 class AlertSettingVotingPowerAdmin(admin.ModelAdmin):
+    inlines = (UserAlertSettingVotingPowerInline,)
     list_display = (
         "__str__",
         "formatted_values",
@@ -52,6 +83,7 @@ class AlertSettingVotingPowerAdmin(admin.ModelAdmin):
 
 @admin.register(AlertSettingUptime)
 class AlertSettingUptimeAdmin(admin.ModelAdmin):
+    inlines = (UserAlertSettingUptimeInline,)
     list_display = (
         "__str__",
         "formatted_values",
@@ -90,6 +122,7 @@ class AlertSettingUptimeAdmin(admin.ModelAdmin):
 
 @admin.register(AlertSettingComission)
 class AlertSettingComissionAdmin(admin.ModelAdmin):
+    inlines = (UserAlertSettingComissionInline,)
     list_display = (
         "__str__",
         "formatted_values",
@@ -128,6 +161,7 @@ class AlertSettingComissionAdmin(admin.ModelAdmin):
 
 @admin.register(AlertSettingJailedStatus)
 class AlertSettingJailedAdmin(admin.ModelAdmin):
+    inlines = (UserAlertSettingJailedStatusInline,)
     list_display = (
         "__str__",
         "false_to_true",
@@ -160,6 +194,7 @@ class AlertSettingJailedAdmin(admin.ModelAdmin):
 
 @admin.register(AlertSettingTombstonedStatus)
 class AlertSettingTombstonedAdmin(admin.ModelAdmin):
+    inlines = (UserAlertSettingTombstonedStatusInline,)
     list_display = (
         "__str__",
         "false_to_true",
