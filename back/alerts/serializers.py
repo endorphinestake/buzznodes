@@ -220,3 +220,11 @@ class CreateUserAlertSettingSerializer(serializers.Serializer):
             )
         else:
             raise serializers.ValidationError(_("Unknown setting type."))
+
+
+class UpdateUserAlertSettingSerializer(serializers.Serializer):
+    user_setting_id = serializers.IntegerField(required=True)
+    setting_id = serializers.IntegerField(required=True)
+
+    def validate_setting_id(self, setting_id):
+        pass
