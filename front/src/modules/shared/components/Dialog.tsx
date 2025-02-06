@@ -46,8 +46,8 @@ const DialogComponent = (props: IProps) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
+          justifyContent: "left",
+          textAlign: "left",
         }}
       >
         {content}

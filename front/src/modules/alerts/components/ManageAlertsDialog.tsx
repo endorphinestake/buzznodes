@@ -1,9 +1,17 @@
 // ** React Imports
-import { memo, useState, useEffect, Fragment, SyntheticEvent } from "react";
+import {
+  memo,
+  useState,
+  useEffect,
+  Fragment,
+  SyntheticEvent,
+  ChangeEvent,
+} from "react";
 
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
 import { useAlertService } from "@hooks/useAlertService";
+import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces & Enums Imports
 import { EAlertType } from "@modules/alerts/enums";
@@ -18,7 +26,14 @@ import ConfirmDialog from "@modules/shared/components/ConfirmDialog";
 import {
   Tab,
   Typography,
+  Radio,
+  RadioGroup,
+  FormControl,
+  FormControlLabel,
+  Grid,
   Box,
+  Badge,
+  Chip,
   Switch,
   FormHelperText,
   InputLabel,
@@ -39,18 +54,9 @@ const ManageAlertsDialog = (props: IProps) => {
   // ** Props
   const { open, setOpen, blockchainValidator } = props;
 
-  // ** State
-  const [openDelete, setOpenDelete] = useState<boolean>(false);
-  const [currentTab, setCurrentTab] = useState<EAlertType>(
-    EAlertType.VOTING_POWER
-  );
-
-  const handleTabChange = (event: SyntheticEvent, newValue: EAlertType) => {
-    setCurrentTab(newValue);
-  };
-
   // ** Hooks
   const { t } = useTranslation();
+  const { symbol } = useDomain();
   const {
     dispatch,
     alertSettings,
@@ -67,6 +73,36 @@ const ManageAlertsDialog = (props: IProps) => {
     resetCreateUserAlertSettingState,
     resetUpdateOrDeleteUserAlertSettingState,
   } = useAlertService();
+
+  // ** State
+  const [openDelete, setOpenDelete] = useState<boolean>(false);
+  const [currentTab, setCurrentTab] = useState<EAlertType>(
+    EAlertType.VOTING_POWER
+  );
+  const [votingPowerSettingId, setVotingPowerSettingId] = useState<number>(
+    userAlertSettings[blockchainValidator.id]?.[EAlertType.VOTING_POWER]?.[0]
+      ?.setting_id || 0
+  );
+  const [uptimeSettingId, setUptimeSettingId] = useState<number>(
+    userAlertSettings[blockchainValidator.id]?.[EAlertType.UPTIME]?.[0]
+      ?.setting_id || 0
+  );
+  const [comissionSettingId, setComissionSettingId] = useState<number>(
+    userAlertSettings[blockchainValidator.id]?.[EAlertType.COMISSION]?.[0]
+      ?.setting_id || 0
+  );
+  const [jailedSettingId, setJailedSettingId] = useState<number>(
+    userAlertSettings[blockchainValidator.id]?.[EAlertType.JAILED]?.[0]
+      ?.setting_id || 0
+  );
+  const [tombstonedSettingId, setTombstonedSettingId] = useState<number>(
+    userAlertSettings[blockchainValidator.id]?.[EAlertType.TOMBSTONED]?.[0]
+      ?.setting_id || 0
+  );
+
+  const handleTabChange = (event: SyntheticEvent, newValue: EAlertType) => {
+    setCurrentTab(newValue);
+  };
 
   const handleClose = () => setOpen(false);
 
@@ -96,13 +132,7 @@ const ManageAlertsDialog = (props: IProps) => {
                   userAlertSettings[blockchainValidator.id]?.[
                     EAlertType.VOTING_POWER
                   ]?.[0] ? (
-                    userAlertSettings[blockchainValidator.id][
-                      EAlertType.VOTING_POWER
-                    ][0].is_confirmed === false ? (
-                      <BellAlert />
-                    ) : (
-                      <BellCheck />
-                    )
+                    <BellCheck />
                   ) : (
                     <BellPlus />
                   )
@@ -115,13 +145,7 @@ const ManageAlertsDialog = (props: IProps) => {
                   userAlertSettings[blockchainValidator.id]?.[
                     EAlertType.UPTIME
                   ]?.[0] ? (
-                    userAlertSettings[blockchainValidator.id][
-                      EAlertType.UPTIME
-                    ][0].is_confirmed === false ? (
-                      <BellAlert />
-                    ) : (
-                      <BellCheck />
-                    )
+                    <BellCheck />
                   ) : (
                     <BellPlus />
                   )
@@ -134,13 +158,7 @@ const ManageAlertsDialog = (props: IProps) => {
                   userAlertSettings[blockchainValidator.id]?.[
                     EAlertType.COMISSION
                   ]?.[0] ? (
-                    userAlertSettings[blockchainValidator.id][
-                      EAlertType.COMISSION
-                    ][0].is_confirmed === false ? (
-                      <BellAlert />
-                    ) : (
-                      <BellCheck />
-                    )
+                    <BellCheck />
                   ) : (
                     <BellPlus />
                   )
@@ -153,13 +171,7 @@ const ManageAlertsDialog = (props: IProps) => {
                   userAlertSettings[blockchainValidator.id]?.[
                     EAlertType.JAILED
                   ]?.[0] ? (
-                    userAlertSettings[blockchainValidator.id][
-                      EAlertType.JAILED
-                    ][0].is_confirmed === false ? (
-                      <BellAlert />
-                    ) : (
-                      <BellCheck />
-                    )
+                    <BellCheck />
                   ) : (
                     <BellPlus />
                   )
@@ -172,33 +184,77 @@ const ManageAlertsDialog = (props: IProps) => {
                   userAlertSettings[blockchainValidator.id]?.[
                     EAlertType.TOMBSTONED
                   ]?.[0] ? (
-                    userAlertSettings[blockchainValidator.id][
-                      EAlertType.TOMBSTONED
-                    ][0].is_confirmed === false ? (
-                      <BellAlert />
-                    ) : (
-                      <BellCheck />
-                    )
+                    <BellCheck />
                   ) : (
                     <BellPlus />
                   )
                 }
               />
             </TabList>
+
             <TabPanel
               value={EAlertType.VOTING_POWER}
-              sx={{ textAlign: "left", mt: 4 }}
+              sx={{ width: "100%", mt: 4 }}
             >
-              <Typography>
-                Cake apple pie chupa chups biscuit liquorice tootsie roll
-                liquorice sugar plum. Cotton candy wafer wafer jelly cake
-                caramels brownie gummies.
-              </Typography>
+              <Box>
+                <FormControl>
+                  <RadioGroup
+                    value={votingPowerSettingId}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      setVotingPowerSettingId(
+                        (event.target as HTMLInputElement).value
+                      )
+                    }
+                  >
+                    {alertSettings[EAlertType.VOTING_POWER].map(
+                      (alertSetting) => (
+                        <FormControlLabel
+                          key={alertSetting.id}
+                          value={alertSetting.id}
+                          control={<Radio />}
+                          label={
+                            <Fragment>
+                              <Typography>
+                                {/* will increase by */}
+                                {/* will decrease by */}
+                                {t(`will increase by`)}{" "}
+                                {Intl.NumberFormat("ru-RU").format(
+                                  alertSetting.value_from
+                                )}
+                                <Chip label={symbol} size="small" disabled />
+                              </Typography>
+                            </Fragment>
+                          }
+                        />
+                      )
+                    )}
+                    {alertSettings[EAlertType.VOTING_POWER].map(
+                      (alertSetting) => (
+                        <FormControlLabel
+                          key={alertSetting.id + 4}
+                          value={alertSetting.id + 4}
+                          control={<Radio />}
+                          label={
+                            <Fragment>
+                              <Typography>
+                                {/* will increase by */}
+                                {/* will decrease by */}
+                                {t(`will decrease by`)}{" "}
+                                {Intl.NumberFormat("ru-RU").format(
+                                  alertSetting.value_from
+                                )}
+                                <Chip label={symbol} size="small" disabled />
+                              </Typography>
+                            </Fragment>
+                          }
+                        />
+                      )
+                    )}
+                  </RadioGroup>
+                </FormControl>
+              </Box>
             </TabPanel>
-            <TabPanel
-              value={EAlertType.UPTIME}
-              sx={{ textAlign: "left", mt: 4 }}
-            >
+            <TabPanel value={EAlertType.UPTIME} sx={{ width: "100%", mt: 4 }}>
               <Typography>
                 Chocolate bar carrot cake candy canes sesame snaps. Cupcake pie
                 gummi bears jujubes candy canes. Chupa chups sesame snaps
@@ -207,7 +263,7 @@ const ManageAlertsDialog = (props: IProps) => {
             </TabPanel>
             <TabPanel
               value={EAlertType.COMISSION}
-              sx={{ textAlign: "left", mt: 4 }}
+              sx={{ width: "100%", mt: 4 }}
             >
               <Typography>
                 Danish tiramisu jujubes cupcake chocolate bar cake cheesecake
@@ -215,10 +271,7 @@ const ManageAlertsDialog = (props: IProps) => {
                 bears.
               </Typography>
             </TabPanel>
-            <TabPanel
-              value={EAlertType.JAILED}
-              sx={{ textAlign: "left", mt: 4 }}
-            >
+            <TabPanel value={EAlertType.JAILED} sx={{ width: "100%", mt: 4 }}>
               <Typography>
                 Danish tiramisu jujubes cupcake chocolate bar cake cheesecake
                 chupa chups. Macaroon ice cream tootsie roll carrot cake gummi
@@ -227,7 +280,7 @@ const ManageAlertsDialog = (props: IProps) => {
             </TabPanel>
             <TabPanel
               value={EAlertType.TOMBSTONED}
-              sx={{ textAlign: "left", mt: 4 }}
+              sx={{ width: "100%", mt: 4 }}
             >
               <Typography>
                 Danish tiramisu jujubes cupcake chocolate bar cake cheesecake

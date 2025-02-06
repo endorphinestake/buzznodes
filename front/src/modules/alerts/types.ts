@@ -42,7 +42,6 @@ type TUserAlertSettingBase = {
   setting_id: number;
   blockchain_validator_id: number;
   channels: EAlertChannel;
-  is_confirmed: boolean;
 };
 
 export type TUserAlertSettingVotingPower = TUserAlertSettingBase & {};

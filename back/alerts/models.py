@@ -1,6 +1,5 @@
 from multiselectfield import MultiSelectField
 
-from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -142,9 +141,6 @@ class UserAlertSettingBase(AlertSettingBase):
         choices=AlertSettingBase.Channels.choices,
         max_length=10,
         verbose_name=_("Alert Channel"),
-    )
-    is_confirmed = models.BooleanField(
-        default=settings.EMAIL_CONFIRM_FOR_NEW_USER_ALERT
     )
     sms_template = None
     voice_template = None

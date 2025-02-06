@@ -78,7 +78,6 @@ class UserAlertSettingVotingPowerSerializer(serializers.ModelSerializer):
             "id",
             "blockchain_validator_id",
             "channels",
-            "is_confirmed",
             "setting_id",
         )
 
@@ -90,7 +89,6 @@ class UserAlertSettingUptimeSerializer(serializers.ModelSerializer):
             "id",
             "blockchain_validator_id",
             "channels",
-            "is_confirmed",
             "setting_id",
         )
 
@@ -102,7 +100,6 @@ class UserAlertSettingComissionSerializer(serializers.ModelSerializer):
             "id",
             "blockchain_validator_id",
             "channels",
-            "is_confirmed",
             "setting_id",
         )
 
@@ -114,7 +111,6 @@ class UserAlertSettingJailedStatusSerializer(serializers.ModelSerializer):
             "id",
             "blockchain_validator_id",
             "channels",
-            "is_confirmed",
             "setting_id",
         )
 
@@ -126,7 +122,6 @@ class UserAlertSettingTombstonedStatusSerializer(serializers.ModelSerializer):
             "id",
             "blockchain_validator_id",
             "channels",
-            "is_confirmed",
             "setting_id",
         )
 

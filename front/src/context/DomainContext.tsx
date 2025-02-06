@@ -8,6 +8,7 @@ type DomainValue = {
   logo: ComponentType<any>;
   domain: string;
   name: string;
+  symbol: string;
 };
 
 const DEV_DOMAINS = {
@@ -16,12 +17,14 @@ const DEV_DOMAINS = {
     logo: CelestiaLogo,
     domain: "celestia.local.com",
     name: "Celestia Mainnet",
+    symbol: "TIA",
   },
   "celestia-testnet.local.com": {
     blockchainId: 3,
     logo: CelestiaLogo,
     domain: "celestia-testnet.local.com",
     name: "Celestia Testnet",
+    symbol: "TIA",
   },
 } as const as Record<string, DomainValue>;
 
@@ -31,12 +34,14 @@ const PROD_DOMAINS = {
     logo: CelestiaLogo,
     domain: "celestia.buzznodes.com",
     name: "Celestia Mainnet",
+    symbol: "TIA",
   },
   "celestia-testnet.buzznodes.com": {
     blockchainId: 2,
     logo: CelestiaLogo,
     domain: "celestia-testnet.buzznodes.com",
     name: "Celestia Testnet",
+    symbol: "TIA",
   },
 } as const as Record<string, DomainValue>;
 

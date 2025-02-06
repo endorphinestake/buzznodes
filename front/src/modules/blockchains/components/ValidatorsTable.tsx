@@ -157,24 +157,9 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
               }}
             >
               {userAlertSettings[row.id] ? (
-                userAlertSettings[row.id][EAlertType.VOTING_POWER]?.[0]
-                  ?.is_confirmed === false ||
-                userAlertSettings[row.id][EAlertType.UPTIME]?.[0]
-                  ?.is_confirmed === false ||
-                userAlertSettings[row.id][EAlertType.COMISSION]?.[0]
-                  ?.is_confirmed === false ||
-                userAlertSettings[row.id][EAlertType.JAILED]?.[0]
-                  ?.is_confirmed === false ||
-                userAlertSettings[row.id][EAlertType.TOMBSTONED]?.[0]
-                  ?.is_confirmed === false ? (
-                  <Tooltip title={t(`Alert setup not completed`)}>
-                    <BellAlert />
-                  </Tooltip>
-                ) : (
-                  <Tooltip title={t(`Managing Alert Settings`)}>
-                    <BellCheck />
-                  </Tooltip>
-                )
+                <Tooltip title={t(`Managing Alert Settings`)}>
+                  <BellCheck />
+                </Tooltip>
               ) : (
                 <BellPlus />
               )}
