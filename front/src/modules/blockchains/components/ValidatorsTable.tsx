@@ -8,29 +8,26 @@ import Link from "next/link";
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
 import { useBlockchainService } from "@hooks/useBlockchainService";
+import { useAlertService } from "@hooks/useAlertService";
 
 // ** Types & Interfaces
 import {
   IValidatorsTableProps,
   IValidatorsTableRow,
 } from "@modules/blockchains/interfaces";
+import { TBlockchainValidator } from "@modules/blockchains/types";
+import { EAlertType } from "@modules/alerts/enums";
 
 // ** Shared Components
+import ManageAlertsDialog from "@modules/alerts/components/ManageAlertsDialog";
 
 // ** MUI Imports
-import {
-  Box,
-  Card,
-  CardHeader,
-  Grid,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Box, Typography, IconButton, Tooltip } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import AddIcon from "@mui/icons-material/Add";
 import {
-  BellAlertOutline,
-  BellPlusOutline,
+  BellPlus,
+  BellCheck,
+  BellAlert,
   ChartAreaspline,
 } from "mdi-material-ui";
 
@@ -41,10 +38,13 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
   // ** Hooks
   const { t } = useTranslation();
   const { isBlockchainValidatorsLoading } = useBlockchainService();
+  const { userAlertSettings } = useAlertService();
 
   // ** State
   const [pageSize, setPageSize] = useState<number>(100);
-  const [isAlertShow, setIsAlertShow] = useState<boolean>(false);
+  const [selectedValidator, setSelectedValidator] =
+    useState<TBlockchainValidator>();
+  const [isAlertSettingShow, setIsAlertSettingShow] = useState<boolean>(false);
 
   // ** Vars
   const columns = [
@@ -147,8 +147,37 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
                 <ChartAreaspline />
               </IconButton>
             </Link>
-            <IconButton aria-label="capture screenshot" color="primary">
-              <BellPlusOutline />
+
+            <IconButton
+              aria-label="capture screenshot"
+              color="primary"
+              onClick={() => {
+                setSelectedValidator(row);
+                setIsAlertSettingShow(true);
+              }}
+            >
+              {userAlertSettings[row.id] ? (
+                userAlertSettings[row.id][EAlertType.VOTING_POWER]?.[0]
+                  ?.is_confirmed === false ||
+                userAlertSettings[row.id][EAlertType.UPTIME]?.[0]
+                  ?.is_confirmed === false ||
+                userAlertSettings[row.id][EAlertType.COMISSION]?.[0]
+                  ?.is_confirmed === false ||
+                userAlertSettings[row.id][EAlertType.JAILED]?.[0]
+                  ?.is_confirmed === false ||
+                userAlertSettings[row.id][EAlertType.TOMBSTONED]?.[0]
+                  ?.is_confirmed === false ? (
+                  <Tooltip title={t(`Alert setup not completed`)}>
+                    <BellAlert />
+                  </Tooltip>
+                ) : (
+                  <Tooltip title={t(`Managing Alert Settings`)}>
+                    <BellCheck />
+                  </Tooltip>
+                )
+              ) : (
+                <BellPlus />
+              )}
             </IconButton>
           </Fragment>
         );
@@ -157,26 +186,35 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
   ];
 
   return (
-    <DataGrid
-      sx={{ p: 3 }}
-      autoHeight
-      disableSelectionOnClick
-      columns={columns}
-      pageSize={pageSize}
-      rowsPerPageOptions={[25, 50, 100, 500]}
-      loading={isBlockchainValidatorsLoading}
-      rows={validators}
-      onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-      disableColumnMenu
-      localeText={{
-        noRowsLabel: t(`No rows`),
-      }}
-      initialState={{
-        sorting: {
-          sortModel: [{ field: "rank", sort: "asc" }],
-        },
-      }}
-    />
+    <Fragment>
+      <DataGrid
+        sx={{ p: 3 }}
+        autoHeight
+        disableSelectionOnClick
+        columns={columns}
+        pageSize={pageSize}
+        rowsPerPageOptions={[25, 50, 100, 500]}
+        loading={isBlockchainValidatorsLoading}
+        rows={validators}
+        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+        disableColumnMenu
+        localeText={{
+          noRowsLabel: t(`No rows`),
+        }}
+        initialState={{
+          sorting: {
+            sortModel: [{ field: "rank", sort: "asc" }],
+          },
+        }}
+      />
+      {selectedValidator ? (
+        <ManageAlertsDialog
+          open={isAlertSettingShow}
+          setOpen={setIsAlertSettingShow}
+          blockchainValidator={selectedValidator}
+        />
+      ) : null}
+    </Fragment>
   );
 };
 

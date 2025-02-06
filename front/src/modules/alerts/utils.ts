@@ -15,6 +15,8 @@ type TUserAlertSettingBase =
   | TUserAlertSettingJailedStatus
   | TUserAlertSettingTombstonedStatus;
 
+type EAlertTypeWithoutAny = Exclude<EAlertType, EAlertType.ANY>;
+
 export const groupByValidatorId = (data: TUserAlertSettingsResponse) => {
   const result: Record<number, Partial<TUserAlertSettingsResponse>> = {};
 
@@ -31,8 +33,10 @@ export const groupByValidatorId = (data: TUserAlertSettingsResponse) => {
         };
       }
 
-      result[validatorId][key as EAlertType] ??= [];
-      result[validatorId][key as EAlertType]!.push(alert);
+      if (key !== EAlertType.ANY) {
+        result[validatorId][key as EAlertTypeWithoutAny] ??= [];
+        result[validatorId][key as EAlertTypeWithoutAny]!.push(alert);
+      }
     });
   });
 

@@ -131,33 +131,36 @@ const HomePage = () => {
   }
 
   // filter by AlertType
-  if (blockchainValidators.length > 0) {
+  if (blockchainValidators.length > 0 && userAlertSettings) {
     filteredValidators = filteredValidators.filter((item) => {
       switch (alertType) {
         case EAlertType.VOTING_POWER:
           return (
-            userAlertSettings[item.id] &&
-            userAlertSettings[item.id][EAlertType.VOTING_POWER].length
+            Array.isArray(
+              userAlertSettings[item.id]?.[EAlertType.VOTING_POWER]
+            ) &&
+            userAlertSettings[item.id]![EAlertType.VOTING_POWER]!.length > 0
           );
         case EAlertType.UPTIME:
           return (
-            userAlertSettings[item.id] &&
-            userAlertSettings[item.id][EAlertType.UPTIME].length
+            Array.isArray(userAlertSettings[item.id]?.[EAlertType.UPTIME]) &&
+            userAlertSettings[item.id]![EAlertType.UPTIME]!.length > 0
           );
         case EAlertType.COMISSION:
           return (
-            userAlertSettings[item.id] &&
-            userAlertSettings[item.id][EAlertType.COMISSION].length
+            Array.isArray(userAlertSettings[item.id]?.[EAlertType.COMISSION]) &&
+            userAlertSettings[item.id]![EAlertType.COMISSION]!.length > 0
           );
         case EAlertType.JAILED:
           return (
-            userAlertSettings[item.id] &&
-            userAlertSettings[item.id][EAlertType.JAILED].length
+            Array.isArray(userAlertSettings[item.id]?.[EAlertType.JAILED]) &&
+            userAlertSettings[item.id]![EAlertType.JAILED]!.length > 0
           );
         case EAlertType.TOMBSTONED:
           return (
-            userAlertSettings[item.id] &&
-            userAlertSettings[item.id][EAlertType.TOMBSTONED].length
+            Array.isArray(
+              userAlertSettings[item.id]?.[EAlertType.TOMBSTONED]
+            ) && userAlertSettings[item.id]![EAlertType.TOMBSTONED]!.length > 0
           );
         default:
           return true;
@@ -174,8 +177,6 @@ const HomePage = () => {
       );
     });
   }
-
-  console.log("userAlertSettings: ", userAlertSettings);
 
   return (
     <div className={styles.container}>
