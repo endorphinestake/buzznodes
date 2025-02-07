@@ -7,3 +7,11 @@ export interface IManageUserAlertSetting {
   channel: EAlertChannel;
   is_delete: boolean;
 }
+
+export interface IManageUserAlertsButtonProps {
+  handleSaveAlerts: () => void;
+  handleClearAlerts: () => void;
+  handleDeleteAlerts: () => void;
+  isDisabledSave: boolean;
+  isCanDelete: boolean;
+}

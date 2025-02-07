@@ -1,5 +1,11 @@
 import { EAlertType } from "@modules/alerts/enums";
 import {
+  TAlertSettingVotingPower,
+  TAlertSettingUptime,
+  TAlertSettingComission,
+  TAlertSettingJailedStatus,
+  TAlertSettingTombstonedStatus,
+  TAlertSettingBondedStatus,
   TUserAlertSettingsResponse,
   TUserAlertSettingVotingPower,
   TUserAlertSettingUptime,
@@ -44,4 +50,12 @@ export const groupByValidatorId = (data: TUserAlertSettingsResponse) => {
   });
 
   return result;
+};
+
+export const getSettingVotingPowerByUserSettings = (
+  settings: TAlertSettingVotingPower[],
+  userSettings: TUserAlertSettingVotingPower[]
+): TAlertSettingVotingPower | undefined => {
+  const userSettingIds = userSettings.map((item) => item.setting_id) ?? [];
+  return settings.find((setting) => userSettingIds.includes(setting.id));
 };

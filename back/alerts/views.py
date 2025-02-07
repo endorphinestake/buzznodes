@@ -7,6 +7,7 @@ from alerts.models import (
     AlertSettingComission,
     AlertSettingJailedStatus,
     AlertSettingTombstonedStatus,
+    AlertSettingBondedStatus,
 )
 from alerts.serializers import (
     AlertSettingVotingPowerSerializer,
@@ -14,11 +15,13 @@ from alerts.serializers import (
     AlertSettingComissionSerializer,
     AlertSettingJailedStatusSerializer,
     AlertSettingTombstonedStatusSerializer,
+    AlertSettingBondedStatusSerializer,
     UserAlertSettingVotingPowerSerializer,
     UserAlertSettingUptimeSerializer,
     UserAlertSettingComissionSerializer,
     UserAlertSettingJailedStatusSerializer,
     UserAlertSettingTombstonedStatusSerializer,
+    UserAlertSettingBondedStatusSerializer,
     ManageUserAlertSettingSerializer,
 )
 
@@ -50,6 +53,11 @@ class AlertSettingsView(views.APIView):
             tombstoned_settings, many=True
         )
 
+        bonded_settings = AlertSettingBondedStatus.objects.filter(status=True)
+        bonded_serializer = AlertSettingBondedStatusSerializer(
+            bonded_settings, many=True
+        )
+
         return response.Response(
             {
                 AlertSettingBase.AlertType.VOTING_POWER: voting_power_serializer.data,
@@ -57,6 +65,7 @@ class AlertSettingsView(views.APIView):
                 AlertSettingBase.AlertType.COMISSION: comission_serializer.data,
                 AlertSettingBase.AlertType.JAILED: jailed_serializer.data,
                 AlertSettingBase.AlertType.TOMBSTONED: tombstoned_serializer.data,
+                AlertSettingBase.AlertType.BONDED: bonded_serializer.data,
             },
             status=status.HTTP_200_OK,
         )

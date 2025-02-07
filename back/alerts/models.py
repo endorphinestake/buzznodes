@@ -24,8 +24,16 @@ class AlertSettingBase(models.Model):
     channels = MultiSelectField(
         choices=Channels.choices, max_length=10, verbose_name=_("Alert Channels")
     )
-    template_increase = models.TextField(verbose_name=_("Text Template for increase"))
-    template_decraease = models.TextField(verbose_name=_("Text Template for decrease"))
+    template_increase = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_("Text Template for increase (False to True)"),
+    )
+    template_decraease = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_("Text Template for decrease (True to False)"),
+    )
     status = models.BooleanField(default=True, verbose_name=_("Enabled"))
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))

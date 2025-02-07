@@ -8,11 +8,13 @@ from alerts.models import (
     AlertSettingComission,
     AlertSettingJailedStatus,
     AlertSettingTombstonedStatus,
+    AlertSettingBondedStatus,
     UserAlertSettingVotingPower,
     UserAlertSettingUptime,
     UserAlertSettingComission,
     UserAlertSettingJailedStatus,
     UserAlertSettingTombstonedStatus,
+    UserAlertSettingBondedStatus,
 )
 from blockchains.models import BlockchainValidator
 
@@ -68,6 +70,17 @@ class AlertSettingTombstonedStatusSerializer(serializers.ModelSerializer):
         )
 
 
+class AlertSettingBondedStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AlertSettingBondedStatus
+        fields = (
+            "id",
+            "channels",
+            "false_to_true",
+            "true_to_false",
+        )
+
+
 class UserAlertSettingVotingPowerSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserAlertSettingVotingPower
@@ -115,6 +128,17 @@ class UserAlertSettingJailedStatusSerializer(serializers.ModelSerializer):
 class UserAlertSettingTombstonedStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserAlertSettingTombstonedStatus
+        fields = (
+            "id",
+            "blockchain_validator_id",
+            "channels",
+            "setting_id",
+        )
+
+
+class UserAlertSettingBondedStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAlertSettingBondedStatus
         fields = (
             "id",
             "blockchain_validator_id",
