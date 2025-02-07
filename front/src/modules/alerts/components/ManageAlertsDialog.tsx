@@ -551,9 +551,9 @@ const ManageAlertsDialog = (props: IProps) => {
             </TabPanel>
             <TabPanel value={EAlertType.UPTIME} sx={{ width: "100%", mt: 4 }}>
               <Typography>
-                Chocolate bar carrot cake candy canes sesame snaps. Cupcake pie
-                gummi bears jujubes candy canes. Chupa chups sesame snaps
-                halvah.
+                Danish tiramisu jujubes cupcake chocolate bar cake cheesecake
+                chupa chups. Macaroon ice cream tootsie roll carrot cake gummi
+                bears.
               </Typography>
             </TabPanel>
             <TabPanel
