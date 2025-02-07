@@ -16,8 +16,7 @@ import {
 export type TAlertState = {
   fetchAlertSettings: Function;
   fetchUserAlertSettings: Function;
-  createUserAlertSetting: Function;
-  updateOrDeleteUserAlertSetting: Function;
+  manageUserAlertSetting: Function;
 
   isAlertSettingsLoading: boolean;
   isAlertSettingsLoaded: boolean;
@@ -29,20 +28,15 @@ export type TAlertState = {
   isUserAlertSettingsError: any;
   userAlertSettings: Record<number, Partial<TUserAlertSettingsResponse>>;
 
-  isCreatingUserAlertSettingLoading: boolean;
-  isCreatingUserAlertSettingLoaded: boolean;
-  isCreatingUserAlertSettingError: any;
-
-  isUpdatingOrDeletingUserAlertSettingLoading: boolean;
-  isUpdatingOrDeletingUserAlertSettingLoaded: boolean;
-  isUpdatingOrDeletingUserAlertSettingError: any;
+  isManageUserAlertSettingLoading: boolean;
+  isManageUserAlertSettingLoaded: boolean;
+  isManageUserAlertSettingError: any;
 };
 
 const initialState: TAlertState = {
   fetchAlertSettings: AlertService.fetchAlertSettings,
   fetchUserAlertSettings: AlertService.fetchUserAlertSettings,
-  createUserAlertSetting: AlertService.createUserAlertSetting,
-  updateOrDeleteUserAlertSetting: AlertService.updateOrDeleteUserAlertSetting,
+  manageUserAlertSetting: AlertService.manageUserAlertSetting,
 
   isAlertSettingsLoading: false,
   isAlertSettingsLoaded: false,
@@ -54,13 +48,9 @@ const initialState: TAlertState = {
   isUserAlertSettingsError: null,
   userAlertSettings: {} as Record<number, Partial<TUserAlertSettingsResponse>>,
 
-  isCreatingUserAlertSettingLoading: false,
-  isCreatingUserAlertSettingLoaded: false,
-  isCreatingUserAlertSettingError: null,
-
-  isUpdatingOrDeletingUserAlertSettingLoading: false,
-  isUpdatingOrDeletingUserAlertSettingLoaded: false,
-  isUpdatingOrDeletingUserAlertSettingError: null,
+  isManageUserAlertSettingLoading: false,
+  isManageUserAlertSettingLoaded: false,
+  isManageUserAlertSettingError: null,
 };
 
 export const AlertSlice = createSlice({
@@ -75,13 +65,9 @@ export const AlertSlice = createSlice({
       state.isUserAlertSettingsLoaded = false;
       state.isUserAlertSettingsError = null;
     },
-    resetCreateUserAlertSettingState(state) {
-      state.isCreatingUserAlertSettingLoaded = false;
-      state.isCreatingUserAlertSettingError = null;
-    },
-    resetUpdateOrDeleteUserAlertSettingState(state) {
-      state.isUpdatingOrDeletingUserAlertSettingLoaded = false;
-      state.isUpdatingOrDeletingUserAlertSettingError = null;
+    resetManageUserAlertSettingState(state) {
+      state.isManageUserAlertSettingLoaded = false;
+      state.isManageUserAlertSettingError = null;
     },
   },
   extraReducers: (builder) => {
@@ -140,51 +126,27 @@ export const AlertSlice = createSlice({
       }
     );
 
-    // ** createUserAlertSetting
+    // ** manageUserAlertSetting
     builder.addCase(
-      AlertService.createUserAlertSetting.pending,
+      AlertService.manageUserAlertSetting.pending,
       (state, action) => {
-        state.isCreatingUserAlertSettingLoading = true;
-        state.isCreatingUserAlertSettingLoaded = false;
-        state.isCreatingUserAlertSettingError = null;
+        state.isManageUserAlertSettingLoading = true;
+        state.isManageUserAlertSettingLoaded = false;
+        state.isManageUserAlertSettingError = null;
       }
     );
     builder.addCase(
-      AlertService.createUserAlertSetting.fulfilled,
+      AlertService.manageUserAlertSetting.fulfilled,
       (state, action) => {
-        state.isCreatingUserAlertSettingLoading = false;
-        state.isCreatingUserAlertSettingLoaded = true;
+        state.isManageUserAlertSettingLoading = false;
+        state.isManageUserAlertSettingLoaded = true;
       }
     );
     builder.addCase(
-      AlertService.createUserAlertSetting.rejected,
+      AlertService.manageUserAlertSetting.rejected,
       (state, action) => {
-        state.isCreatingUserAlertSettingLoading = false;
-        state.isCreatingUserAlertSettingError = action.payload;
-      }
-    );
-
-    // ** updateOrDeleteUserAlertSetting
-    builder.addCase(
-      AlertService.updateOrDeleteUserAlertSetting.pending,
-      (state, action) => {
-        state.isUpdatingOrDeletingUserAlertSettingLoading = true;
-        state.isUpdatingOrDeletingUserAlertSettingLoaded = false;
-        state.isUpdatingOrDeletingUserAlertSettingError = null;
-      }
-    );
-    builder.addCase(
-      AlertService.updateOrDeleteUserAlertSetting.fulfilled,
-      (state, action) => {
-        state.isUpdatingOrDeletingUserAlertSettingLoading = false;
-        state.isUpdatingOrDeletingUserAlertSettingLoaded = true;
-      }
-    );
-    builder.addCase(
-      AlertService.updateOrDeleteUserAlertSetting.rejected,
-      (state, action) => {
-        state.isUpdatingOrDeletingUserAlertSettingLoading = false;
-        state.isUpdatingOrDeletingUserAlertSettingError = action.payload;
+        state.isManageUserAlertSettingLoading = false;
+        state.isManageUserAlertSettingError = action.payload;
       }
     );
   },

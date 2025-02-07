@@ -43,32 +43,14 @@ export class AlertService {
     }
   );
 
-  // ** createUserAlertSetting
-  static createUserAlertSetting = createAsyncThunk(
-    "AlertService/createUserAlertSetting",
+  // ** manageUserAlertSetting
+  static manageUserAlertSetting = createAsyncThunk(
+    "AlertService/manageUserAlertSetting",
     async (payload: IManageUserAlertSetting[], redux: IRedux) => {
       try {
         const { data } = await axiosInstance({
           url: "/api/alerts/user-settings/manage/",
           method: "POST",
-          data: payload,
-        });
-
-        return data;
-      } catch (error) {
-        return redux.rejectWithValue(error);
-      }
-    }
-  );
-
-  // ** updateOrDeleteUserAlertSetting
-  static updateOrDeleteUserAlertSetting = createAsyncThunk(
-    "AlertService/updateOrDeleteUserAlertSetting",
-    async (payload: IManageUserAlertSetting, redux: IRedux) => {
-      try {
-        const { data } = await axiosInstance({
-          url: "/api/alerts/user-settings/manage/",
-          method: "PUT",
           data: payload,
         });
 

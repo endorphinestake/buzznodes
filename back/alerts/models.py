@@ -159,6 +159,7 @@ class UserAlertSettingVotingPower(UserAlertSettingBase):
         related_name="alert_setting_voting_power_user_settings",
     )
     current_value = models.IntegerField(verbose_name=_("Current Value"))
+    next_value = models.IntegerField(verbose_name=_("Next Value"))
 
     class Meta:
         verbose_name = _("User Alert Setting Voting Power")
@@ -189,6 +190,11 @@ class UserAlertSettingUptime(UserAlertSettingBase):
         max_digits=5,
         decimal_places=2,
         verbose_name=_("Current Value"),
+    )
+    next_value = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        verbose_name=_("Next Value"),
     )
 
     class Meta:
@@ -221,6 +227,11 @@ class UserAlertSettingComission(UserAlertSettingBase):
         decimal_places=2,
         verbose_name=_("Current Value"),
     )
+    next_value = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        verbose_name=_("Next Value"),
+    )
 
     class Meta:
         verbose_name = _("User Alert Setting Comission")
@@ -248,6 +259,7 @@ class UserAlertSettingJailedStatus(UserAlertSettingBase):
         related_name="alert_setting_jailed_status_user_settings",
     )
     current_value = models.BooleanField(default=False)
+    next_value = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = _("User Alert Setting Jailed Status")
@@ -277,6 +289,7 @@ class UserAlertSettingTombstonedStatus(UserAlertSettingBase):
         related_name="alert_setting_tombstoned_status_user_settings",
     )
     current_value = models.BooleanField(default=False)
+    next_value = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = _("User Alert Setting Tombstoned Status")
@@ -306,6 +319,7 @@ class UserAlertSettingBondedStatus(UserAlertSettingBase):
         related_name="alert_setting_bonded_status_user_settings",
     )
     current_value = models.BooleanField(default=False)
+    next_value = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = _("User Alert Setting Bonded Status")

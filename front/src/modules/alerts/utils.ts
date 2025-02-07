@@ -1,11 +1,5 @@
 import { EAlertType } from "@modules/alerts/enums";
 import {
-  TAlertSettingVotingPower,
-  TAlertSettingUptime,
-  TAlertSettingComission,
-  TAlertSettingJailedStatus,
-  TAlertSettingTombstonedStatus,
-  TAlertSettingBondedStatus,
   TUserAlertSettingsResponse,
   TUserAlertSettingVotingPower,
   TUserAlertSettingUptime,
@@ -60,7 +54,8 @@ export const getSettingByUserSettings = <
   userSettings: TUserSetting[]
 ): TSetting | undefined => {
   const userSettingIds = userSettings.map((item) => item.setting_id);
-  return settings.find((setting) => userSettingIds.includes(setting.id));
+  const found = settings.find((setting) => userSettingIds.includes(setting.id));
+  return found;
 };
 
 export const getUserSettingBySettings = <
@@ -75,17 +70,3 @@ export const getUserSettingBySettings = <
     settingIds.includes(userSetting.setting_id)
   );
 };
-
-// export const getUserSettingBySettingId = <TSetting extends { id: number }>(
-//   settings: TSetting[],
-//   settingId: number
-// ): TSetting | undefined => {
-//   return settings.find((setting) => setting.id === settingId);
-// };
-
-// export const getUserSettingBySettingId = <TSetting extends { id: number }>(
-//   settings: TSetting[],
-//   settingId: number
-// ): TSetting | undefined => {
-//   return settings.find((setting) => setting.id === settingId);
-// };

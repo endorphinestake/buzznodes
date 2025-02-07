@@ -71,29 +71,18 @@ const ManageAlertsDialog = (props: IProps) => {
   const {
     dispatch,
     fetchUserAlertSettings,
-    createUserAlertSetting,
-    updateOrDeleteUserAlertSetting,
-
-    isCreatingUserAlertSettingLoading,
-    isCreatingUserAlertSettingLoaded,
-    isCreatingUserAlertSettingError,
-
-    isUpdatingOrDeletingUserAlertSettingLoading,
-    isUpdatingOrDeletingUserAlertSettingLoaded,
-    isUpdatingOrDeletingUserAlertSettingError,
-
-    resetCreateUserAlertSettingState,
-    resetUpdateOrDeleteUserAlertSettingState,
-
+    manageUserAlertSetting,
+    isManageUserAlertSettingLoading,
+    isManageUserAlertSettingLoaded,
+    isManageUserAlertSettingError,
+    resetManageUserAlertSettingState,
     alertSettings,
     userAlertSettings,
   } = useAlertService();
 
   if (!alertSettings) return <></>;
 
-  // ** Vars
-
-  // VotingPower
+  // ** VotingPower State
   const increasedVotingPowerSettings = alertSettings[EAlertType.VOTING_POWER]
     .filter((item) => item.value > 0)
     .sort((a, b) => a.value - b.value);
@@ -112,6 +101,45 @@ const ManageAlertsDialog = (props: IProps) => {
     userAlertSettings[blockchainValidator.id]?.[EAlertType.VOTING_POWER] || []
   );
 
+  // ** State
+  const [currentTab, setCurrentTab] = useState<EAlertType>(
+    EAlertType.VOTING_POWER
+  );
+  const [votingPowerIncreasedSetting, setVotingPowerIncreasedSetting] =
+    useState<TAlertSettingVotingPower | undefined>(undefined);
+  const [votingPowerDecreasedSetting, setVotingPowerDecreasedSetting] =
+    useState<TAlertSettingVotingPower | undefined>(undefined);
+  const [votingPowerIncreasedChannel, setVotingPowerIncreasedChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
+  const [votingPowerDecreasedChannel, setVotingPowerDecreasedChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
+
+  useEffect(() => {
+    const increasedSetting = getSettingByUserSettings(
+      increasedVotingPowerSettings,
+      votingPowerIncreasedUserSetting ? [votingPowerIncreasedUserSetting] : []
+    );
+    setVotingPowerIncreasedSetting(increasedSetting);
+
+    const decreasedSetting = getSettingByUserSettings(
+      decreasedVotingPowerSettings,
+      votingPowerDecreasedUserSetting ? [votingPowerDecreasedUserSetting] : []
+    );
+    setVotingPowerDecreasedSetting(decreasedSetting);
+
+    setVotingPowerIncreasedChannel(
+      votingPowerIncreasedUserSetting?.channels ||
+        increasedSetting?.channels?.[0] ||
+        EAlertChannel.SMS
+    );
+
+    setVotingPowerDecreasedChannel(
+      votingPowerDecreasedUserSetting?.channels ||
+        decreasedSetting?.channels?.[0] ||
+        EAlertChannel.SMS
+    );
+  }, [open]);
+
   // Uptime
   const increasedUptimeSettings = alertSettings[EAlertType.UPTIME]
     .filter((item) => item.value > 0)
@@ -120,63 +148,6 @@ const ManageAlertsDialog = (props: IProps) => {
   const decreasedUptimeSettings = alertSettings[EAlertType.UPTIME]
     .filter((item) => item.value < 0)
     .sort((a, b) => b.value - a.value);
-
-  // ** State
-  const [currentTab, setCurrentTab] = useState<EAlertType>(
-    EAlertType.VOTING_POWER
-  );
-  const [votingPowerIncreasedSetting, setVotingPowerIncreasedSetting] =
-    useState<TAlertSettingVotingPower | undefined>(
-      getSettingByUserSettings(
-        increasedVotingPowerSettings,
-        [votingPowerIncreasedUserSetting ?? []].flat()
-      )
-    );
-  const [votingPowerDecreasedSetting, setVotingPowerDecreasedSetting] =
-    useState<TAlertSettingVotingPower | undefined>(
-      getSettingByUserSettings(
-        decreasedVotingPowerSettings,
-        userAlertSettings[blockchainValidator.id]?.[EAlertType.VOTING_POWER] ||
-          []
-      )
-    );
-  const [votingPowerIncreasedChannel, setVotingPowerIncreasedChannel] =
-    useState<EAlertChannel>(
-      votingPowerIncreasedUserSetting?.channels ||
-        votingPowerIncreasedSetting?.channels?.[0] ||
-        EAlertChannel.SMS
-    );
-
-  const [votingPowerDecreasedChannel, setVotingPowerDecreasedChannel] =
-    useState<EAlertChannel>(
-      votingPowerDecreasedUserSetting?.channels ||
-        votingPowerDecreasedSetting?.channels?.[0] ||
-        EAlertChannel.SMS
-    );
-
-  // const [uptimeSettingId, setUptimeSettingId] = useState<number>(
-  //   userAlertSettings[blockchainValidator.id]?.[EAlertType.UPTIME]?.[0]
-  //     ?.setting_id || 0
-  // );
-  // const [comissionSettingId, setComissionSettingId] = useState<number>(
-  //   userAlertSettings[blockchainValidator.id]?.[EAlertType.COMISSION]?.[0]
-  //     ?.setting_id || 0
-  // );
-  // const [jailedSettingId, setJailedSettingId] = useState<number>(
-  //   userAlertSettings[blockchainValidator.id]?.[EAlertType.JAILED]?.[0]
-  //     ?.setting_id || 0
-  // );
-  // const [tombstonedSettingId, setTombstonedSettingId] = useState<number>(
-  //   userAlertSettings[blockchainValidator.id]?.[EAlertType.TOMBSTONED]?.[0]
-  //     ?.setting_id || 0
-  // );
-  // const [bondedSettingId, setBondedSettingId] = useState<number>(
-  //   userAlertSettings[blockchainValidator.id]?.[EAlertType.BONDED]?.[0]
-  //     ?.setting_id || 0
-  // );
-
-  // ** Vars2
-  // const  alertSettings.find((item) => item.id === idToFind)
 
   // ** Handlers
   const handleTabChange = (event: SyntheticEvent, newValue: EAlertType) => {
@@ -190,31 +161,25 @@ const ManageAlertsDialog = (props: IProps) => {
       case EAlertType.VOTING_POWER:
         console.log("todo save voting power...");
 
-        // // Update
-        // if() {
-
-        //   // Create
-        // } else {
-
-        // }
-
         let payload = [
           votingPowerIncreasedSetting &&
             votingPowerIncreasedChannel && {
               blockchain_validator_id: blockchainValidator.id,
               setting_id: votingPowerIncreasedSetting.id,
+              user_setting_id: votingPowerIncreasedUserSetting?.id,
               channel: votingPowerIncreasedChannel,
             },
           votingPowerDecreasedSetting &&
             votingPowerDecreasedChannel && {
               blockchain_validator_id: blockchainValidator.id,
               setting_id: votingPowerDecreasedSetting.id,
+              user_setting_id: votingPowerDecreasedUserSetting?.id,
               channel: votingPowerDecreasedChannel,
             },
         ].filter(Boolean);
 
         if (payload.length) {
-          dispatch(createUserAlertSetting(payload));
+          dispatch(manageUserAlertSetting(payload));
         } else {
           Notify("warning", t("Parameter not selected!"));
         }
@@ -289,7 +254,8 @@ const ManageAlertsDialog = (props: IProps) => {
         ].filter(Boolean);
 
         if (payload.length) {
-          dispatch(updateOrDeleteUserAlertSetting(payload));
+          dispatch(manageUserAlertSetting(payload));
+          handleClearAlerts();
         } else {
           Notify("warning", t("Parameter not selected!"));
         }
@@ -317,19 +283,19 @@ const ManageAlertsDialog = (props: IProps) => {
   // Events for createUserAlertSetting
   useEffect(() => {
     // Success
-    if (isCreatingUserAlertSettingLoaded) {
+    if (isManageUserAlertSettingLoaded) {
       Notify("info", t(`Alert settings saved successfully!`));
-      dispatch(resetCreateUserAlertSettingState());
+      dispatch(resetManageUserAlertSettingState());
       dispatch(fetchUserAlertSettings());
     }
 
     // Error
     if (
-      isCreatingUserAlertSettingError &&
-      typeof isCreatingUserAlertSettingError.response?.data === "object"
+      isManageUserAlertSettingError &&
+      typeof isManageUserAlertSettingError.response?.data === "object"
     ) {
-      if (isCreatingUserAlertSettingError?.response?.data) {
-        Object.entries(isCreatingUserAlertSettingError.response.data).forEach(
+      if (isManageUserAlertSettingError?.response?.data) {
+        Object.entries(isManageUserAlertSettingError.response.data).forEach(
           ([key, value]) => {
             if (value) {
               Notify("error", value.toString());
@@ -337,61 +303,24 @@ const ManageAlertsDialog = (props: IProps) => {
           }
         );
       }
-      dispatch(resetCreateUserAlertSettingState());
+      dispatch(resetManageUserAlertSettingState());
     } else if (
-      typeof isCreatingUserAlertSettingError?.response?.data === "string"
+      typeof isManageUserAlertSettingError?.response?.data === "string"
     ) {
-      Notify("error", isCreatingUserAlertSettingError.response.data.toString());
-      dispatch(resetCreateUserAlertSettingState());
+      Notify("error", isManageUserAlertSettingError.response.data.toString());
+      dispatch(resetManageUserAlertSettingState());
     }
-  }, [isCreatingUserAlertSettingLoaded, isCreatingUserAlertSettingError]);
-
-  // Events for updateOrDeleteUserAlertSetting
-  useEffect(() => {
-    // Success
-    if (isUpdatingOrDeletingUserAlertSettingLoaded) {
-      Notify("info", t(`Alert settings changed successfully!`));
-      dispatch(resetUpdateOrDeleteUserAlertSettingState());
-      dispatch(fetchUserAlertSettings());
-    }
-
-    // Error
-    if (
-      isUpdatingOrDeletingUserAlertSettingError &&
-      typeof isUpdatingOrDeletingUserAlertSettingError.response?.data ===
-        "object"
-    ) {
-      if (isUpdatingOrDeletingUserAlertSettingError?.response?.data) {
-        Object.entries(
-          isUpdatingOrDeletingUserAlertSettingError.response.data
-        ).forEach(([key, value]) => {
-          if (value) {
-            Notify("error", value.toString());
-          }
-        });
-      }
-      dispatch(resetUpdateOrDeleteUserAlertSettingState());
-    } else if (
-      typeof isUpdatingOrDeletingUserAlertSettingError?.response?.data ===
-      "string"
-    ) {
-      Notify(
-        "error",
-        isUpdatingOrDeletingUserAlertSettingError.response.data.toString()
-      );
-      dispatch(resetUpdateOrDeleteUserAlertSettingState());
-    }
-  }, [
-    isUpdatingOrDeletingUserAlertSettingLoaded,
-    isUpdatingOrDeletingUserAlertSettingError,
-  ]);
+  }, [isManageUserAlertSettingLoaded, isManageUserAlertSettingError]);
 
   return (
     <Fragment>
       <DialogComponent
         open={open}
         setOpen={setOpen}
-        handleClose={handleClose}
+        handleClose={() => {
+          handleClearAlerts();
+          handleClose();
+        }}
         title={t("Manage Alerts for «{{moniker}}»", {
           moniker: blockchainValidator.moniker || "",
         })}
@@ -494,7 +423,9 @@ const ManageAlertsDialog = (props: IProps) => {
                       <FormControl>
                         <RadioGroup
                           value={
-                            JSON.stringify(votingPowerIncreasedSetting) || ""
+                            votingPowerIncreasedSetting
+                              ? JSON.stringify(votingPowerIncreasedSetting)
+                              : ""
                           }
                           onChange={(event: ChangeEvent<HTMLInputElement>) => {
                             setVotingPowerIncreasedSetting(

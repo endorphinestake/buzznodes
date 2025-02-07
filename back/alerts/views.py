@@ -127,6 +127,7 @@ class UserAlertManageSettingsView(views.APIView):
                 _("Unknown data format!", status=status.HTTP_400_BAD_REQUEST)
             )
 
+        managed_user_settings = []
         with transaction.atomic():
             for data in request.data:
                 serializer = ManageUserAlertSettingSerializer(
@@ -138,37 +139,13 @@ class UserAlertManageSettingsView(views.APIView):
                         serializer.errors, status=status.HTTP_400_BAD_REQUEST
                     )
                 try:
-                    serializer.create(validated_data=serializer.validated_data)
+                    user_setting = serializer.manage(
+                        validated_data=serializer.validated_data
+                    )
+                    managed_user_settings.append(user_setting)
                 except exceptions.ValidationError as err:
                     return response.Response(
                         err.detail, status=status.HTTP_400_BAD_REQUEST
                     )
 
         return response.Response("OK", status=status.HTTP_200_OK)
-
-    # def put(self, request):
-    #     if type(request.data) != list or len(request.data) > 2:  # Max 2 setting allowed
-    #         return response.Response(
-    #             _("Unknown data format!", status=status.HTTP_400_BAD_REQUEST)
-    #         )
-
-    #     with transaction.atomic():
-    #         for data in request.data:
-    #             serializer = ManageUserAlertSettingSerializer(
-    #                 data=data,
-    #                 context={"request": request},
-    #             )
-    #             if not serializer.is_valid():
-    #                 return response.Response(
-    #                     serializer.errors, status=status.HTTP_400_BAD_REQUEST
-    #                 )
-    #             try:
-    #                 serializer.update_or_delete(
-    #                     validated_data=serializer.validated_data
-    #                 )
-    #             except exceptions.ValidationError as err:
-    #                 return response.Response(
-    #                     err.detail, status=status.HTTP_400_BAD_REQUEST
-    #                 )
-
-    #     return response.Response("OK", status=status.HTTP_200_OK)
