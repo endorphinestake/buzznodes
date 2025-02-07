@@ -146,19 +146,29 @@ class UserAlertManageSettingsView(views.APIView):
 
         return response.Response("OK", status=status.HTTP_200_OK)
 
-    def put(self, request):
-        serializer = ManageUserAlertSettingSerializer(
-            data=request.data, context={"request": request}, many=True
-        )
-        if not serializer.is_valid():
-            return response.Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+    # def put(self, request):
+    #     if type(request.data) != list or len(request.data) > 2:  # Max 2 setting allowed
+    #         return response.Response(
+    #             _("Unknown data format!", status=status.HTTP_400_BAD_REQUEST)
+    #         )
 
-        for validated_data in serializer.validated_data:
-            try:
-                serializer.update_or_delete(validated_data=validated_data)
-            except exceptions.ValidationError as err:
-                return response.Response(err.detail, status=status.HTTP_400_BAD_REQUEST)
+    #     with transaction.atomic():
+    #         for data in request.data:
+    #             serializer = ManageUserAlertSettingSerializer(
+    #                 data=data,
+    #                 context={"request": request},
+    #             )
+    #             if not serializer.is_valid():
+    #                 return response.Response(
+    #                     serializer.errors, status=status.HTTP_400_BAD_REQUEST
+    #                 )
+    #             try:
+    #                 serializer.update_or_delete(
+    #                     validated_data=serializer.validated_data
+    #                 )
+    #             except exceptions.ValidationError as err:
+    #                 return response.Response(
+    #                     err.detail, status=status.HTTP_400_BAD_REQUEST
+    #                 )
 
-        return response.Response("OK", status=status.HTTP_200_OK)
+    #     return response.Response("OK", status=status.HTTP_200_OK)

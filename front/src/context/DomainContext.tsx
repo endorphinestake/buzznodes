@@ -66,7 +66,7 @@ export const DomainProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const hostname = window.location.hostname;
-      console.log("HOSTNAME: ", hostname);
+      // console.log("HOSTNAME: ", hostname);
 
       if (hostname in DOMAINS) {
         setDomainData({

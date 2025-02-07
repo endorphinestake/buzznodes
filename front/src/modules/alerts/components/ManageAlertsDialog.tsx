@@ -70,9 +70,9 @@ const ManageAlertsDialog = (props: IProps) => {
   const { symbol } = useDomain();
   const {
     dispatch,
-    alertSettings,
-    userAlertSettings,
+    fetchUserAlertSettings,
     createUserAlertSetting,
+    updateOrDeleteUserAlertSetting,
 
     isCreatingUserAlertSettingLoading,
     isCreatingUserAlertSettingLoaded,
@@ -84,6 +84,9 @@ const ManageAlertsDialog = (props: IProps) => {
 
     resetCreateUserAlertSettingState,
     resetUpdateOrDeleteUserAlertSettingState,
+
+    alertSettings,
+    userAlertSettings,
   } = useAlertService();
 
   if (!alertSettings) return <></>;
@@ -183,10 +186,17 @@ const ManageAlertsDialog = (props: IProps) => {
   const handleClose = () => setOpen(false);
 
   const handleSaveAlerts = () => {
-    console.log("currentTab: ", currentTab);
     switch (currentTab) {
       case EAlertType.VOTING_POWER:
         console.log("todo save voting power...");
+
+        // // Update
+        // if() {
+
+        //   // Create
+        // } else {
+
+        // }
 
         let payload = [
           votingPowerIncreasedSetting &&
@@ -202,8 +212,6 @@ const ManageAlertsDialog = (props: IProps) => {
               channel: votingPowerDecreasedChannel,
             },
         ].filter(Boolean);
-
-        console.log(payload);
 
         if (payload.length) {
           dispatch(createUserAlertSetting(payload));
@@ -263,6 +271,28 @@ const ManageAlertsDialog = (props: IProps) => {
     switch (currentTab) {
       case EAlertType.VOTING_POWER:
         console.log("todo delete voting power...");
+        let payload = [
+          votingPowerIncreasedUserSetting && {
+            blockchain_validator_id: blockchainValidator.id,
+            setting_id: votingPowerIncreasedUserSetting.setting_id,
+            user_setting_id: votingPowerIncreasedUserSetting.id,
+            channel: votingPowerIncreasedUserSetting.channels,
+            is_delete: true,
+          },
+          votingPowerDecreasedUserSetting && {
+            blockchain_validator_id: blockchainValidator.id,
+            setting_id: votingPowerDecreasedUserSetting.setting_id,
+            user_setting_id: votingPowerDecreasedUserSetting.id,
+            channel: votingPowerDecreasedUserSetting.channels,
+            is_delete: true,
+          },
+        ].filter(Boolean);
+
+        if (payload.length) {
+          dispatch(updateOrDeleteUserAlertSetting(payload));
+        } else {
+          Notify("warning", t("Parameter not selected!"));
+        }
         break;
       case EAlertType.UPTIME:
         console.log("todo delete uptime...");
@@ -283,6 +313,78 @@ const ManageAlertsDialog = (props: IProps) => {
         console.error("Unknown EAlertType!");
     }
   };
+
+  // Events for createUserAlertSetting
+  useEffect(() => {
+    // Success
+    if (isCreatingUserAlertSettingLoaded) {
+      Notify("info", t(`Alert settings saved successfully!`));
+      dispatch(resetCreateUserAlertSettingState());
+      dispatch(fetchUserAlertSettings());
+    }
+
+    // Error
+    if (
+      isCreatingUserAlertSettingError &&
+      typeof isCreatingUserAlertSettingError.response?.data === "object"
+    ) {
+      if (isCreatingUserAlertSettingError?.response?.data) {
+        Object.entries(isCreatingUserAlertSettingError.response.data).forEach(
+          ([key, value]) => {
+            if (value) {
+              Notify("error", value.toString());
+            }
+          }
+        );
+      }
+      dispatch(resetCreateUserAlertSettingState());
+    } else if (
+      typeof isCreatingUserAlertSettingError?.response?.data === "string"
+    ) {
+      Notify("error", isCreatingUserAlertSettingError.response.data.toString());
+      dispatch(resetCreateUserAlertSettingState());
+    }
+  }, [isCreatingUserAlertSettingLoaded, isCreatingUserAlertSettingError]);
+
+  // Events for updateOrDeleteUserAlertSetting
+  useEffect(() => {
+    // Success
+    if (isUpdatingOrDeletingUserAlertSettingLoaded) {
+      Notify("info", t(`Alert settings changed successfully!`));
+      dispatch(resetUpdateOrDeleteUserAlertSettingState());
+      dispatch(fetchUserAlertSettings());
+    }
+
+    // Error
+    if (
+      isUpdatingOrDeletingUserAlertSettingError &&
+      typeof isUpdatingOrDeletingUserAlertSettingError.response?.data ===
+        "object"
+    ) {
+      if (isUpdatingOrDeletingUserAlertSettingError?.response?.data) {
+        Object.entries(
+          isUpdatingOrDeletingUserAlertSettingError.response.data
+        ).forEach(([key, value]) => {
+          if (value) {
+            Notify("error", value.toString());
+          }
+        });
+      }
+      dispatch(resetUpdateOrDeleteUserAlertSettingState());
+    } else if (
+      typeof isUpdatingOrDeletingUserAlertSettingError?.response?.data ===
+      "string"
+    ) {
+      Notify(
+        "error",
+        isUpdatingOrDeletingUserAlertSettingError.response.data.toString()
+      );
+      dispatch(resetUpdateOrDeleteUserAlertSettingState());
+    }
+  }, [
+    isUpdatingOrDeletingUserAlertSettingLoaded,
+    isUpdatingOrDeletingUserAlertSettingError,
+  ]);
 
   return (
     <Fragment>

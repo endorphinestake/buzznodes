@@ -47,7 +47,6 @@ export class AlertService {
   static createUserAlertSetting = createAsyncThunk(
     "AlertService/createUserAlertSetting",
     async (payload: IManageUserAlertSetting[], redux: IRedux) => {
-      console.log("payload: ", payload);
       try {
         const { data } = await axiosInstance({
           url: "/api/alerts/user-settings/manage/",
