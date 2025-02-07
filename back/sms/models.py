@@ -8,6 +8,7 @@ from alerts.models import (
     UserAlertSettingComission,
     UserAlertSettingJailedStatus,
     UserAlertSettingTombstonedStatus,
+    UserAlertSettingBondedStatus,
 )
 
 
@@ -110,6 +111,14 @@ class SMSAlert(SMSBase):
         blank=True,
         related_name="user_alert_setting_tombstoned_status_sms",
         verbose_name=_("User Alert Setting Tombstoned Status"),
+    )
+    user_alert_setting_bonded_status = models.ForeignKey(
+        UserAlertSettingBondedStatus,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="user_alert_setting_bonded_status_sms",
+        verbose_name=_("User Alert Setting Bonded Status"),
     )
 
     class Meta:

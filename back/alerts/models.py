@@ -15,6 +15,7 @@ class AlertSettingBase(models.Model):
         COMISSION = "COMISSION", _("Comission")
         JAILED = "JAILED", _("Jailed")
         TOMBSTONED = "TOMBSTONED", _("Tombstoned")
+        BONDED = "BONDED", _("Bonded")
 
     class Channels(models.TextChoices):
         SMS = "SMS", _("SMS")
@@ -23,8 +24,8 @@ class AlertSettingBase(models.Model):
     channels = MultiSelectField(
         choices=Channels.choices, max_length=10, verbose_name=_("Alert Channels")
     )
-    sms_template = models.TextField(verbose_name=_("SMS Template"))
-    voice_template = models.TextField(verbose_name=_("Voice Template"))
+    template_increase = models.TextField(verbose_name=_("Text Template for increase"))
+    template_decraease = models.TextField(verbose_name=_("Text Template for decrease"))
     status = models.BooleanField(default=True, verbose_name=_("Enabled"))
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
@@ -37,83 +38,55 @@ class AlertSettingBase(models.Model):
 
 
 class AlertSettingVotingPower(AlertSettingBase):
-    value_from = models.IntegerField(
+    value = models.IntegerField(
         validators=[
-            MinValueValidator(100000),
+            MinValueValidator(-5000000),
             MaxValueValidator(5000000),
         ],
-        verbose_name=_("Value from"),
-    )
-    value_to = models.IntegerField(
-        null=True,
-        blank=True,
-        validators=[
-            MinValueValidator(100000),
-            MaxValueValidator(5000000),
-        ],
-        verbose_name=_("Value to"),
+        verbose_name=_("Value"),
+        help_text=_("Positive number to increase, negative to decrease"),
     )
 
     class Meta:
         verbose_name = _("Voting Power Alert Settings")
         verbose_name_plural = _("Voting Power Alerts Settings")
-        ordering = ("value_from",)
+        ordering = ("value",)
 
 
 class AlertSettingUptime(AlertSettingBase):
-    value_from = models.DecimalField(
+    value = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         validators=[
-            MinValueValidator(0.01),
+            MinValueValidator(-100),
             MaxValueValidator(100),
         ],
-        verbose_name=_("Value from, %"),
-    )
-    value_to = models.DecimalField(
-        null=True,
-        blank=True,
-        max_digits=5,
-        decimal_places=2,
-        validators=[
-            MinValueValidator(0.01),
-            MaxValueValidator(100),
-        ],
-        verbose_name=_("Value to, %"),
+        verbose_name=_("Value, %"),
+        help_text=_("Positive number to increase, negative to decrease"),
     )
 
     class Meta:
         verbose_name = _("Uptime Alert Settings")
         verbose_name_plural = _("Uptime Alerts Settings")
-        ordering = ("value_from",)
+        ordering = ("value",)
 
 
 class AlertSettingComission(AlertSettingBase):
-    value_from = models.DecimalField(
+    value = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         validators=[
-            MinValueValidator(0.01),
+            MinValueValidator(-100),
             MaxValueValidator(100),
         ],
-        verbose_name=_("Value from, %"),
-    )
-    value_to = models.DecimalField(
-        null=True,
-        blank=True,
-        max_digits=5,
-        decimal_places=2,
-        validators=[
-            MinValueValidator(0.01),
-            MaxValueValidator(100),
-        ],
-        verbose_name=_("Value to, %"),
+        verbose_name=_("Value, %"),
+        help_text=_("Positive number to increase, negative to decrease"),
     )
 
     class Meta:
         verbose_name = _("Comission Alert Settings")
         verbose_name_plural = _("Comission Alerts Settings")
-        ordering = ("value_from",)
+        ordering = ("value",)
 
 
 class AlertSettingJailedStatus(AlertSettingBase):
@@ -133,6 +106,15 @@ class AlertSettingTombstonedStatus(AlertSettingBase):
         verbose_name_plural = _("Tombstoned Status Alerts Settings")
 
 
+class AlertSettingBondedStatus(AlertSettingBase):
+    true_to_false = models.BooleanField(default=True)
+    false_to_true = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = _("Bonded Status Alert Settings")
+        verbose_name_plural = _("Bonded Status Alerts Settings")
+
+
 class UserAlertSettingBase(AlertSettingBase):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="user_alert_settings"
@@ -142,8 +124,8 @@ class UserAlertSettingBase(AlertSettingBase):
         max_length=10,
         verbose_name=_("Alert Channel"),
     )
-    sms_template = None
-    voice_template = None
+    template_increase = None
+    template_decraease = None
 
     class Meta:
         abstract = True
@@ -172,6 +154,7 @@ class UserAlertSettingVotingPower(UserAlertSettingBase):
         unique_together = (
             "user",
             "blockchain_validator",
+            "setting",
         )
 
 
@@ -202,6 +185,7 @@ class UserAlertSettingUptime(UserAlertSettingBase):
         unique_together = (
             "user",
             "blockchain_validator",
+            "setting",
         )
 
 
@@ -232,6 +216,7 @@ class UserAlertSettingComission(UserAlertSettingBase):
         unique_together = (
             "user",
             "blockchain_validator",
+            "setting",
         )
 
 
@@ -258,6 +243,7 @@ class UserAlertSettingJailedStatus(UserAlertSettingBase):
         unique_together = (
             "user",
             "blockchain_validator",
+            "setting",
         )
 
 
@@ -286,4 +272,34 @@ class UserAlertSettingTombstonedStatus(UserAlertSettingBase):
         unique_together = (
             "user",
             "blockchain_validator",
+            "setting",
+        )
+
+
+class UserAlertSettingBondedStatus(UserAlertSettingBase):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="user_alert_settings_bonded_status",
+    )
+    blockchain_validator = models.ForeignKey(
+        BlockchainValidator,
+        on_delete=models.CASCADE,
+        related_name="blockchain_validator_user_alert_settings_bonded_status",
+        verbose_name=_("Validator"),
+    )
+    setting = models.ForeignKey(
+        AlertSettingBondedStatus,
+        on_delete=models.CASCADE,
+        related_name="alert_setting_bonded_status_user_settings",
+    )
+    current_value = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = _("User Alert Setting Bonded Status")
+        verbose_name_plural = _("User Alert Settings Bonded Status")
+        unique_together = (
+            "user",
+            "blockchain_validator",
+            "setting",
         )

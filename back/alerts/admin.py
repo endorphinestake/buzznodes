@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.db.models import Count
 from django.utils.translation import gettext_lazy as _
-from django.utils.html import format_html
 
 from alerts.models import (
     AlertSettingVotingPower,
@@ -9,11 +8,13 @@ from alerts.models import (
     AlertSettingComission,
     AlertSettingJailedStatus,
     AlertSettingTombstonedStatus,
+    AlertSettingBondedStatus,
     UserAlertSettingVotingPower,
     UserAlertSettingUptime,
     UserAlertSettingComission,
     UserAlertSettingJailedStatus,
     UserAlertSettingTombstonedStatus,
+    UserAlertSettingBondedStatus,
 )
 
 
@@ -37,6 +38,11 @@ class UserAlertSettingTombstonedStatusInline(admin.TabularInline):
     extra = 0
 
 
+class UserAlertSettingBondedStatusInline(admin.TabularInline):
+    model = UserAlertSettingBondedStatus
+    extra = 0
+
+
 class UserAlertSettingJailedStatusInline(admin.TabularInline):
     model = UserAlertSettingJailedStatus
     extra = 0
@@ -47,7 +53,7 @@ class AlertSettingVotingPowerAdmin(admin.ModelAdmin):
     inlines = (UserAlertSettingVotingPowerInline,)
     list_display = (
         "__str__",
-        "formatted_values",
+        "value",
         "users_count",
         "sms_count",
         "status",
@@ -65,13 +71,6 @@ class AlertSettingVotingPowerAdmin(admin.ModelAdmin):
             ),
         )
 
-    @admin.display(description=_("Values"))
-    def formatted_values(self, obj):
-        value_from = f"{obj.value_from:,}".replace(",", " ")
-        value_to = f"{obj.value_to:,}".replace(",", " ") if obj.value_to else "∞"
-        values = f"{value_from} – {value_to}"
-        return format_html('<span style="white-space: nowrap;">{}</span>', values)
-
     @admin.display(description=_("Uses Users"))
     def users_count(self, obj):
         return obj.users_count
@@ -86,7 +85,7 @@ class AlertSettingUptimeAdmin(admin.ModelAdmin):
     inlines = (UserAlertSettingUptimeInline,)
     list_display = (
         "__str__",
-        "formatted_values",
+        "value",
         "users_count",
         "sms_count",
         "status",
@@ -104,13 +103,6 @@ class AlertSettingUptimeAdmin(admin.ModelAdmin):
             ),
         )
 
-    @admin.display(description=_("Values"))
-    def formatted_values(self, obj):
-        value_from = f"{obj.value_from}%"
-        value_to = f"{obj.value_to}%" if obj.value_to else "∞"
-        values = f"{value_from} – {value_to}"
-        return format_html('<span style="white-space: nowrap;">{}</span>', values)
-
     @admin.display(description=_("Uses Users"))
     def users_count(self, obj):
         return obj.users_count
@@ -125,7 +117,7 @@ class AlertSettingComissionAdmin(admin.ModelAdmin):
     inlines = (UserAlertSettingComissionInline,)
     list_display = (
         "__str__",
-        "formatted_values",
+        "value",
         "users_count",
         "sms_count",
         "status",
@@ -142,13 +134,6 @@ class AlertSettingComissionAdmin(admin.ModelAdmin):
                 "alert_setting_comission_user_settings__user_alert_setting_comission_sms"
             ),
         )
-
-    @admin.display(description=_("Values"))
-    def formatted_values(self, obj):
-        value_from = f"{obj.value_from}%"
-        value_to = f"{obj.value_to}%" if obj.value_to else "∞"
-        values = f"{value_from} – {value_to}"
-        return format_html('<span style="white-space: nowrap;">{}</span>', values)
 
     @admin.display(description=_("Uses Users"))
     def users_count(self, obj):
@@ -212,6 +197,39 @@ class AlertSettingTombstonedAdmin(admin.ModelAdmin):
             users_count=Count("alert_setting_tombstoned_status_user_settings"),
             sms_count=Count(
                 "alert_setting_tombstoned_status_user_settings__user_alert_setting_tombstoned_status_sms"
+            ),
+        )
+
+    @admin.display(description=_("Uses Users"))
+    def users_count(self, obj):
+        return obj.users_count
+
+    @admin.display(description=_("Sent SMS"))
+    def sms_count(self, obj):
+        return obj.sms_count
+
+
+@admin.register(AlertSettingBondedStatus)
+class AlertSettingBondedAdmin(admin.ModelAdmin):
+    inlines = (UserAlertSettingBondedStatusInline,)
+    list_display = (
+        "__str__",
+        "true_to_false",
+        "false_to_true",
+        "users_count",
+        "sms_count",
+        "status",
+        "updated",
+        "created",
+    )
+    list_filter = ("status",)
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.annotate(
+            users_count=Count("alert_setting_bonded_status_user_settings"),
+            sms_count=Count(
+                "alert_setting_bonded_status_user_settings__user_alert_setting_bonded_status_sms"
             ),
         )
 
