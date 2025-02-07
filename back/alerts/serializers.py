@@ -23,8 +23,7 @@ class AlertSettingVotingPowerSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "channels",
-            "value_from",
-            "value_to",
+            "value",
         )
 
 
@@ -34,8 +33,7 @@ class AlertSettingUptimeSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "channels",
-            "value_from",
-            "value_to",
+            "value",
         )
 
 
@@ -45,8 +43,7 @@ class AlertSettingComissionSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "channels",
-            "value_from",
-            "value_to",
+            "value",
         )
 
 

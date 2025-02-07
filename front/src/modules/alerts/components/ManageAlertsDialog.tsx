@@ -99,6 +99,10 @@ const ManageAlertsDialog = (props: IProps) => {
     userAlertSettings[blockchainValidator.id]?.[EAlertType.TOMBSTONED]?.[0]
       ?.setting_id || 0
   );
+  const [bondedSettingId, setBondedSettingId] = useState<number>(
+    userAlertSettings[blockchainValidator.id]?.[EAlertType.BONDED]?.[0]
+      ?.setting_id || 0
+  );
 
   const handleTabChange = (event: SyntheticEvent, newValue: EAlertType) => {
     setCurrentTab(newValue);
@@ -190,6 +194,19 @@ const ManageAlertsDialog = (props: IProps) => {
                   )
                 }
               />
+              <Tab
+                value={EAlertType.BONDED}
+                label={t(`Bonded status`)}
+                icon={
+                  userAlertSettings[blockchainValidator.id]?.[
+                    EAlertType.BONDED
+                  ]?.[0] ? (
+                    <BellCheck />
+                  ) : (
+                    <BellPlus />
+                  )
+                }
+              />
             </TabList>
 
             <TabPanel
@@ -201,9 +218,7 @@ const ManageAlertsDialog = (props: IProps) => {
                   <RadioGroup
                     value={votingPowerSettingId}
                     onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                      setVotingPowerSettingId(
-                        (event.target as HTMLInputElement).value
-                      )
+                      setVotingPowerSettingId(Number(event.target.value))
                     }
                   >
                     {alertSettings[EAlertType.VOTING_POWER].map(
@@ -219,7 +234,7 @@ const ManageAlertsDialog = (props: IProps) => {
                                 {/* will decrease by */}
                                 {t(`will increase by`)}{" "}
                                 {Intl.NumberFormat("ru-RU").format(
-                                  alertSetting.value_from
+                                  alertSetting.value
                                 )}
                                 <Chip label={symbol} size="small" disabled />
                               </Typography>
@@ -241,7 +256,7 @@ const ManageAlertsDialog = (props: IProps) => {
                                 {/* will decrease by */}
                                 {t(`will decrease by`)}{" "}
                                 {Intl.NumberFormat("ru-RU").format(
-                                  alertSetting.value_from
+                                  alertSetting.value
                                 )}
                                 <Chip label={symbol} size="small" disabled />
                               </Typography>
@@ -282,6 +297,13 @@ const ManageAlertsDialog = (props: IProps) => {
               value={EAlertType.TOMBSTONED}
               sx={{ width: "100%", mt: 4 }}
             >
+              <Typography>
+                Danish tiramisu jujubes cupcake chocolate bar cake cheesecake
+                chupa chups. Macaroon ice cream tootsie roll carrot cake gummi
+                bears.
+              </Typography>
+            </TabPanel>
+            <TabPanel value={EAlertType.BONDED} sx={{ width: "100%", mt: 4 }}>
               <Typography>
                 Danish tiramisu jujubes cupcake chocolate bar cake cheesecake
                 chupa chups. Macaroon ice cream tootsie roll carrot cake gummi

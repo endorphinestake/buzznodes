@@ -1,9 +1,5 @@
-from django_ckeditor_5.fields import CKEditor5Field
-
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from users.models import User
 
 
 class Contact(models.Model):

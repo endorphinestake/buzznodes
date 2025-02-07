@@ -162,6 +162,11 @@ const HomePage = () => {
               userAlertSettings[item.id]?.[EAlertType.TOMBSTONED]
             ) && userAlertSettings[item.id]![EAlertType.TOMBSTONED]!.length > 0
           );
+        case EAlertType.BONDED:
+          return (
+            Array.isArray(userAlertSettings[item.id]?.[EAlertType.BONDED]) &&
+            userAlertSettings[item.id]![EAlertType.BONDED]!.length > 0
+          );
         default:
           return true;
       }

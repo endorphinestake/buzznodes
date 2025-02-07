@@ -5,6 +5,7 @@ export enum EAlertType {
   COMISSION = "COMISSION",
   JAILED = "JAILED",
   TOMBSTONED = "TOMBSTONED",
+  BONDED = "BONDED",
 }
 
 export enum EAlertChannel {

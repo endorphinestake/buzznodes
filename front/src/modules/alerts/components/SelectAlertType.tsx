@@ -51,6 +51,7 @@ const SelectAlertType = (props: IProps) => {
       <MenuItem value={EAlertType.TOMBSTONED}>
         {t(`Tombstoned status`)}
       </MenuItem>
+      <MenuItem value={EAlertType.BONDED}>{t(`Bonded status`)}</MenuItem>
     </TextField>
   );
 };
