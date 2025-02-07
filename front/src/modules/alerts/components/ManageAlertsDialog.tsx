@@ -161,22 +161,44 @@ const ManageAlertsDialog = (props: IProps) => {
       case EAlertType.VOTING_POWER:
         console.log("todo save voting power...");
 
-        let payload = [
-          votingPowerIncreasedSetting &&
-            votingPowerIncreasedChannel && {
-              blockchain_validator_id: blockchainValidator.id,
-              setting_id: votingPowerIncreasedSetting.id,
-              user_setting_id: votingPowerIncreasedUserSetting?.id,
-              channel: votingPowerIncreasedChannel,
-            },
-          votingPowerDecreasedSetting &&
-            votingPowerDecreasedChannel && {
-              blockchain_validator_id: blockchainValidator.id,
-              setting_id: votingPowerDecreasedSetting.id,
-              user_setting_id: votingPowerDecreasedUserSetting?.id,
-              channel: votingPowerDecreasedChannel,
-            },
-        ].filter(Boolean);
+        let payload = [];
+        // Update or Create Increase
+        if (votingPowerIncreasedSetting) {
+          payload.push({
+            blockchain_validator_id: blockchainValidator.id,
+            setting_id: votingPowerIncreasedSetting.id,
+            user_setting_id: votingPowerIncreasedUserSetting?.id,
+            channel: votingPowerIncreasedChannel,
+          });
+          // Delete Increase
+        } else if (votingPowerIncreasedUserSetting) {
+          payload.push({
+            blockchain_validator_id: blockchainValidator.id,
+            setting_id: votingPowerIncreasedUserSetting.setting_id,
+            user_setting_id: votingPowerIncreasedUserSetting.id,
+            channel: votingPowerIncreasedUserSetting.channels,
+            is_delete: true,
+          });
+        }
+
+        // Update or Create Decreased
+        if (votingPowerDecreasedSetting) {
+          payload.push({
+            blockchain_validator_id: blockchainValidator.id,
+            setting_id: votingPowerDecreasedSetting.id,
+            user_setting_id: votingPowerDecreasedUserSetting?.id,
+            channel: votingPowerDecreasedChannel,
+          });
+          // Delete Increase
+        } else if (votingPowerDecreasedUserSetting) {
+          payload.push({
+            blockchain_validator_id: blockchainValidator.id,
+            setting_id: votingPowerDecreasedUserSetting.setting_id,
+            user_setting_id: votingPowerDecreasedUserSetting.id,
+            channel: votingPowerDecreasedUserSetting.channels,
+            is_delete: true,
+          });
+        }
 
         if (payload.length) {
           dispatch(manageUserAlertSetting(payload));

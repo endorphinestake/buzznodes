@@ -203,7 +203,7 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 user_setting_instance.setting = setting_instance
                 user_setting_instance.channels = validated_data["channel"]
                 user_setting_instance.current_value = blockchain_validator.voting_power
-                user_setting_instance.current_value += setting_instance.value
+                user_setting_instance.next_value += setting_instance.value
                 user_setting_instance.save()
                 return user_setting_instance
 

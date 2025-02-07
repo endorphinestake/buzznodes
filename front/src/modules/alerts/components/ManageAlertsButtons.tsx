@@ -31,7 +31,7 @@ const ManageAlertsButtons = (props: IManageUserAlertsButtonProps) => {
   // ** Hooks
   const { t } = useTranslation();
   const { profile } = useUserService();
-  const { isCreatingUserAlertSettingLoading } = useAlertService();
+  const { isManageUserAlertSettingLoading } = useAlertService();
 
   // ** State
   const [openDelete, setOpenDelete] = useState<boolean>(false);
@@ -51,7 +51,7 @@ const ManageAlertsButtons = (props: IManageUserAlertsButtonProps) => {
           }}
         >
           <LoadingButton
-            loading={isCreatingUserAlertSettingLoading}
+            loading={isManageUserAlertSettingLoading}
             disabled={isDisabledSave}
             variant="contained"
             color="primary"
