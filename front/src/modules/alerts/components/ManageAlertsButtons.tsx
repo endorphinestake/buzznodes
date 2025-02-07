@@ -94,7 +94,7 @@ const ManageAlertsButtons = (props: IManageUserAlertsButtonProps) => {
               onClick={handleClickDelete}
               endIcon={<BellRemove />}
             >
-              {t(`Delete`)}
+              {t(`Disable`)}
             </LoadingButton>
           ) : null}
         </Grid>

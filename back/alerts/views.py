@@ -1,4 +1,6 @@
-from rest_framework import views, permissions, response, status
+from rest_framework import views, permissions, response, status, exceptions
+from django.utils.translation import gettext_lazy as _
+from django.db import transaction
 
 from alerts.models import (
     AlertSettingBase,
@@ -98,6 +100,11 @@ class UserAlertSettingsView(views.APIView):
             tombstoned_settings, many=True
         )
 
+        bonded_settings = request.user.user_alert_settings_bonded_status.all()
+        bonded_serializer = UserAlertSettingBondedStatusSerializer(
+            bonded_settings, many=True
+        )
+
         return response.Response(
             {
                 AlertSettingBase.AlertType.VOTING_POWER: voting_power_serializer.data,
@@ -105,6 +112,7 @@ class UserAlertSettingsView(views.APIView):
                 AlertSettingBase.AlertType.COMISSION: comission_serializer.data,
                 AlertSettingBase.AlertType.JAILED: jailed_serializer.data,
                 AlertSettingBase.AlertType.TOMBSTONED: tombstoned_serializer.data,
+                AlertSettingBase.AlertType.BONDED: bonded_serializer.data,
             },
             status=status.HTTP_200_OK,
         )
@@ -114,33 +122,43 @@ class UserAlertManageSettingsView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
-        serializer = ManageUserAlertSettingSerializer(
-            data=request.data, context={"request", request}
-        )
-        if not serializer.is_valid():
+        if type(request.data) != list or len(request.data) > 2:  # Max 2 setting allowed
             return response.Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                _("Unknown data format!", status=status.HTTP_400_BAD_REQUEST)
             )
 
-        try:
-            serializer.create(validated_data=serializer.validated_data)
-        except Exception as err:
-            return response.Response(str(err), status=status.HTTP_400_BAD_REQUEST)
+        with transaction.atomic():
+            for data in request.data:
+                serializer = ManageUserAlertSettingSerializer(
+                    data=data,
+                    context={"request": request},
+                )
+                if not serializer.is_valid():
+                    return response.Response(
+                        serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                    )
+                try:
+                    serializer.create(validated_data=serializer.validated_data)
+                except exceptions.ValidationError as err:
+                    return response.Response(
+                        err.detail, status=status.HTTP_400_BAD_REQUEST
+                    )
 
         return response.Response("OK", status=status.HTTP_200_OK)
 
     def put(self, request):
         serializer = ManageUserAlertSettingSerializer(
-            data=request.data, context={"request", request}
+            data=request.data, context={"request": request}, many=True
         )
         if not serializer.is_valid():
             return response.Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
 
-        try:
-            serializer.update_or_delete(validated_data=serializer.validated_data)
-        except Exception as err:
-            return response.Response(str(err), status=status.HTTP_400_BAD_REQUEST)
+        for validated_data in serializer.validated_data:
+            try:
+                serializer.update_or_delete(validated_data=validated_data)
+            except exceptions.ValidationError as err:
+                return response.Response(err.detail, status=status.HTTP_400_BAD_REQUEST)
 
         return response.Response("OK", status=status.HTTP_200_OK)

@@ -12,7 +12,9 @@ export type TBlockchainValidator = {
   voting_power: number;
   commision_rate: number;
   uptime: number;
+  tombstoned: boolean;
   status: EBlockchainValidatorStatus;
+
   updated: Date;
   rank: number;
   voting_power_percentage: number;

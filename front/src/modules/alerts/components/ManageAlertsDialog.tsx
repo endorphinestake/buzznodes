@@ -72,6 +72,7 @@ const ManageAlertsDialog = (props: IProps) => {
     dispatch,
     alertSettings,
     userAlertSettings,
+    createUserAlertSetting,
 
     isCreatingUserAlertSettingLoading,
     isCreatingUserAlertSettingLoaded,
@@ -116,9 +117,6 @@ const ManageAlertsDialog = (props: IProps) => {
   const decreasedUptimeSettings = alertSettings[EAlertType.UPTIME]
     .filter((item) => item.value < 0)
     .sort((a, b) => b.value - a.value);
-
-  // console.log("increasedUptimeSettings: ", increasedUptimeSettings);
-  // console.log("decreasedUptimeSettings: ", decreasedUptimeSettings);
 
   // ** State
   const [currentTab, setCurrentTab] = useState<EAlertType>(
@@ -189,6 +187,29 @@ const ManageAlertsDialog = (props: IProps) => {
     switch (currentTab) {
       case EAlertType.VOTING_POWER:
         console.log("todo save voting power...");
+
+        let payload = [
+          votingPowerIncreasedSetting &&
+            votingPowerIncreasedChannel && {
+              blockchain_validator_id: blockchainValidator.id,
+              setting_id: votingPowerIncreasedSetting.id,
+              channel: votingPowerIncreasedChannel,
+            },
+          votingPowerDecreasedSetting &&
+            votingPowerDecreasedChannel && {
+              blockchain_validator_id: blockchainValidator.id,
+              setting_id: votingPowerDecreasedSetting.id,
+              channel: votingPowerDecreasedChannel,
+            },
+        ].filter(Boolean);
+
+        console.log(payload);
+
+        if (payload.length) {
+          dispatch(createUserAlertSetting(payload));
+        } else {
+          Notify("warning", t("Parameter not selected!"));
+        }
         break;
       case EAlertType.UPTIME:
         console.log("todo save uptime...");

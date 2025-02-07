@@ -5,6 +5,49 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from users.models import User, UserPhone
+from alerts.models import (
+    UserAlertSettingVotingPower,
+    UserAlertSettingUptime,
+    UserAlertSettingComission,
+    UserAlertSettingJailedStatus,
+    UserAlertSettingTombstonedStatus,
+    UserAlertSettingBondedStatus,
+)
+
+
+class BaseUserAlertSettingInline(admin.TabularInline):
+    extra = 0
+    fields = (
+        "id",
+        "blockchain_validator",
+        "channels",
+        "setting",
+        "current_value",
+    )
+
+
+class UserAlertSettingVotingPowerInline(BaseUserAlertSettingInline):
+    model = UserAlertSettingVotingPower
+
+
+class UserAlertSettingUptimeInline(BaseUserAlertSettingInline):
+    model = UserAlertSettingUptime
+
+
+class UserAlertSettingComissionInline(BaseUserAlertSettingInline):
+    model = UserAlertSettingComission
+
+
+class UserAlertSettingJailedStatusInline(BaseUserAlertSettingInline):
+    model = UserAlertSettingJailedStatus
+
+
+class UserAlertSettingTombstonedStatusInline(BaseUserAlertSettingInline):
+    model = UserAlertSettingTombstonedStatus
+
+
+class UserAlertSettingBondedStatusInline(BaseUserAlertSettingInline):
+    model = UserAlertSettingBondedStatus
 
 
 class UserPhoneInline(admin.TabularInline):
@@ -24,7 +67,15 @@ class UserPhoneInline(admin.TabularInline):
 
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
-    inlines = (UserPhoneInline,)
+    inlines = (
+        UserPhoneInline,
+        UserAlertSettingVotingPowerInline,
+        UserAlertSettingUptimeInline,
+        UserAlertSettingComissionInline,
+        UserAlertSettingJailedStatusInline,
+        UserAlertSettingTombstonedStatusInline,
+        UserAlertSettingBondedStatusInline,
+    )
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (
@@ -49,12 +100,6 @@ class UserAdmin(DjangoUserAdmin):
             },
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
-        (
-            _("Alerts"),
-            {
-                "fields": ("display_alert_settings",),
-            },
-        ),
     )
     add_fieldsets = (
         (
@@ -85,7 +130,6 @@ class UserAdmin(DjangoUserAdmin):
     search_fields = ("email",)
     list_filter = ("register_type",)
     ordering = ("-id",)
-    readonly_fields = ("display_alert_settings",)
 
     @admin.display(description=_("User Phones"))
     def display_user_phones(self, obj):
@@ -98,38 +142,6 @@ class UserAdmin(DjangoUserAdmin):
                 f"{'✅' if phone.status else '❌'}{phone.phone}" for phone in phones
             ),
         )
-
-    @admin.display(description=_("Alert Settings"))
-    def display_alert_settings(self, obj):
-        alert_settings = []
-
-        for alert in obj.user_alert_settings_voting_power.all():
-            alert_settings.append(
-                f"🔹 Voting Power: {alert.setting} ({alert.current_value})"
-            )
-
-        for alert in obj.user_alert_settings_uptime.all():
-            alert_settings.append(
-                f"🔹 Uptime: {alert.setting} ({alert.current_value}%)"
-            )
-
-        for alert in obj.user_alert_settings_comission.all():
-            alert_settings.append(
-                f"🔹 Commission: {alert.setting} ({alert.current_value}%)"
-            )
-
-        for alert in obj.user_alert_settings_jailed_status.all():
-            status = "Yes" if alert.current_value else "No"
-            alert_settings.append(f"🔹 Jailed Status: {alert.setting} ({status})")
-
-        for alert in obj.user_alert_settings_tombstoned_status.all():
-            status = "Yes" if alert.current_value else "No"
-            alert_settings.append(f"🔹 Tombstoned Status: {alert.setting} ({status})")
-
-        if not alert_settings:
-            return "—"
-
-        return format_html("<br>".join(alert_settings))
 
     @admin.display(description=_("Voting Power Alerts"))
     def count_voting_power_alerts(self, obj):

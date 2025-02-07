@@ -24,6 +24,7 @@ class BlockchainValidatorModelSerializer(serializers.ModelSerializer):
             "picture",
             "voting_power",
             "commision_rate",
+            "tombstoned",
             "uptime",
             "status",
             "updated",

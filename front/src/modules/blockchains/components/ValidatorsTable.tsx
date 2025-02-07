@@ -151,6 +151,7 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
             <IconButton
               aria-label="capture screenshot"
               color="primary"
+              disabled={row.tombstoned}
               onClick={() => {
                 setSelectedValidator(row);
                 setIsAlertSettingShow(true);
