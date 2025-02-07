@@ -19,58 +19,57 @@ from alerts.models import (
 from blockchains.models import BlockchainValidator
 
 
-class AlertSettingVotingPowerSerializer(serializers.ModelSerializer):
+class AlertSettingBaseSerializer(serializers.ModelSerializer):
+    channels = serializers.ListField(
+        child=serializers.CharField(),
+        default=list,
+        required=False,
+    )
+
     class Meta:
+        fields = ("id", "channels")
+
+
+class AlertSettingVotingPowerSerializer(AlertSettingBaseSerializer):
+    class Meta(AlertSettingBaseSerializer.Meta):
         model = AlertSettingVotingPower
-        fields = (
-            "id",
-            "channels",
-            "value",
-        )
+        fields = AlertSettingBaseSerializer.Meta.fields + ("value",)
 
 
-class AlertSettingUptimeSerializer(serializers.ModelSerializer):
-    class Meta:
+class AlertSettingUptimeSerializer(AlertSettingBaseSerializer):
+    class Meta(AlertSettingBaseSerializer.Meta):
         model = AlertSettingUptime
-        fields = (
-            "id",
-            "channels",
-            "value",
-        )
+        fields = AlertSettingBaseSerializer.Meta.fields + ("value",)
 
 
-class AlertSettingComissionSerializer(serializers.ModelSerializer):
-    class Meta:
+class AlertSettingComissionSerializer(AlertSettingBaseSerializer):
+    class Meta(AlertSettingBaseSerializer.Meta):
         model = AlertSettingComission
-        fields = (
-            "id",
-            "channels",
-            "value",
-        )
+        fields = AlertSettingBaseSerializer.Meta.fields + ("value",)
 
 
-class AlertSettingJailedStatusSerializer(serializers.ModelSerializer):
-    class Meta:
+class AlertSettingJailedStatusSerializer(AlertSettingBaseSerializer):
+    class Meta(AlertSettingBaseSerializer.Meta):
         model = AlertSettingJailedStatus
-        fields = (
-            "id",
-            "channels",
+        fields = AlertSettingBaseSerializer.Meta.fields + (
             "false_to_true",
             "true_to_false",
         )
 
 
-class AlertSettingTombstonedStatusSerializer(serializers.ModelSerializer):
-    class Meta:
+class AlertSettingTombstonedStatusSerializer(AlertSettingBaseSerializer):
+    class Meta(AlertSettingBaseSerializer.Meta):
         model = AlertSettingTombstonedStatus
-        fields = (
-            "id",
-            "channels",
-            "false_to_true",
-        )
+        fields = AlertSettingBaseSerializer.Meta.fields + ("false_to_true",)
 
 
 class AlertSettingBondedStatusSerializer(serializers.ModelSerializer):
+    channels = serializers.ListField(
+        child=serializers.CharField(),
+        default=list,
+        required=False,
+    )
+
     class Meta:
         model = AlertSettingBondedStatus
         fields = (

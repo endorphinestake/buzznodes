@@ -22,7 +22,11 @@ class AlertSettingBase(models.Model):
         VOICE = "VOICE", _("Voice")
 
     channels = MultiSelectField(
-        choices=Channels.choices, max_length=10, verbose_name=_("Alert Channels")
+        choices=Channels.choices,
+        max_length=10,
+        null=True,
+        blank=True,
+        verbose_name=_("Alert Channels"),
     )
     template_increase = models.TextField(
         null=True,

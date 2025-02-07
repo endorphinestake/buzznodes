@@ -52,10 +52,40 @@ export const groupByValidatorId = (data: TUserAlertSettingsResponse) => {
   return result;
 };
 
-export const getSettingVotingPowerByUserSettings = (
-  settings: TAlertSettingVotingPower[],
-  userSettings: TUserAlertSettingVotingPower[]
-): TAlertSettingVotingPower | undefined => {
-  const userSettingIds = userSettings.map((item) => item.setting_id) ?? [];
+export const getSettingByUserSettings = <
+  TSetting extends { id: number },
+  TUserSetting extends { setting_id: number }
+>(
+  settings: TSetting[],
+  userSettings: TUserSetting[]
+): TSetting | undefined => {
+  const userSettingIds = userSettings.map((item) => item.setting_id);
   return settings.find((setting) => userSettingIds.includes(setting.id));
 };
+
+export const getUserSettingBySettings = <
+  TSetting extends { id: number },
+  TUserSetting extends { setting_id: number }
+>(
+  settings: TSetting[],
+  userSettings: TUserSetting[]
+): TUserSetting | undefined => {
+  const settingIds = settings.map((item) => item.id);
+  return userSettings.find((userSetting) =>
+    settingIds.includes(userSetting.setting_id)
+  );
+};
+
+// export const getUserSettingBySettingId = <TSetting extends { id: number }>(
+//   settings: TSetting[],
+//   settingId: number
+// ): TSetting | undefined => {
+//   return settings.find((setting) => setting.id === settingId);
+// };
+
+// export const getUserSettingBySettingId = <TSetting extends { id: number }>(
+//   settings: TSetting[],
+//   settingId: number
+// ): TSetting | undefined => {
+//   return settings.find((setting) => setting.id === settingId);
+// };

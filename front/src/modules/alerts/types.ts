@@ -3,6 +3,7 @@ import { EAlertType, EAlertChannel } from "@modules/alerts/enums";
 type TAlertSettingBase = {
   id: number;
   channels: EAlertChannel[];
+  status: boolean;
 };
 
 export type TAlertSettingVotingPower = TAlertSettingBase & {

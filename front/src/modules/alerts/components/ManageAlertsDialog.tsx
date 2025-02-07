@@ -14,18 +14,21 @@ import { useAlertService } from "@hooks/useAlertService";
 import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces & Enums Imports
-import { EAlertType } from "@modules/alerts/enums";
+import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
 import { TAlertSettingVotingPower } from "@modules/alerts/types";
 import { TBlockchainValidator } from "@modules/blockchains/types";
 
 // ** Utils Imports
-import { getSettingVotingPowerByUserSettings } from "@modules/alerts/utils";
+import {
+  getSettingByUserSettings,
+  getUserSettingBySettings,
+} from "@modules/alerts/utils";
 
 // ** Shared Components Imports
 import Notify from "@modules/shared/utils/Notify";
 import DialogComponent from "@modules/shared/components/Dialog";
-import ConfirmDialog from "@modules/shared/components/ConfirmDialog";
 import ManageAlertsButtons from "@modules/alerts/components/ManageAlertsButtons";
+import ManageAlertsChannels from "@modules/alerts/components/ManageAlertsChannels";
 
 // ** Mui Imports
 import {
@@ -49,9 +52,8 @@ import {
   CardContent,
   Button,
 } from "@mui/material";
-import { TabList, TabPanel, TabContext, LoadingButton } from "@mui/lab";
-import { DeleteOutline } from "@mui/icons-material";
-import { BellPlus, BellCheck, BellRemove } from "mdi-material-ui";
+import { TabList, TabPanel, TabContext } from "@mui/lab";
+import { BellPlus, BellCheck } from "mdi-material-ui";
 
 interface IProps {
   open: boolean;
@@ -86,6 +88,8 @@ const ManageAlertsDialog = (props: IProps) => {
   if (!alertSettings) return <></>;
 
   // ** Vars
+
+  // VotingPower
   const increasedVotingPowerSettings = alertSettings[EAlertType.VOTING_POWER]
     .filter((item) => item.value > 0)
     .sort((a, b) => a.value - b.value);
@@ -94,27 +98,59 @@ const ManageAlertsDialog = (props: IProps) => {
     .filter((item) => item.value < 0)
     .sort((a, b) => b.value - a.value);
 
+  const votingPowerIncreasedUserSetting = getUserSettingBySettings(
+    increasedVotingPowerSettings,
+    userAlertSettings[blockchainValidator.id]?.[EAlertType.VOTING_POWER] || []
+  );
+
+  const votingPowerDecreasedUserSetting = getUserSettingBySettings(
+    decreasedVotingPowerSettings,
+    userAlertSettings[blockchainValidator.id]?.[EAlertType.VOTING_POWER] || []
+  );
+
+  // Uptime
+  const increasedUptimeSettings = alertSettings[EAlertType.UPTIME]
+    .filter((item) => item.value > 0)
+    .sort((a, b) => a.value - b.value);
+
+  const decreasedUptimeSettings = alertSettings[EAlertType.UPTIME]
+    .filter((item) => item.value < 0)
+    .sort((a, b) => b.value - a.value);
+
+  // console.log("increasedUptimeSettings: ", increasedUptimeSettings);
+  // console.log("decreasedUptimeSettings: ", decreasedUptimeSettings);
+
   // ** State
-  const [openDelete, setOpenDelete] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState<EAlertType>(
     EAlertType.VOTING_POWER
   );
   const [votingPowerIncreasedSetting, setVotingPowerIncreasedSetting] =
     useState<TAlertSettingVotingPower | undefined>(
-      getSettingVotingPowerByUserSettings(
+      getSettingByUserSettings(
         increasedVotingPowerSettings,
-        userAlertSettings[blockchainValidator.id]?.[EAlertType.VOTING_POWER] ||
-          []
+        [votingPowerIncreasedUserSetting ?? []].flat()
       )
     );
-
   const [votingPowerDecreasedSetting, setVotingPowerDecreasedSetting] =
     useState<TAlertSettingVotingPower | undefined>(
-      getSettingVotingPowerByUserSettings(
+      getSettingByUserSettings(
         decreasedVotingPowerSettings,
         userAlertSettings[blockchainValidator.id]?.[EAlertType.VOTING_POWER] ||
           []
       )
+    );
+  const [votingPowerIncreasedChannel, setVotingPowerIncreasedChannel] =
+    useState<EAlertChannel>(
+      votingPowerIncreasedUserSetting?.channels ||
+        votingPowerIncreasedSetting?.channels?.[0] ||
+        EAlertChannel.SMS
+    );
+
+  const [votingPowerDecreasedChannel, setVotingPowerDecreasedChannel] =
+    useState<EAlertChannel>(
+      votingPowerDecreasedUserSetting?.channels ||
+        votingPowerDecreasedSetting?.channels?.[0] ||
+        EAlertChannel.SMS
     );
 
   // const [uptimeSettingId, setUptimeSettingId] = useState<number>(
@@ -347,7 +383,11 @@ const ManageAlertsDialog = (props: IProps) => {
                             <FormControlLabel
                               key={alertSetting.id}
                               value={JSON.stringify(alertSetting)}
-                              control={<Radio />}
+                              control={
+                                <Radio
+                                  disabled={!alertSetting.channels.length}
+                                />
+                              }
                               label={
                                 <Fragment>
                                   {Intl.NumberFormat("ru-RU").format(
@@ -360,6 +400,12 @@ const ManageAlertsDialog = (props: IProps) => {
                           ))}
                         </RadioGroup>
                       </FormControl>
+
+                      <ManageAlertsChannels
+                        channel={votingPowerIncreasedChannel}
+                        setChannel={setVotingPowerIncreasedChannel}
+                        channels={votingPowerIncreasedSetting?.channels || []}
+                      />
                     </CardContent>
                   </Card>
                 </Grid>
@@ -385,7 +431,11 @@ const ManageAlertsDialog = (props: IProps) => {
                             <FormControlLabel
                               key={alertSetting.id}
                               value={JSON.stringify(alertSetting)}
-                              control={<Radio />}
+                              control={
+                                <Radio
+                                  disabled={!alertSetting.channels.length}
+                                />
+                              }
                               label={
                                 <Fragment>
                                   {Intl.NumberFormat("ru-RU").format(
@@ -398,6 +448,12 @@ const ManageAlertsDialog = (props: IProps) => {
                           ))}
                         </RadioGroup>
                       </FormControl>
+
+                      <ManageAlertsChannels
+                        channel={votingPowerDecreasedChannel}
+                        setChannel={setVotingPowerDecreasedChannel}
+                        channels={votingPowerDecreasedSetting?.channels || []}
+                      />
                     </CardContent>
                   </Card>
                 </Grid>

@@ -4,12 +4,14 @@ import { Fragment, useState } from "react";
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
 import { useAlertService } from "@hooks/useAlertService";
+import { useUserService } from "@hooks/useUserService";
 
 // ** Types & Interfaces
 import { IManageUserAlertsButtonProps } from "@modules/alerts/interfaces";
 
 // ** Shared Components Imports
 import ConfirmDialog from "@modules/shared/components/ConfirmDialog";
+import Notify from "@modules/shared/utils/Notify";
 
 // ** MUI Imports
 import { Grid } from "@mui/material";
@@ -28,6 +30,7 @@ const ManageAlertsButtons = (props: IManageUserAlertsButtonProps) => {
 
   // ** Hooks
   const { t } = useTranslation();
+  const { profile } = useUserService();
   const { isCreatingUserAlertSettingLoading } = useAlertService();
 
   // ** State
@@ -52,7 +55,16 @@ const ManageAlertsButtons = (props: IManageUserAlertsButtonProps) => {
             disabled={isDisabledSave}
             variant="contained"
             color="primary"
-            onClick={handleSaveAlerts}
+            onClick={() => {
+              if (profile?.phones.length) {
+                handleSaveAlerts();
+              } else {
+                Notify(
+                  "warning",
+                  t(`Please add your phone number in the settings`)
+                );
+              }
+            }}
             endIcon={<BellCheck />}
           >
             {t(`Save`)}
