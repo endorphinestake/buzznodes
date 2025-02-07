@@ -196,19 +196,19 @@ const HomePage = () => {
               <CardHeader
                 title={t(`Validators`)}
                 subheader={t(`Blockchain Monitoring`)}
-                action={
-                  <Button
-                    color="primary"
-                    size="medium"
-                    variant="contained"
-                    onClick={() => {
-                      console.log("click");
-                    }}
-                  >
-                    <BellCog fontSize="small" sx={{ mb: 1, mr: 2 }} />
-                    {t(`Manage Alerts`)}
-                  </Button>
-                }
+                // action={
+                //   <Button
+                //     color="primary"
+                //     size="medium"
+                //     variant="contained"
+                //     onClick={() => {
+                //       console.log("click");
+                //     }}
+                //   >
+                //     <BellCog fontSize="small" sx={{ mb: 1, mr: 2 }} />
+                //     {t(`Manage Alerts`)}
+                //   </Button>
+                // }
               />
 
               <Box
