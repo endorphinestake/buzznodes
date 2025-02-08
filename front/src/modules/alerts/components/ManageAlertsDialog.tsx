@@ -1,57 +1,26 @@
 // ** React Imports
-import {
-  memo,
-  useState,
-  useEffect,
-  Fragment,
-  SyntheticEvent,
-  ChangeEvent,
-} from "react";
+import { memo, useState, useEffect, Fragment, SyntheticEvent } from "react";
 
-// ** Hooks Imports
+// ** Hooks ImportshandleClose
 import { useTranslation } from "react-i18next";
 import { useAlertService } from "@hooks/useAlertService";
-import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces & Enums Imports
 import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
-import { TAlertSettingVotingPower } from "@modules/alerts/types";
-import { TBlockchainValidator } from "@modules/blockchains/types";
-
-// ** Utils Imports
 import {
-  getSettingByUserSettings,
-  getUserSettingBySettings,
-} from "@modules/alerts/utils";
+  TAlertSettingVotingPower,
+  TAlertSettingUptime,
+} from "@modules/alerts/types";
+import { TBlockchainValidator } from "@modules/blockchains/types";
 
 // ** Shared Components Imports
 import Notify from "@modules/shared/utils/Notify";
 import DialogComponent from "@modules/shared/components/Dialog";
-import ManageAlertsButtons from "@modules/alerts/components/ManageAlertsButtons";
-import ManageAlertsChannels from "@modules/alerts/components/ManageAlertsChannels";
+import VotingPowerTab from "@modules/alerts/components/tabs/VotingPowerTab";
+import UptimeTab from "@modules/alerts/components/tabs/UptimeTab";
 
 // ** Mui Imports
-import {
-  Tab,
-  Typography,
-  Radio,
-  RadioGroup,
-  FormControl,
-  FormControlLabel,
-  Grid,
-  Box,
-  Badge,
-  Chip,
-  Switch,
-  FormHelperText,
-  InputLabel,
-  IconButton,
-  Tooltip,
-  Card,
-  CardHeader,
-  CardContent,
-  Button,
-} from "@mui/material";
+import { Tab, Typography } from "@mui/material";
 import { TabList, TabPanel, TabContext } from "@mui/lab";
 import { BellPlus, BellCheck } from "mdi-material-ui";
 
@@ -67,12 +36,9 @@ const ManageAlertsDialog = (props: IProps) => {
 
   // ** Hooks
   const { t } = useTranslation();
-  const { symbol } = useDomain();
   const {
     dispatch,
     fetchUserAlertSettings,
-    manageUserAlertSetting,
-    isManageUserAlertSettingLoading,
     isManageUserAlertSettingLoaded,
     isManageUserAlertSettingError,
     resetManageUserAlertSettingState,
@@ -82,29 +48,11 @@ const ManageAlertsDialog = (props: IProps) => {
 
   if (!alertSettings) return <></>;
 
-  // ** VotingPower State
-  const increasedVotingPowerSettings = alertSettings[EAlertType.VOTING_POWER]
-    .filter((item) => item.value > 0)
-    .sort((a, b) => a.value - b.value);
-
-  const decreasedVotingPowerSettings = alertSettings[EAlertType.VOTING_POWER]
-    .filter((item) => item.value < 0)
-    .sort((a, b) => b.value - a.value);
-
-  const votingPowerIncreasedUserSetting = getUserSettingBySettings(
-    increasedVotingPowerSettings,
-    userAlertSettings[blockchainValidator.id]?.[EAlertType.VOTING_POWER] || []
-  );
-
-  const votingPowerDecreasedUserSetting = getUserSettingBySettings(
-    decreasedVotingPowerSettings,
-    userAlertSettings[blockchainValidator.id]?.[EAlertType.VOTING_POWER] || []
-  );
-
   // ** State
   const [currentTab, setCurrentTab] = useState<EAlertType>(
     EAlertType.VOTING_POWER
   );
+
   const [votingPowerIncreasedSetting, setVotingPowerIncreasedSetting] =
     useState<TAlertSettingVotingPower | undefined>(undefined);
   const [votingPowerDecreasedSetting, setVotingPowerDecreasedSetting] =
@@ -114,40 +62,16 @@ const ManageAlertsDialog = (props: IProps) => {
   const [votingPowerDecreasedChannel, setVotingPowerDecreasedChannel] =
     useState<EAlertChannel>(EAlertChannel.SMS);
 
-  useEffect(() => {
-    const increasedSetting = getSettingByUserSettings(
-      increasedVotingPowerSettings,
-      votingPowerIncreasedUserSetting ? [votingPowerIncreasedUserSetting] : []
-    );
-    setVotingPowerIncreasedSetting(increasedSetting);
-
-    const decreasedSetting = getSettingByUserSettings(
-      decreasedVotingPowerSettings,
-      votingPowerDecreasedUserSetting ? [votingPowerDecreasedUserSetting] : []
-    );
-    setVotingPowerDecreasedSetting(decreasedSetting);
-
-    setVotingPowerIncreasedChannel(
-      votingPowerIncreasedUserSetting?.channels ||
-        increasedSetting?.channels?.[0] ||
-        EAlertChannel.SMS
-    );
-
-    setVotingPowerDecreasedChannel(
-      votingPowerDecreasedUserSetting?.channels ||
-        decreasedSetting?.channels?.[0] ||
-        EAlertChannel.SMS
-    );
-  }, [open]);
-
-  // Uptime
-  const increasedUptimeSettings = alertSettings[EAlertType.UPTIME]
-    .filter((item) => item.value > 0)
-    .sort((a, b) => a.value - b.value);
-
-  const decreasedUptimeSettings = alertSettings[EAlertType.UPTIME]
-    .filter((item) => item.value < 0)
-    .sort((a, b) => b.value - a.value);
+  const [uptimeIncreasedSetting, setUptimeIncreasedSetting] = useState<
+    TAlertSettingUptime | undefined
+  >(undefined);
+  const [uptimeDecreasedSetting, setUptimeDecreasedSetting] = useState<
+    TAlertSettingUptime | undefined
+  >(undefined);
+  const [uptimeIncreasedChannel, setUptimeIncreasedChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
+  const [uptimeDecreasedChannel, setUptimeDecreasedChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
 
   // ** Handlers
   const handleTabChange = (event: SyntheticEvent, newValue: EAlertType) => {
@@ -155,152 +79,6 @@ const ManageAlertsDialog = (props: IProps) => {
   };
 
   const handleClose = () => setOpen(false);
-
-  const handleSaveAlerts = () => {
-    switch (currentTab) {
-      case EAlertType.VOTING_POWER:
-        console.log("todo save voting power...");
-
-        let payload = [];
-        // Update or Create Increase
-        if (votingPowerIncreasedSetting) {
-          payload.push({
-            blockchain_validator_id: blockchainValidator.id,
-            setting_id: votingPowerIncreasedSetting.id,
-            user_setting_id: votingPowerIncreasedUserSetting?.id,
-            channel: votingPowerIncreasedChannel,
-          });
-          // Delete Increase
-        } else if (votingPowerIncreasedUserSetting) {
-          payload.push({
-            blockchain_validator_id: blockchainValidator.id,
-            setting_id: votingPowerIncreasedUserSetting.setting_id,
-            user_setting_id: votingPowerIncreasedUserSetting.id,
-            channel: votingPowerIncreasedUserSetting.channels,
-            is_delete: true,
-          });
-        }
-
-        // Update or Create Decreased
-        if (votingPowerDecreasedSetting) {
-          payload.push({
-            blockchain_validator_id: blockchainValidator.id,
-            setting_id: votingPowerDecreasedSetting.id,
-            user_setting_id: votingPowerDecreasedUserSetting?.id,
-            channel: votingPowerDecreasedChannel,
-          });
-          // Delete Increase
-        } else if (votingPowerDecreasedUserSetting) {
-          payload.push({
-            blockchain_validator_id: blockchainValidator.id,
-            setting_id: votingPowerDecreasedUserSetting.setting_id,
-            user_setting_id: votingPowerDecreasedUserSetting.id,
-            channel: votingPowerDecreasedUserSetting.channels,
-            is_delete: true,
-          });
-        }
-
-        if (payload.length) {
-          dispatch(manageUserAlertSetting(payload));
-        } else {
-          Notify("warning", t("Parameter not selected!"));
-        }
-        break;
-      case EAlertType.UPTIME:
-        console.log("todo save uptime...");
-        break;
-      case EAlertType.COMISSION:
-        console.log("todo save comission...");
-        break;
-      case EAlertType.JAILED:
-        console.log("todo save jailed...");
-        break;
-      case EAlertType.TOMBSTONED:
-        console.log("todo save tombstoned...");
-        break;
-      case EAlertType.BONDED:
-        console.log("todo save bonded...");
-        break;
-      default:
-        console.error("Unknown EAlertType!");
-    }
-  };
-
-  const handleClearAlerts = () => {
-    console.log("currentTab: ", currentTab);
-    switch (currentTab) {
-      case EAlertType.VOTING_POWER:
-        setVotingPowerIncreasedSetting(undefined);
-        setVotingPowerDecreasedSetting(undefined);
-        break;
-      case EAlertType.UPTIME:
-        console.log("todo clear uptime...");
-        break;
-      case EAlertType.COMISSION:
-        console.log("todo clear comission...");
-        break;
-      case EAlertType.JAILED:
-        console.log("todo clear jailed...");
-        break;
-      case EAlertType.TOMBSTONED:
-        console.log("todo clear tombstoned...");
-        break;
-      case EAlertType.BONDED:
-        console.log("todo clear bonded...");
-        break;
-      default:
-        console.error("Unknown EAlertType!");
-    }
-  };
-
-  const handleDeleteAlerts = () => {
-    console.log("currentTab: ", currentTab);
-    switch (currentTab) {
-      case EAlertType.VOTING_POWER:
-        console.log("todo delete voting power...");
-        let payload = [
-          votingPowerIncreasedUserSetting && {
-            blockchain_validator_id: blockchainValidator.id,
-            setting_id: votingPowerIncreasedUserSetting.setting_id,
-            user_setting_id: votingPowerIncreasedUserSetting.id,
-            channel: votingPowerIncreasedUserSetting.channels,
-            is_delete: true,
-          },
-          votingPowerDecreasedUserSetting && {
-            blockchain_validator_id: blockchainValidator.id,
-            setting_id: votingPowerDecreasedUserSetting.setting_id,
-            user_setting_id: votingPowerDecreasedUserSetting.id,
-            channel: votingPowerDecreasedUserSetting.channels,
-            is_delete: true,
-          },
-        ].filter(Boolean);
-
-        if (payload.length) {
-          dispatch(manageUserAlertSetting(payload));
-          handleClearAlerts();
-        } else {
-          Notify("warning", t("Parameter not selected!"));
-        }
-        break;
-      case EAlertType.UPTIME:
-        console.log("todo delete uptime...");
-        break;
-      case EAlertType.COMISSION:
-        console.log("todo delete comission...");
-        break;
-      case EAlertType.JAILED:
-        console.log("todo delete jailed...");
-        break;
-      case EAlertType.TOMBSTONED:
-        console.log("todo delete tombstoned...");
-        break;
-      case EAlertType.BONDED:
-        console.log("todo delete bonded...");
-        break;
-      default:
-        console.error("Unknown EAlertType!");
-    }
-  };
 
   // Events for createUserAlertSetting
   useEffect(() => {
@@ -339,10 +117,7 @@ const ManageAlertsDialog = (props: IProps) => {
       <DialogComponent
         open={open}
         setOpen={setOpen}
-        handleClose={() => {
-          handleClearAlerts();
-          handleClose();
-        }}
+        handleClose={handleClose}
         title={t("Manage Alerts for «{{moniker}}»", {
           moniker: blockchainValidator.moniker || "",
         })}
@@ -434,127 +209,30 @@ const ManageAlertsDialog = (props: IProps) => {
               value={EAlertType.VOTING_POWER}
               sx={{ width: "100%", mt: 4 }}
             >
-              <Grid container spacing={4}>
-                <Grid item xs={6}>
-                  <Card>
-                    <CardHeader
-                      title={t(`When the value increases`)}
-                      titleTypographyProps={{ variant: "h6" }}
-                    />
-                    <CardContent>
-                      <FormControl>
-                        <RadioGroup
-                          value={
-                            votingPowerIncreasedSetting
-                              ? JSON.stringify(votingPowerIncreasedSetting)
-                              : ""
-                          }
-                          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                            setVotingPowerIncreasedSetting(
-                              JSON.parse(event.target.value)
-                            );
-                          }}
-                        >
-                          {increasedVotingPowerSettings.map((alertSetting) => (
-                            <FormControlLabel
-                              key={alertSetting.id}
-                              value={JSON.stringify(alertSetting)}
-                              control={
-                                <Radio
-                                  disabled={!alertSetting.channels.length}
-                                />
-                              }
-                              label={
-                                <Fragment>
-                                  {Intl.NumberFormat("ru-RU").format(
-                                    alertSetting.value
-                                  )}
-                                  <Chip label={symbol} size="small" disabled />
-                                </Fragment>
-                              }
-                            />
-                          ))}
-                        </RadioGroup>
-                      </FormControl>
-
-                      <ManageAlertsChannels
-                        channel={votingPowerIncreasedChannel}
-                        setChannel={setVotingPowerIncreasedChannel}
-                        channels={votingPowerIncreasedSetting?.channels || []}
-                      />
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={6}>
-                  <Card>
-                    <CardHeader
-                      title={t(`When the value decreases`)}
-                      titleTypographyProps={{ variant: "h6" }}
-                    />
-                    <CardContent>
-                      <FormControl>
-                        <RadioGroup
-                          value={
-                            JSON.stringify(votingPowerDecreasedSetting) || ""
-                          }
-                          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                            setVotingPowerDecreasedSetting(
-                              JSON.parse(event.target.value)
-                            );
-                          }}
-                        >
-                          {decreasedVotingPowerSettings.map((alertSetting) => (
-                            <FormControlLabel
-                              key={alertSetting.id}
-                              value={JSON.stringify(alertSetting)}
-                              control={
-                                <Radio
-                                  disabled={!alertSetting.channels.length}
-                                />
-                              }
-                              label={
-                                <Fragment>
-                                  {Intl.NumberFormat("ru-RU").format(
-                                    Math.abs(alertSetting.value)
-                                  )}
-                                  <Chip label={symbol} size="small" disabled />
-                                </Fragment>
-                              }
-                            />
-                          ))}
-                        </RadioGroup>
-                      </FormControl>
-
-                      <ManageAlertsChannels
-                        channel={votingPowerDecreasedChannel}
-                        setChannel={setVotingPowerDecreasedChannel}
-                        channels={votingPowerDecreasedSetting?.channels || []}
-                      />
-                    </CardContent>
-                  </Card>
-                </Grid>
-
-                <ManageAlertsButtons
-                  handleSaveAlerts={handleSaveAlerts}
-                  handleClearAlerts={handleClearAlerts}
-                  handleDeleteAlerts={handleDeleteAlerts}
-                  isDisabledSave={
-                    !votingPowerIncreasedSetting && !votingPowerDecreasedSetting
-                  }
-                  isCanDelete={Boolean(
-                    userAlertSettings[blockchainValidator.id]?.[
-                      EAlertType.VOTING_POWER
-                    ]?.length
-                  )}
-                />
-              </Grid>
+              <VotingPowerTab
+                blockchainValidator={blockchainValidator}
+                votingPowerIncreasedSetting={votingPowerIncreasedSetting}
+                setVotingPowerIncreasedSetting={setVotingPowerIncreasedSetting}
+                votingPowerDecreasedSetting={votingPowerDecreasedSetting}
+                setVotingPowerDecreasedSetting={setVotingPowerDecreasedSetting}
+                votingPowerIncreasedChannel={votingPowerIncreasedChannel}
+                setVotingPowerIncreasedChannel={setVotingPowerIncreasedChannel}
+                votingPowerDecreasedChannel={votingPowerDecreasedChannel}
+                setVotingPowerDecreasedChannel={setVotingPowerDecreasedChannel}
+              />
             </TabPanel>
             <TabPanel value={EAlertType.UPTIME} sx={{ width: "100%", mt: 4 }}>
-              <Typography>
-                Danish tiramisu jujubes cupcake chocolate bar cake cheesecake
-                chupa chups. Macaroon ice cream tootsie roll carrot cake gummi
-                bears.
-              </Typography>
+              <UptimeTab
+                blockchainValidator={blockchainValidator}
+                uptimeIncreasedSetting={uptimeIncreasedSetting}
+                setUptimeIncreasedSetting={setUptimeIncreasedSetting}
+                uptimeDecreasedSetting={uptimeDecreasedSetting}
+                setUptimeDecreasedSetting={setUptimeDecreasedSetting}
+                uptimeIncreasedChannel={uptimeIncreasedChannel}
+                setUptimeIncreasedChannel={setUptimeIncreasedChannel}
+                uptimeDecreasedChannel={uptimeDecreasedChannel}
+                setUptimeDecreasedChannel={setUptimeDecreasedChannel}
+              />
             </TabPanel>
             <TabPanel
               value={EAlertType.COMISSION}
