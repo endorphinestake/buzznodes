@@ -129,8 +129,8 @@ const BondedTab = (props: IManageUserAlertsTabProps) => {
   };
 
   const handleClearAlerts = () => {
-    setBondedFalseToTrueSetting(false);
-    setBondedTrueToFalseSetting(false);
+    setBondedFalseToTrueSetting(undefined);
+    setBondedTrueToFalseSetting(undefined);
   };
 
   const handleDeleteAlerts = () => {

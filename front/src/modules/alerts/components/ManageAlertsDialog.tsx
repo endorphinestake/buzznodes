@@ -17,6 +17,7 @@ import UptimeTab from "@modules/alerts/components/tabs/UptimeTab";
 import ComissionTab from "@modules/alerts/components/tabs/ComissionTab";
 import JailedTab from "@modules/alerts/components/tabs/JailedTab";
 import BondedTab from "@modules/alerts/components/tabs/BondedTab";
+import TombstonedTab from "@modules/alerts/components/tabs/TombstonedTab";
 
 // ** Mui Imports
 import { Tab, Typography } from "@mui/material";
@@ -206,11 +207,7 @@ const ManageAlertsDialog = (props: IProps) => {
               value={EAlertType.TOMBSTONED}
               sx={{ width: "100%", mt: 4 }}
             >
-              <Typography>
-                Danish tiramisu jujubes cupcake chocolate bar cake cheesecake
-                chupa chups. Macaroon ice cream tootsie roll carrot cake gummi
-                bears.
-              </Typography>
+              <TombstonedTab blockchainValidator={blockchainValidator} />
             </TabPanel>
             <TabPanel value={EAlertType.BONDED} sx={{ width: "100%", mt: 4 }}>
               <BondedTab blockchainValidator={blockchainValidator} />

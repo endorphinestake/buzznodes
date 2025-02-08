@@ -129,8 +129,8 @@ const JailedTab = (props: IManageUserAlertsTabProps) => {
   };
 
   const handleClearAlerts = () => {
-    setJailedFalseToTrueSetting(false);
-    setJailedTrueToFalseSetting(false);
+    setJailedFalseToTrueSetting(undefined);
+    setJailedTrueToFalseSetting(undefined);
   };
 
   const handleDeleteAlerts = () => {
