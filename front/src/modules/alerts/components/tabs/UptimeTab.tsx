@@ -91,6 +91,7 @@ const UptimeTab = (props: IProps) => {
     if (uptimeIncreasedSetting) {
       payload.push({
         blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.UPTIME,
         setting_id: uptimeIncreasedSetting.id,
         user_setting_id: uptimeIncreasedUserSetting?.id,
         channel: uptimeIncreasedChannel,
@@ -99,6 +100,7 @@ const UptimeTab = (props: IProps) => {
     } else if (uptimeIncreasedUserSetting) {
       payload.push({
         blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.UPTIME,
         setting_id: uptimeIncreasedUserSetting.setting_id,
         user_setting_id: uptimeIncreasedUserSetting.id,
         channel: uptimeIncreasedUserSetting.channels,
@@ -110,6 +112,7 @@ const UptimeTab = (props: IProps) => {
     if (uptimeDecreasedSetting) {
       payload.push({
         blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.UPTIME,
         setting_id: uptimeDecreasedSetting.id,
         user_setting_id: uptimeDecreasedUserSetting?.id,
         channel: uptimeDecreasedChannel,
@@ -118,6 +121,7 @@ const UptimeTab = (props: IProps) => {
     } else if (uptimeDecreasedUserSetting) {
       payload.push({
         blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.UPTIME,
         setting_id: uptimeDecreasedUserSetting.setting_id,
         user_setting_id: uptimeDecreasedUserSetting.id,
         channel: uptimeDecreasedUserSetting.channels,
@@ -141,6 +145,7 @@ const UptimeTab = (props: IProps) => {
     let payload = [
       uptimeIncreasedUserSetting && {
         blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.UPTIME,
         setting_id: uptimeIncreasedUserSetting.setting_id,
         user_setting_id: uptimeIncreasedUserSetting.id,
         channel: uptimeIncreasedUserSetting.channels,
@@ -148,6 +153,7 @@ const UptimeTab = (props: IProps) => {
       },
       uptimeDecreasedUserSetting && {
         blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.UPTIME,
         setting_id: uptimeDecreasedUserSetting.setting_id,
         user_setting_id: uptimeDecreasedUserSetting.id,
         channel: uptimeDecreasedUserSetting.channels,

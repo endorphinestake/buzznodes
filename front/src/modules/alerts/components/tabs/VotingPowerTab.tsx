@@ -97,6 +97,7 @@ const VotingPowerTab = (props: IProps) => {
     if (votingPowerIncreasedSetting) {
       payload.push({
         blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.VOTING_POWER,
         setting_id: votingPowerIncreasedSetting.id,
         user_setting_id: votingPowerIncreasedUserSetting?.id,
         channel: votingPowerIncreasedChannel,
@@ -105,6 +106,7 @@ const VotingPowerTab = (props: IProps) => {
     } else if (votingPowerIncreasedUserSetting) {
       payload.push({
         blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.VOTING_POWER,
         setting_id: votingPowerIncreasedUserSetting.setting_id,
         user_setting_id: votingPowerIncreasedUserSetting.id,
         channel: votingPowerIncreasedUserSetting.channels,
@@ -116,6 +118,7 @@ const VotingPowerTab = (props: IProps) => {
     if (votingPowerDecreasedSetting) {
       payload.push({
         blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.VOTING_POWER,
         setting_id: votingPowerDecreasedSetting.id,
         user_setting_id: votingPowerDecreasedUserSetting?.id,
         channel: votingPowerDecreasedChannel,
@@ -124,6 +127,7 @@ const VotingPowerTab = (props: IProps) => {
     } else if (votingPowerDecreasedUserSetting) {
       payload.push({
         blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.VOTING_POWER,
         setting_id: votingPowerDecreasedUserSetting.setting_id,
         user_setting_id: votingPowerDecreasedUserSetting.id,
         channel: votingPowerDecreasedUserSetting.channels,
@@ -147,6 +151,7 @@ const VotingPowerTab = (props: IProps) => {
     let payload = [
       votingPowerIncreasedUserSetting && {
         blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.VOTING_POWER,
         setting_id: votingPowerIncreasedUserSetting.setting_id,
         user_setting_id: votingPowerIncreasedUserSetting.id,
         channel: votingPowerIncreasedUserSetting.channels,
@@ -154,6 +159,7 @@ const VotingPowerTab = (props: IProps) => {
       },
       votingPowerDecreasedUserSetting && {
         blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.VOTING_POWER,
         setting_id: votingPowerDecreasedUserSetting.setting_id,
         user_setting_id: votingPowerDecreasedUserSetting.id,
         channel: votingPowerDecreasedUserSetting.channels,

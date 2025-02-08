@@ -116,6 +116,9 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
     blockchain_validator_id = serializers.PrimaryKeyRelatedField(
         queryset=BlockchainValidator.objects.filter(tombstoned=False)
     )
+    setting_type = serializers.ChoiceField(
+        AlertSettingBase.AlertType.choices, required=True
+    )
     setting_id = serializers.IntegerField(required=True)
     user_setting_id = serializers.IntegerField(required=False)  # for update
     channel = serializers.ChoiceField(AlertSettingBase.Channels.choices, required=True)
@@ -123,21 +126,35 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
 
     def validate_setting_id(self, setting_id):
         setting_instance = None
-        setting_models = [
-            AlertSettingVotingPower,
-            AlertSettingUptime,
-            AlertSettingComission,
-            AlertSettingJailedStatus,
-            AlertSettingTombstonedStatus,
-            AlertSettingBondedStatus,
-        ]
+        setting_type = self.initial_data["setting_type"]
 
-        for model in setting_models:
-            try:
-                setting_instance = model.objects.get(pk=setting_id)
-                break
-            except model.DoesNotExist:
-                continue
+        if setting_type == AlertSettingBase.AlertType.VOTING_POWER:
+            setting_instance = AlertSettingVotingPower.objects.filter(
+                pk=setting_id
+            ).first()
+
+        elif setting_type == AlertSettingBase.AlertType.UPTIME:
+            setting_instance = AlertSettingUptime.objects.filter(pk=setting_id).first()
+
+        elif setting_type == AlertSettingBase.AlertType.COMISSION:
+            setting_instance = AlertSettingComission.objects.filter(
+                pk=setting_id
+            ).first()
+
+        elif setting_type == AlertSettingBase.AlertType.JAILED:
+            setting_instance = AlertSettingJailedStatus.objects.filter(
+                pk=setting_id
+            ).first()
+
+        elif setting_type == AlertSettingBase.AlertType.TOMBSTONED:
+            setting_instance = AlertSettingTombstonedStatus.objects.filter(
+                pk=setting_id
+            ).first()
+
+        elif setting_type == AlertSettingBase.AlertType.BONDED:
+            setting_instance = AlertSettingBondedStatus.objects.filter(
+                pk=setting_id
+            ).first()
 
         if not setting_instance:
             raise serializers.ValidationError(_("Unknown setting type."))
@@ -147,24 +164,38 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
 
     def validate_user_setting_id(self, user_setting_id):
         user_setting_instance = None
-        if user_setting_id:
-            user_setting_models = [
-                UserAlertSettingVotingPower,
-                UserAlertSettingUptime,
-                UserAlertSettingComission,
-                UserAlertSettingJailedStatus,
-                UserAlertSettingTombstonedStatus,
-                UserAlertSettingBondedStatus,
-            ]
+        setting_type = self.initial_data["setting_type"]
 
-            for model in user_setting_models:
-                try:
-                    user_setting_instance = model.objects.get(
-                        pk=user_setting_id, user=self.context["request"].user
-                    )
-                    break
-                except model.DoesNotExist:
-                    continue
+        if user_setting_id:
+            if setting_type == AlertSettingBase.AlertType.VOTING_POWER:
+                user_setting_instance = UserAlertSettingVotingPower.objects.filter(
+                    pk=user_setting_id
+                ).first()
+
+            elif setting_type == AlertSettingBase.AlertType.UPTIME:
+                user_setting_instance = UserAlertSettingUptime.objects.filter(
+                    pk=user_setting_id
+                ).first()
+
+            elif setting_type == AlertSettingBase.AlertType.COMISSION:
+                user_setting_instance = UserAlertSettingComission.objects.filter(
+                    pk=user_setting_id
+                ).first()
+
+            elif setting_type == AlertSettingBase.AlertType.JAILED:
+                user_setting_instance = UserAlertSettingJailedStatus.objects.filter(
+                    pk=user_setting_id
+                ).first()
+
+            elif setting_type == AlertSettingBase.AlertType.TOMBSTONED:
+                user_setting_instance = UserAlertSettingTombstonedStatus.objects.filter(
+                    pk=user_setting_id
+                ).first()
+
+            elif setting_type == AlertSettingBase.AlertType.BONDED:
+                user_setting_instance = UserAlertSettingBondedStatus.objects.filter(
+                    pk=user_setting_id
+                ).first()
 
             if not user_setting_instance:
                 raise serializers.ValidationError(_("Unknown setting type."))
@@ -246,21 +277,35 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
 
             # Update
             elif user_setting_instance:
+                if setting_instance.value < 0:
+                    next_value = (
+                        (100 - abs(setting_instance.value))
+                        if blockchain_validator.uptime
+                        > (100 - abs(setting_instance.value))
+                        else 0
+                    )
+                else:
+                    next_value = (
+                        (100 - setting_instance.value)
+                        if blockchain_validator.uptime < (100 - setting_instance.value)
+                        else 0
+                    )
+
                 user_setting_instance.setting = setting_instance
                 user_setting_instance.channels = validated_data["channel"]
-                # user_setting_instance.current_value = blockchain_validator.voting_power
-                # user_setting_instance.next_value += setting_instance.value
+                user_setting_instance.current_value = blockchain_validator.uptime
+                user_setting_instance.next_value = next_value
                 user_setting_instance.save()
                 return user_setting_instance
 
             # Create
             else:
                 if (
-                    user.alert_setting_uptime_user_settings.filter(
+                    user.user_alert_settings_uptime.filter(
                         blockchain_validator=blockchain_validator,
                         setting=setting_instance,
                     ).exists()
-                    or user.alert_setting_uptime_user_settings.filter(
+                    or user.user_alert_settings_uptime.filter(
                         blockchain_validator=blockchain_validator
                     ).count()
                     >= 2  # 2 total: 1 increased, 1 decreased
@@ -269,15 +314,27 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                         {"setting_id": [_("The Alert already exists!")]}
                     )
 
+                if setting_instance.value < 0:
+                    next_value = (
+                        (100 - abs(setting_instance.value))
+                        if blockchain_validator.uptime
+                        > (100 - abs(setting_instance.value))
+                        else 0
+                    )
+                else:
+                    next_value = (
+                        (100 - setting_instance.value)
+                        if blockchain_validator.uptime < (100 - setting_instance.value)
+                        else 0
+                    )
+
                 return UserAlertSettingUptime.objects.create(
                     user=user,
                     channels=validated_data["channel"],
                     blockchain_validator=blockchain_validator,
                     setting=setting_instance,
-                    # current_value=blockchain_validator.uptime,
-                    # next_value=(
-                    #     blockchain_validator.voting_power + setting_instance.value
-                    # ),
+                    current_value=blockchain_validator.uptime,
+                    next_value=next_value,
                 )
         elif isinstance(setting_instance, AlertSettingComission):
             if user.user_alert_settings_comission.filter(
