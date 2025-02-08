@@ -144,8 +144,8 @@ class AlertSettingBondedStatus(AlertSettingBase):
     )
 
     class Meta:
-        verbose_name = _("Bonded Status Alert Settings")
-        verbose_name_plural = _("Bonded Status Alerts Settings")
+        verbose_name = _("Bond Status Alert Settings")
+        verbose_name_plural = _("Bond Status Alerts Settings")
 
 
 class UserAlertSettingBase(AlertSettingBase):
@@ -348,8 +348,8 @@ class UserAlertSettingBondedStatus(UserAlertSettingBase):
     next_value = models.BooleanField(default=True)
 
     class Meta:
-        verbose_name = _("User Alert Setting Bonded Status")
-        verbose_name_plural = _("User Alert Settings Bonded Status")
+        verbose_name = _("User Alert Setting Bond Status")
+        verbose_name_plural = _("User Alert Settings Bond Status")
         unique_together = (
             "user",
             "blockchain_validator",

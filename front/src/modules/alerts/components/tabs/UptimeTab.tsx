@@ -190,7 +190,7 @@ const UptimeTab = (props: IManageUserAlertsTabProps) => {
       <Grid item xs={6}>
         <Card>
           <CardHeader
-            title={t(`When the value has increased to`)}
+            title={t(`When the Uptime has increased to`)}
             titleTypographyProps={{ variant: "h6" }}
           />
           <CardContent>
@@ -232,7 +232,7 @@ const UptimeTab = (props: IManageUserAlertsTabProps) => {
       <Grid item xs={6}>
         <Card>
           <CardHeader
-            title={t(`When the value has decreased to`)}
+            title={t(`When the Uptime has decreased to`)}
             titleTypographyProps={{ variant: "h6" }}
           />
           <CardContent>

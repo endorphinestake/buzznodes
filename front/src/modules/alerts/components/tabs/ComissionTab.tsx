@@ -191,7 +191,7 @@ const ComissisionTab = (props: IManageUserAlertsTabProps) => {
       <Grid item xs={6}>
         <Card>
           <CardHeader
-            title={t(`When the value increases`)}
+            title={t(`When the Comission increases`)}
             titleTypographyProps={{ variant: "h6" }}
           />
           <CardContent>
@@ -233,7 +233,7 @@ const ComissisionTab = (props: IManageUserAlertsTabProps) => {
       <Grid item xs={6}>
         <Card>
           <CardHeader
-            title={t(`When the value decreases`)}
+            title={t(`When the Comission decreases`)}
             titleTypographyProps={{ variant: "h6" }}
           />
           <CardContent>

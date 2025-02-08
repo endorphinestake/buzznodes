@@ -16,6 +16,7 @@ import VotingPowerTab from "@modules/alerts/components/tabs/VotingPowerTab";
 import UptimeTab from "@modules/alerts/components/tabs/UptimeTab";
 import ComissionTab from "@modules/alerts/components/tabs/ComissionTab";
 import JailedTab from "@modules/alerts/components/tabs/JailedTab";
+import BondedTab from "@modules/alerts/components/tabs/BondedTab";
 
 // ** Mui Imports
 import { Tab, Typography } from "@mui/material";
@@ -50,21 +51,6 @@ const ManageAlertsDialog = (props: IProps) => {
   const [currentTab, setCurrentTab] = useState<EAlertType>(
     EAlertType.VOTING_POWER
   );
-
-  // // Tombstoned status
-  // const [tombstonedFalseToTrueSetting, setTombstonedFalseToTrueSetting] =
-  //   useState<boolean>(false);
-  // const [tombstonedStatusChannel, setTombstonedStatusChannel] =
-  //   useState<EAlertChannel>(EAlertChannel.SMS);
-
-  // // Bonded status
-  // const [bondedFalseToTrueSetting, setBondedFalseToTrueSetting] =
-  //   useState<boolean>(false);
-  // const [bondedTrueToFalseSetting, setBondedTrueToFalseSetting] =
-  //   useState<boolean>(false);
-  // const [bondedStatusChannel, setBondedStatusChannel] = useState<EAlertChannel>(
-  //   EAlertChannel.SMS
-  // );
 
   // ** Handlers
   const handleTabChange = (event: SyntheticEvent, newValue: EAlertType) => {
@@ -185,7 +171,7 @@ const ManageAlertsDialog = (props: IProps) => {
               />
               <Tab
                 value={EAlertType.BONDED}
-                label={t(`Bonded status`)}
+                label={t(`Bond status`)}
                 icon={
                   userAlertSettings[blockchainValidator.id]?.[
                     EAlertType.BONDED
@@ -227,11 +213,7 @@ const ManageAlertsDialog = (props: IProps) => {
               </Typography>
             </TabPanel>
             <TabPanel value={EAlertType.BONDED} sx={{ width: "100%", mt: 4 }}>
-              <Typography>
-                Danish tiramisu jujubes cupcake chocolate bar cake cheesecake
-                chupa chups. Macaroon ice cream tootsie roll carrot cake gummi
-                bears.
-              </Typography>
+              <BondedTab blockchainValidator={blockchainValidator} />
             </TabPanel>
           </TabContext>
         }
