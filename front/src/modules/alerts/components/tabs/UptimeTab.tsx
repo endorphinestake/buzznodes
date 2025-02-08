@@ -1,5 +1,5 @@
 // ** React Imports
-import { memo, useEffect, Fragment, ChangeEvent } from "react";
+import { memo, useState, useEffect, Fragment, ChangeEvent } from "react";
 
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
@@ -7,8 +7,7 @@ import { useAlertService } from "@hooks/useAlertService";
 
 // ** Types & Interfaces & Enums Imports
 import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
-import { TAlertSettingUptime } from "@modules/alerts/types";
-import { TBlockchainValidator } from "@modules/blockchains/types";
+import { IManageUserAlertsTabProps } from "@modules/alerts/interfaces";
 
 // ** Utils Imports
 import {
@@ -34,31 +33,21 @@ import {
   CardContent,
 } from "@mui/material";
 
-interface IProps {
-  blockchainValidator: TBlockchainValidator;
-  uptimeIncreasedSetting: TAlertSettingUptime | undefined;
-  setUptimeIncreasedSetting: (value: TAlertSettingUptime | undefined) => void;
-  uptimeDecreasedSetting: TAlertSettingUptime | undefined;
-  setUptimeDecreasedSetting: (value: TAlertSettingUptime | undefined) => void;
-  uptimeIncreasedChannel: EAlertChannel;
-  setUptimeIncreasedChannel: (value: EAlertChannel) => void;
-  uptimeDecreasedChannel: EAlertChannel;
-  setUptimeDecreasedChannel: (value: EAlertChannel) => void;
-}
-
-const UptimeTab = (props: IProps) => {
+const UptimeTab = (props: IManageUserAlertsTabProps) => {
   // ** Props
-  const {
-    blockchainValidator,
-    uptimeIncreasedSetting,
-    setUptimeIncreasedSetting,
-    uptimeDecreasedSetting,
-    setUptimeDecreasedSetting,
-    uptimeIncreasedChannel,
-    setUptimeIncreasedChannel,
-    uptimeDecreasedChannel,
-    setUptimeDecreasedChannel,
-  } = props;
+  const { blockchainValidator } = props;
+
+  // ** State
+  const [uptimeIncreasedSetting, setUptimeIncreasedSetting] = useState<
+    TAlertSettingUptime | undefined
+  >(undefined);
+  const [uptimeDecreasedSetting, setUptimeDecreasedSetting] = useState<
+    TAlertSettingUptime | undefined
+  >(undefined);
+  const [uptimeIncreasedChannel, setUptimeIncreasedChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
+  const [uptimeDecreasedChannel, setUptimeDecreasedChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
 
   // ** Hooks
   const { t } = useTranslation();

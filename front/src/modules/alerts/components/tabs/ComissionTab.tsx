@@ -1,15 +1,14 @@
 // ** React Imports
-import { memo, useEffect, Fragment, ChangeEvent } from "react";
+import { memo, useState, useEffect, Fragment, ChangeEvent } from "react";
 
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
 import { useAlertService } from "@hooks/useAlertService";
-import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces & Enums Imports
 import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
 import { TAlertSettingComission } from "@modules/alerts/types";
-import { TBlockchainValidator } from "@modules/blockchains/types";
+import { IManageUserAlertsTabProps } from "@modules/alerts/interfaces";
 
 // ** Utils Imports
 import {
@@ -35,35 +34,21 @@ import {
   CardContent,
 } from "@mui/material";
 
-interface IProps {
-  blockchainValidator: TBlockchainValidator;
-  comissionIncreasedSetting: TAlertSettingComission | undefined;
-  setComissionIncreasedSetting: (
-    value: TAlertSettingComission | undefined
-  ) => void;
-  comissionDecreasedSetting: TAlertSettingComission | undefined;
-  setComissionDecreasedSetting: (
-    value: TAlertSettingComission | undefined
-  ) => void;
-  comissionIncreasedChannel: EAlertChannel;
-  setComissionIncreasedChannel: (value: EAlertChannel) => void;
-  comissionDecreasedChannel: EAlertChannel;
-  setComisssionDecreasedChannel: (value: EAlertChannel) => void;
-}
-
-const ComissisionTab = (props: IProps) => {
+const ComissisionTab = (props: IManageUserAlertsTabProps) => {
   // ** Props
-  const {
-    blockchainValidator,
-    comissionIncreasedSetting,
-    setComissionIncreasedSetting,
-    comissionDecreasedSetting,
-    setComissionDecreasedSetting,
-    comissionIncreasedChannel,
-    setComissionIncreasedChannel,
-    comissionDecreasedChannel,
-    setComissionDecreasedChannel,
-  } = props;
+  const { blockchainValidator } = props;
+
+  // ** State
+  const [comissionIncreasedSetting, setComissionIncreasedSetting] = useState<
+    TAlertSettingComission | undefined
+  >(undefined);
+  const [comissionDecreasedSetting, setComissionDecreasedSetting] = useState<
+    TAlertSettingComission | undefined
+  >(undefined);
+  const [comissionIncreasedChannel, setComissionIncreasedChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
+  const [comissionDecreasedChannel, setComissionDecreasedChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
 
   // ** Hooks
   const { t } = useTranslation();

@@ -149,8 +149,7 @@ class AlertSettingJailedAdmin(admin.ModelAdmin):
     inlines = (UserAlertSettingJailedStatusInline,)
     list_display = (
         "__str__",
-        "false_to_true",
-        "true_to_false",
+        "value",
         "users_count",
         "sms_count",
         "status",
@@ -182,7 +181,7 @@ class AlertSettingTombstonedAdmin(admin.ModelAdmin):
     inlines = (UserAlertSettingTombstonedStatusInline,)
     list_display = (
         "__str__",
-        "false_to_true",
+        "value",
         "users_count",
         "sms_count",
         "status",
@@ -214,8 +213,7 @@ class AlertSettingBondedAdmin(admin.ModelAdmin):
     inlines = (UserAlertSettingBondedStatusInline,)
     list_display = (
         "__str__",
-        "true_to_false",
-        "false_to_true",
+        "value",
         "users_count",
         "sms_count",
         "status",

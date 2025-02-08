@@ -1,4 +1,8 @@
-import { EAlertType, EAlertChannel } from "@modules/alerts/enums";
+import {
+  EAlertType,
+  EAlertChannel,
+  EAlertValueStatus,
+} from "@modules/alerts/enums";
 
 type TAlertSettingBase = {
   id: number;
@@ -19,17 +23,15 @@ export type TAlertSettingComission = TAlertSettingBase & {
 };
 
 export type TAlertSettingJailedStatus = TAlertSettingBase & {
-  false_to_true: boolean;
-  true_to_false: boolean;
+  value: EAlertValueStatus;
 };
 
 export type TAlertSettingTombstonedStatus = TAlertSettingBase & {
-  false_to_true: boolean;
+  value: EAlertValueStatus;
 };
 
 export type TAlertSettingBondedStatus = TAlertSettingBase & {
-  false_to_true: boolean;
-  true_to_false: boolean;
+  value: EAlertValueStatus;
 };
 
 export type TAlertSettingsResponse = {

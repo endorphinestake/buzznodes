@@ -1,4 +1,5 @@
 import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
+import { TBlockchainValidator } from "@modules/blockchains/types";
 
 export interface IManageUserAlertSetting {
   blockchain_validator_id: number;
@@ -15,4 +16,8 @@ export interface IManageUserAlertsButtonProps {
   handleDeleteAlerts: () => void;
   isDisabledSave: boolean;
   isCanDelete: boolean;
+}
+
+export interface IManageUserAlertsTabProps {
+  blockchainValidator: TBlockchainValidator;
 }

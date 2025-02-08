@@ -51,25 +51,19 @@ class AlertSettingComissionSerializer(AlertSettingBaseSerializer):
 class AlertSettingJailedStatusSerializer(AlertSettingBaseSerializer):
     class Meta(AlertSettingBaseSerializer.Meta):
         model = AlertSettingJailedStatus
-        fields = AlertSettingBaseSerializer.Meta.fields + (
-            "false_to_true",
-            "true_to_false",
-        )
+        fields = AlertSettingBaseSerializer.Meta.fields + ("value",)
 
 
 class AlertSettingTombstonedStatusSerializer(AlertSettingBaseSerializer):
     class Meta(AlertSettingBaseSerializer.Meta):
         model = AlertSettingTombstonedStatus
-        fields = AlertSettingBaseSerializer.Meta.fields + ("false_to_true",)
+        fields = AlertSettingBaseSerializer.Meta.fields + ("value",)
 
 
 class AlertSettingBondedStatusSerializer(AlertSettingBaseSerializer):
     class Meta(AlertSettingBaseSerializer.Meta):
         model = AlertSettingBondedStatus
-        fields = AlertSettingBaseSerializer.Meta.fields + (
-            "false_to_true",
-            "true_to_false",
-        )
+        fields = AlertSettingBaseSerializer.Meta.fields + ("value",)
 
 
 class UserAlertSettingBaseSerializer(serializers.ModelSerializer):

@@ -1,5 +1,5 @@
 // ** React Imports
-import { memo, useEffect, Fragment, ChangeEvent } from "react";
+import { memo, useState, useEffect, Fragment, ChangeEvent } from "react";
 
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
@@ -8,8 +8,7 @@ import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces & Enums Imports
 import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
-import { TAlertSettingVotingPower } from "@modules/alerts/types";
-import { TBlockchainValidator } from "@modules/blockchains/types";
+import { IManageUserAlertsTabProps } from "@modules/alerts/interfaces";
 
 // ** Utils Imports
 import {
@@ -35,35 +34,19 @@ import {
   CardContent,
 } from "@mui/material";
 
-interface IProps {
-  blockchainValidator: TBlockchainValidator;
-  votingPowerIncreasedSetting: TAlertSettingVotingPower | undefined;
-  setVotingPowerIncreasedSetting: (
-    value: TAlertSettingVotingPower | undefined
-  ) => void;
-  votingPowerDecreasedSetting: TAlertSettingVotingPower | undefined;
-  setVotingPowerDecreasedSetting: (
-    value: TAlertSettingVotingPower | undefined
-  ) => void;
-  votingPowerIncreasedChannel: EAlertChannel;
-  setVotingPowerIncreasedChannel: (value: EAlertChannel) => void;
-  votingPowerDecreasedChannel: EAlertChannel;
-  setVotingPowerDecreasedChannel: (value: EAlertChannel) => void;
-}
-
-const VotingPowerTab = (props: IProps) => {
+const VotingPowerTab = (props: IManageUserAlertsTabProps) => {
   // ** Props
-  const {
-    blockchainValidator,
-    votingPowerIncreasedSetting,
-    setVotingPowerIncreasedSetting,
-    votingPowerDecreasedSetting,
-    setVotingPowerDecreasedSetting,
-    votingPowerIncreasedChannel,
-    setVotingPowerIncreasedChannel,
-    votingPowerDecreasedChannel,
-    setVotingPowerDecreasedChannel,
-  } = props;
+  const { blockchainValidator } = props;
+
+  // ** State
+  const [votingPowerIncreasedSetting, setVotingPowerIncreasedSetting] =
+    useState<TAlertSettingVotingPower | undefined>(undefined);
+  const [votingPowerDecreasedSetting, setVotingPowerDecreasedSetting] =
+    useState<TAlertSettingVotingPower | undefined>(undefined);
+  const [votingPowerIncreasedChannel, setVotingPowerIncreasedChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
+  const [votingPowerDecreasedChannel, setVotingPowerDecreasedChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
 
   // ** Hooks
   const { t } = useTranslation();

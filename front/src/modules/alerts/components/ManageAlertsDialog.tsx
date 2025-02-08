@@ -6,15 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useAlertService } from "@hooks/useAlertService";
 
 // ** Types & Interfaces & Enums Imports
-import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
-import {
-  TAlertSettingVotingPower,
-  TAlertSettingUptime,
-  TAlertSettingComission,
-  TAlertSettingJailedStatus,
-  TAlertSettingTombstonedStatus,
-  TAlertSettingBondedStatus,
-} from "@modules/alerts/types";
+import { EAlertType } from "@modules/alerts/enums";
 import { TBlockchainValidator } from "@modules/blockchains/types";
 
 // ** Shared Components Imports
@@ -23,6 +15,7 @@ import DialogComponent from "@modules/shared/components/Dialog";
 import VotingPowerTab from "@modules/alerts/components/tabs/VotingPowerTab";
 import UptimeTab from "@modules/alerts/components/tabs/UptimeTab";
 import ComissionTab from "@modules/alerts/components/tabs/ComissionTab";
+import JailedTab from "@modules/alerts/components/tabs/JailedTab";
 
 // ** Mui Imports
 import { Tab, Typography } from "@mui/material";
@@ -58,36 +51,20 @@ const ManageAlertsDialog = (props: IProps) => {
     EAlertType.VOTING_POWER
   );
 
-  const [votingPowerIncreasedSetting, setVotingPowerIncreasedSetting] =
-    useState<TAlertSettingVotingPower | undefined>(undefined);
-  const [votingPowerDecreasedSetting, setVotingPowerDecreasedSetting] =
-    useState<TAlertSettingVotingPower | undefined>(undefined);
-  const [votingPowerIncreasedChannel, setVotingPowerIncreasedChannel] =
-    useState<EAlertChannel>(EAlertChannel.SMS);
-  const [votingPowerDecreasedChannel, setVotingPowerDecreasedChannel] =
-    useState<EAlertChannel>(EAlertChannel.SMS);
+  // // Tombstoned status
+  // const [tombstonedFalseToTrueSetting, setTombstonedFalseToTrueSetting] =
+  //   useState<boolean>(false);
+  // const [tombstonedStatusChannel, setTombstonedStatusChannel] =
+  //   useState<EAlertChannel>(EAlertChannel.SMS);
 
-  const [uptimeIncreasedSetting, setUptimeIncreasedSetting] = useState<
-    TAlertSettingUptime | undefined
-  >(undefined);
-  const [uptimeDecreasedSetting, setUptimeDecreasedSetting] = useState<
-    TAlertSettingUptime | undefined
-  >(undefined);
-  const [uptimeIncreasedChannel, setUptimeIncreasedChannel] =
-    useState<EAlertChannel>(EAlertChannel.SMS);
-  const [uptimeDecreasedChannel, setUptimeDecreasedChannel] =
-    useState<EAlertChannel>(EAlertChannel.SMS);
-
-  const [comissionIncreasedSetting, setComissionIncreasedSetting] = useState<
-    TAlertSettingComission | undefined
-  >(undefined);
-  const [comissionDecreasedSetting, setComissionDecreasedSetting] = useState<
-    TAlertSettingComission | undefined
-  >(undefined);
-  const [comissionIncreasedChannel, setComissionIncreasedChannel] =
-    useState<EAlertChannel>(EAlertChannel.SMS);
-  const [comissionDecreasedChannel, setComissionDecreasedChannel] =
-    useState<EAlertChannel>(EAlertChannel.SMS);
+  // // Bonded status
+  // const [bondedFalseToTrueSetting, setBondedFalseToTrueSetting] =
+  //   useState<boolean>(false);
+  // const [bondedTrueToFalseSetting, setBondedTrueToFalseSetting] =
+  //   useState<boolean>(false);
+  // const [bondedStatusChannel, setBondedStatusChannel] = useState<EAlertChannel>(
+  //   EAlertChannel.SMS
+  // );
 
   // ** Handlers
   const handleTabChange = (event: SyntheticEvent, newValue: EAlertType) => {
@@ -182,7 +159,7 @@ const ManageAlertsDialog = (props: IProps) => {
               />
               <Tab
                 value={EAlertType.JAILED}
-                label={t(`Jailed`)}
+                label={t(`Jailed status`)}
                 icon={
                   userAlertSettings[blockchainValidator.id]?.[
                     EAlertType.JAILED
@@ -225,53 +202,19 @@ const ManageAlertsDialog = (props: IProps) => {
               value={EAlertType.VOTING_POWER}
               sx={{ width: "100%", mt: 4 }}
             >
-              <VotingPowerTab
-                blockchainValidator={blockchainValidator}
-                votingPowerIncreasedSetting={votingPowerIncreasedSetting}
-                setVotingPowerIncreasedSetting={setVotingPowerIncreasedSetting}
-                votingPowerDecreasedSetting={votingPowerDecreasedSetting}
-                setVotingPowerDecreasedSetting={setVotingPowerDecreasedSetting}
-                votingPowerIncreasedChannel={votingPowerIncreasedChannel}
-                setVotingPowerIncreasedChannel={setVotingPowerIncreasedChannel}
-                votingPowerDecreasedChannel={votingPowerDecreasedChannel}
-                setVotingPowerDecreasedChannel={setVotingPowerDecreasedChannel}
-              />
+              <VotingPowerTab blockchainValidator={blockchainValidator} />
             </TabPanel>
             <TabPanel value={EAlertType.UPTIME} sx={{ width: "100%", mt: 4 }}>
-              <UptimeTab
-                blockchainValidator={blockchainValidator}
-                uptimeIncreasedSetting={uptimeIncreasedSetting}
-                setUptimeIncreasedSetting={setUptimeIncreasedSetting}
-                uptimeDecreasedSetting={uptimeDecreasedSetting}
-                setUptimeDecreasedSetting={setUptimeDecreasedSetting}
-                uptimeIncreasedChannel={uptimeIncreasedChannel}
-                setUptimeIncreasedChannel={setUptimeIncreasedChannel}
-                uptimeDecreasedChannel={uptimeDecreasedChannel}
-                setUptimeDecreasedChannel={setUptimeDecreasedChannel}
-              />
+              <UptimeTab blockchainValidator={blockchainValidator} />
             </TabPanel>
             <TabPanel
               value={EAlertType.COMISSION}
               sx={{ width: "100%", mt: 4 }}
             >
-              <ComissionTab
-                blockchainValidator={blockchainValidator}
-                comissionIncreasedSetting={comissionIncreasedSetting}
-                setComissionIncreasedSetting={setComissionIncreasedSetting}
-                comissionDecreasedSetting={comissionDecreasedSetting}
-                setComissionDecreasedSetting={setComissionDecreasedSetting}
-                comissionIncreasedChannel={comissionIncreasedChannel}
-                setComissionIncreasedChannel={setComissionIncreasedChannel}
-                comissionDecreasedChannel={comissionDecreasedChannel}
-                setComissionDecreasedChannel={setComissionDecreasedChannel}
-              />
+              <ComissionTab blockchainValidator={blockchainValidator} />
             </TabPanel>
             <TabPanel value={EAlertType.JAILED} sx={{ width: "100%", mt: 4 }}>
-              <Typography>
-                Danish tiramisu jujubes cupcake chocolate bar cake cheesecake
-                chupa chups. Macaroon ice cream tootsie roll carrot cake gummi
-                bears.
-              </Typography>
+              <JailedTab blockchainValidator={blockchainValidator} />
             </TabPanel>
             <TabPanel
               value={EAlertType.TOMBSTONED}

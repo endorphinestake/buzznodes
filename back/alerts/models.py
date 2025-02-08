@@ -21,6 +21,10 @@ class AlertSettingBase(models.Model):
         SMS = "SMS", _("SMS")
         VOICE = "VOICE", _("Voice")
 
+    class ValueStatus(models.TextChoices):
+        FALSE_TO_TRUE = "FALSE_TO_TRUE", _("False to True")
+        TRUE_TO_FALSE = "TRUE_TO_FALSE", _("True to False")
+
     channels = MultiSelectField(
         choices=Channels.choices,
         max_length=10,
@@ -43,8 +47,6 @@ class AlertSettingBase(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
 
     value = None
-    false_to_true = None
-    true_to_false = None
 
     def __str__(self):
         return (
@@ -108,8 +110,12 @@ class AlertSettingComission(AlertSettingBase):
 
 
 class AlertSettingJailedStatus(AlertSettingBase):
-    false_to_true = models.BooleanField(default=True)
-    true_to_false = models.BooleanField(default=True)
+    value = models.CharField(
+        unique=True,
+        max_length=25,
+        choices=AlertSettingBase.ValueStatus.choices,
+        default=AlertSettingBase.ValueStatus.FALSE_TO_TRUE,
+    )
 
     class Meta:
         verbose_name = _("Jailed Status Alert Settings")
@@ -117,7 +123,12 @@ class AlertSettingJailedStatus(AlertSettingBase):
 
 
 class AlertSettingTombstonedStatus(AlertSettingBase):
-    false_to_true = models.BooleanField(default=True)
+    value = models.CharField(
+        unique=True,
+        max_length=25,
+        choices=AlertSettingBase.ValueStatus.choices,
+        default=AlertSettingBase.ValueStatus.FALSE_TO_TRUE,
+    )
 
     class Meta:
         verbose_name = _("Tombstoned Status Alert Settings")
@@ -125,8 +136,12 @@ class AlertSettingTombstonedStatus(AlertSettingBase):
 
 
 class AlertSettingBondedStatus(AlertSettingBase):
-    true_to_false = models.BooleanField(default=True)
-    false_to_true = models.BooleanField(default=True)
+    value = models.CharField(
+        unique=True,
+        max_length=25,
+        choices=AlertSettingBase.ValueStatus.choices,
+        default=AlertSettingBase.ValueStatus.FALSE_TO_TRUE,
+    )
 
     class Meta:
         verbose_name = _("Bonded Status Alert Settings")
