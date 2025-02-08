@@ -7,6 +7,7 @@ import { useAlertService } from "@hooks/useAlertService";
 
 // ** Types & Interfaces & Enums Imports
 import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
+import { TAlertSettingUptime } from "@modules/alerts/types";
 import { IManageUserAlertsTabProps } from "@modules/alerts/interfaces";
 
 // ** Utils Imports
@@ -273,7 +274,10 @@ const UptimeTab = (props: IManageUserAlertsTabProps) => {
         handleClearAlerts={handleClearAlerts}
         handleDeleteAlerts={handleDeleteAlerts}
         isDisabledSave={!uptimeIncreasedSetting && !uptimeDecreasedSetting}
-        isCanDelete={uptimeIncreasedUserSetting || uptimeDecreasedUserSetting}
+        isCanDelete={
+          Boolean(uptimeIncreasedUserSetting) ||
+          Boolean(uptimeDecreasedUserSetting)
+        }
       />
     </Grid>
   );

@@ -173,7 +173,7 @@ const TombstonedTab = (props: IManageUserAlertsTabProps) => {
         handleClearAlerts={handleClearAlerts}
         handleDeleteAlerts={handleDeleteAlerts}
         isDisabledSave={!tombstonedFalseToTrueSetting}
-        isCanDelete={tombstonedFalseToTrueUserSetting}
+        isCanDelete={Boolean(tombstonedFalseToTrueUserSetting)}
         isHideClear={true}
       />
     </Grid>

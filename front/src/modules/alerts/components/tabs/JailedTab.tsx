@@ -268,7 +268,8 @@ const JailedTab = (props: IManageUserAlertsTabProps) => {
         handleDeleteAlerts={handleDeleteAlerts}
         isDisabledSave={!jailedFalseToTrueSetting && !jailedTrueToFalseSetting}
         isCanDelete={
-          jailedFalseToTrueUserSetting || jailedTrueToFalseUserSetting
+          Boolean(jailedFalseToTrueUserSetting) ||
+          Boolean(jailedTrueToFalseUserSetting)
         }
         isHideClear={true}
       />

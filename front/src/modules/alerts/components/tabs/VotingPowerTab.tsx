@@ -8,6 +8,7 @@ import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces & Enums Imports
 import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
+import { TAlertSettingVotingPower } from "@modules/alerts/types";
 import { IManageUserAlertsTabProps } from "@modules/alerts/interfaces";
 
 // ** Utils Imports
@@ -282,7 +283,8 @@ const VotingPowerTab = (props: IManageUserAlertsTabProps) => {
           !votingPowerIncreasedSetting && !votingPowerDecreasedSetting
         }
         isCanDelete={
-          votingPowerIncreasedUserSetting || votingPowerDecreasedUserSetting
+          Boolean(votingPowerIncreasedUserSetting) ||
+          Boolean(votingPowerDecreasedUserSetting)
         }
       />
     </Grid>

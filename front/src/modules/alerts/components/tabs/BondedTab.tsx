@@ -268,7 +268,8 @@ const BondedTab = (props: IManageUserAlertsTabProps) => {
         handleDeleteAlerts={handleDeleteAlerts}
         isDisabledSave={!bondedFalseToTrueSetting && !bondedTrueToFalseSetting}
         isCanDelete={
-          bondedFalseToTrueUserSetting || bondedTrueToFalseUserSetting
+          Boolean(bondedFalseToTrueUserSetting) ||
+          Boolean(bondedTrueToFalseUserSetting)
         }
         isHideClear={true}
       />

@@ -277,7 +277,8 @@ const ComissisionTab = (props: IManageUserAlertsTabProps) => {
           !comissionIncreasedSetting && !comissionDecreasedSetting
         }
         isCanDelete={
-          comissionIncreasedUserSetting || comissionDecreasedUserSetting
+          Boolean(comissionIncreasedUserSetting) ||
+          Boolean(comissionDecreasedUserSetting)
         }
       />
     </Grid>
