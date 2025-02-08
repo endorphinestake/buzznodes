@@ -6,7 +6,11 @@ import { useTranslation } from "react-i18next";
 import { useAlertService } from "@hooks/useAlertService";
 
 // ** Types & Interfaces & Enums Imports
-import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
+import {
+  EAlertChannel,
+  EAlertType,
+  EAlertValueStatus,
+} from "@modules/alerts/enums";
 import { TAlertSettingJailedStatus } from "@modules/alerts/types";
 import { TBlockchainValidator } from "@modules/blockchains/types";
 import { IManageUserAlertsTabProps } from "@modules/alerts/interfaces";
@@ -41,81 +45,92 @@ const JailedTab = (props: IManageUserAlertsTabProps) => {
   // ** Props
   const { blockchainValidator } = props;
 
-  // ** State
-  const [jailedStatusSetting, setJailedStatusSetting] = useState<
-    TAlertSettingJailedStatus | undefined
-  >(undefined);
-  const [jailedStatusChannel, setJailedStatusChannel] = useState<EAlertChannel>(
-    EAlertChannel.SMS
-  );
-  const [jailedFalseToTrueSetting, setJailedFalseToTrueSetting] =
-    useState<boolean>(false);
-  const [jailedTrueToFalseSetting, setJailedTrueToFalseSetting] =
-    useState<boolean>(false);
-
   // ** Hooks
   const { t } = useTranslation();
   const { dispatch, manageUserAlertSetting, alertSettings, userAlertSettings } =
     useAlertService();
 
+  // ** State
+  const [jailedFalseToTrueSetting, setJailedFalseToTrueSetting] = useState<
+    TAlertSettingJailedStatus | undefined
+  >(undefined);
+  const [jailedTrueToFalseSetting, setJailedTrueToFalseSetting] = useState<
+    TAlertSettingJailedStatus | undefined
+  >(undefined);
+  const [jailedFalseToTrueChannel, setJailedFalseToTrueChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
+  const [jailedTrueToFalseChannel, setJailedTrueToFalseChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
+
   // ** Vars
-  const jailedStatusSettings = alertSettings[EAlertType.JAILED];
-  const jailedStatusUserSetting = getUserSettingBySettings(
-    jailedStatusSettings,
+  const falseToTrueJailedSettings = alertSettings[EAlertType.JAILED].filter(
+    (item) => item.value === EAlertValueStatus.FALSE_TO_TRUE
+  );
+
+  const trueToFalseJailedSettings = alertSettings[EAlertType.JAILED].filter(
+    (item) => item.value === EAlertValueStatus.TRUE_TO_FALSE
+  );
+
+  const jailedFalseToTrueUserSetting = getUserSettingBySettings(
+    falseToTrueJailedSettings,
+    userAlertSettings[blockchainValidator.id]?.[EAlertType.JAILED] || []
+  );
+
+  const jailedTrueToFalseUserSetting = getUserSettingBySettings(
+    trueToFalseJailedSettings,
     userAlertSettings[blockchainValidator.id]?.[EAlertType.JAILED] || []
   );
 
   // ** Handlers
   const handleSaveAlerts = () => {
-    console.log("handleSaveAlerts...");
-    // let payload = [];
-    // // Update or Create Increase
-    // if (comissionIncreasedSetting) {
-    //   payload.push({
-    //     blockchain_validator_id: blockchainValidator.id,
-    //     setting_type: EAlertType.COMISSION,
-    //     setting_id: comissionIncreasedSetting.id,
-    //     user_setting_id: comissionIncreasedUserSetting?.id,
-    //     channel: comissionIncreasedChannel,
-    //   });
-    //   // Delete Increase
-    // } else if (comissionIncreasedUserSetting) {
-    //   payload.push({
-    //     blockchain_validator_id: blockchainValidator.id,
-    //     setting_type: EAlertType.COMISSION,
-    //     setting_id: comissionIncreasedUserSetting.setting_id,
-    //     user_setting_id: comissionIncreasedUserSetting.id,
-    //     channel: comissionIncreasedUserSetting.channels,
-    //     is_delete: true,
-    //   });
-    // }
+    let payload = [];
+    // Update or Create FalseToTrue
+    if (jailedFalseToTrueSetting) {
+      payload.push({
+        blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.JAILED,
+        setting_id: jailedFalseToTrueSetting.id,
+        user_setting_id: jailedFalseToTrueUserSetting?.id,
+        channel: jailedFalseToTrueChannel,
+      });
+      // Delete Increase
+    } else if (jailedFalseToTrueUserSetting) {
+      payload.push({
+        blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.JAILED,
+        setting_id: jailedFalseToTrueUserSetting.setting_id,
+        user_setting_id: jailedFalseToTrueUserSetting.id,
+        channel: jailedFalseToTrueUserSetting.channels,
+        is_delete: true,
+      });
+    }
 
-    // // Update or Create Decreased
-    // if (comissionDecreasedSetting) {
-    //   payload.push({
-    //     blockchain_validator_id: blockchainValidator.id,
-    //     setting_type: EAlertType.COMISSION,
-    //     setting_id: comissionDecreasedSetting.id,
-    //     user_setting_id: comissionDecreasedUserSetting?.id,
-    //     channel: comissionDecreasedChannel,
-    //   });
-    //   // Delete Increase
-    // } else if (comissionDecreasedUserSetting) {
-    //   payload.push({
-    //     blockchain_validator_id: blockchainValidator.id,
-    //     setting_type: EAlertType.COMISSION,
-    //     setting_id: comissionDecreasedUserSetting.setting_id,
-    //     user_setting_id: comissionDecreasedUserSetting.id,
-    //     channel: comissionDecreasedUserSetting.channels,
-    //     is_delete: true,
-    //   });
-    // }
+    // Update or Create TrueToFalse
+    if (jailedTrueToFalseSetting) {
+      payload.push({
+        blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.JAILED,
+        setting_id: jailedTrueToFalseSetting.id,
+        user_setting_id: jailedTrueToFalseUserSetting?.id,
+        channel: jailedTrueToFalseChannel,
+      });
+      // Delete Increase
+    } else if (jailedTrueToFalseUserSetting) {
+      payload.push({
+        blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.JAILED,
+        setting_id: jailedTrueToFalseUserSetting.setting_id,
+        user_setting_id: jailedTrueToFalseUserSetting.id,
+        channel: jailedTrueToFalseUserSetting.channels,
+        is_delete: true,
+      });
+    }
 
-    // if (payload.length) {
-    //   dispatch(manageUserAlertSetting(payload));
-    // } else {
-    //   Notify("warning", t(`Parameter not selected!`));
-    // }
+    if (payload.length) {
+      dispatch(manageUserAlertSetting(payload));
+    } else {
+      Notify("warning", t(`Parameter not selected!`));
+    }
   };
 
   const handleClearAlerts = () => {
@@ -124,60 +139,56 @@ const JailedTab = (props: IManageUserAlertsTabProps) => {
   };
 
   const handleDeleteAlerts = () => {
-    console.log("handleDeleteAlerts...");
-    // let payload = [
-    //   comissionIncreasedUserSetting && {
-    //     blockchain_validator_id: blockchainValidator.id,
-    //     setting_type: EAlertType.COMISSION,
-    //     setting_id: comissionIncreasedUserSetting.setting_id,
-    //     user_setting_id: comissionIncreasedUserSetting.id,
-    //     channel: comissionIncreasedUserSetting.channels,
-    //     is_delete: true,
-    //   },
-    //   comissionDecreasedUserSetting && {
-    //     blockchain_validator_id: blockchainValidator.id,
-    //     setting_type: EAlertType.COMISSION,
-    //     setting_id: comissionDecreasedUserSetting.setting_id,
-    //     user_setting_id: comissionDecreasedUserSetting.id,
-    //     channel: comissionDecreasedUserSetting.channels,
-    //     is_delete: true,
-    //   },
-    // ].filter(Boolean);
+    let payload = [
+      jailedFalseToTrueUserSetting && {
+        blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.JAILED,
+        setting_id: jailedFalseToTrueUserSetting.setting_id,
+        user_setting_id: jailedFalseToTrueUserSetting.id,
+        channel: jailedFalseToTrueUserSetting.channels,
+        is_delete: true,
+      },
+      jailedTrueToFalseUserSetting && {
+        blockchain_validator_id: blockchainValidator.id,
+        setting_type: EAlertType.JAILED,
+        setting_id: jailedTrueToFalseUserSetting.setting_id,
+        user_setting_id: jailedTrueToFalseUserSetting.id,
+        channel: jailedTrueToFalseUserSetting.channels,
+        is_delete: true,
+      },
+    ].filter(Boolean);
 
-    // if (payload.length) {
-    //   dispatch(manageUserAlertSetting(payload));
-    //   handleClearAlerts();
-    // } else {
-    //   Notify("warning", t(`Parameter not selected!`));
-    // }
+    if (payload.length) {
+      dispatch(manageUserAlertSetting(payload));
+      handleClearAlerts();
+    } else {
+      Notify("warning", t(`Parameter not selected!`));
+    }
   };
 
   // Event on BlockchainChanged
   useEffect(() => {
-    const jailedSetting = getSettingByUserSettings(
-      jailedStatusSettings,
-      jailedStatusUserSetting ? [jailedStatusUserSetting] : []
+    const falseToTrueSetting = getSettingByUserSettings(
+      falseToTrueJailedSettings,
+      jailedFalseToTrueUserSetting ? [jailedFalseToTrueUserSetting] : []
     );
-    setJailedStatusSetting(jailedSetting);
-    setJailedFalseToTrueSetting(
-      Boolean(jailedStatusUserSetting?.false_to_true)
+    setJailedFalseToTrueSetting(falseToTrueSetting);
+
+    const trueToFalseSetting = getSettingByUserSettings(
+      trueToFalseJailedSettings,
+      jailedTrueToFalseUserSetting ? [jailedTrueToFalseUserSetting] : []
     );
-    setJailedTrueToFalseSetting(
-      Boolean(jailedStatusUserSetting?.true_to_false)
-    );
-    console.log("jailedStatusUserSetting: ", jailedStatusUserSetting);
-    console.log("jailedSetting: ", jailedSetting);
-    console.log("jailedStatusSettings: ", jailedStatusSettings);
-    console.log(
-      "jailed channel: ",
-      jailedStatusUserSetting?.channels ||
-        jailedSetting?.channels?.[0] ||
-        jailedStatusSettings?.[0]?.channels?.[0] ||
+    setJailedTrueToFalseSetting(trueToFalseSetting);
+
+    setJailedFalseToTrueChannel(
+      jailedFalseToTrueUserSetting?.channels ||
+        falseToTrueSetting?.channels?.[0] ||
         EAlertChannel.SMS
     );
-    setJailedStatusChannel(
-      jailedStatusUserSetting?.channels ||
-        jailedSetting?.channels?.[0] ||
+
+    setJailedTrueToFalseChannel(
+      jailedTrueToFalseUserSetting?.channels ||
+        trueToFalseSetting?.channels?.[0] ||
         EAlertChannel.SMS
     );
   }, [blockchainValidator]);
@@ -186,54 +197,63 @@ const JailedTab = (props: IManageUserAlertsTabProps) => {
     <Grid container spacing={4}>
       <Grid item xs={6}>
         <Card>
-          <CardHeader
-            title={t(`When the status changes`)}
-            titleTypographyProps={{ variant: "h6" }}
-          />
           <CardContent>
             <FormGroup row>
-              {jailedStatusSettings.map((alertSetting) => (
-                <>
-                  {typeof alertSetting.false_to_true === "boolean" && (
-                    <FormControlLabel
-                      label={t(`from "False" to "True"`)}
-                      control={
-                        <Switch
-                          checked={jailedFalseToTrueSetting}
-                          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                            setJailedFalseToTrueSetting(event.target.checked)
-                          }
-                          disabled={!alertSetting.false_to_true}
-                        />
-                      }
+              {falseToTrueJailedSettings.map((alertSetting) => (
+                <FormControlLabel
+                  key={alertSetting.id}
+                  label={t(`from "False" to "True"`)}
+                  control={
+                    <Switch
+                      checked={Boolean(jailedFalseToTrueSetting)}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                        setJailedFalseToTrueSetting(
+                          event.target.checked ? alertSetting : undefined
+                        );
+                      }}
+                      disabled={!alertSetting.channels.length}
                     />
-                  )}
-                  {typeof alertSetting.true_to_false === "boolean" && (
-                    <FormControlLabel
-                      label={t(`from "True" to "False"`)}
-                      control={
-                        <Switch
-                          checked={jailedTrueToFalseSetting}
-                          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                            setJailedTrueToFalseSetting(event.target.checked)
-                          }
-                          disabled={!alertSetting.true_to_false}
-                        />
-                      }
-                    />
-                  )}
-                </>
+                  }
+                />
               ))}
             </FormGroup>
 
             <ManageAlertsChannels
-              channel={jailedStatusChannel}
-              setChannel={setJailedStatusChannel}
-              channels={
-                jailedStatusSetting?.channels ||
-                jailedStatusSettings?.[0]?.channels ||
-                []
-              }
+              channel={jailedFalseToTrueChannel}
+              setChannel={setJailedFalseToTrueChannel}
+              channels={jailedFalseToTrueSetting?.channels || []}
+            />
+          </CardContent>
+        </Card>
+      </Grid>
+
+      <Grid item xs={6}>
+        <Card>
+          <CardContent>
+            <FormGroup row>
+              {trueToFalseJailedSettings.map((alertSetting) => (
+                <FormControlLabel
+                  key={alertSetting.id}
+                  label={t(`from "True" to "False"`)}
+                  control={
+                    <Switch
+                      checked={Boolean(jailedTrueToFalseSetting)}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                        setJailedTrueToFalseSetting(
+                          event.target.checked ? alertSetting : undefined
+                        );
+                      }}
+                      disabled={!alertSetting.channels.length}
+                    />
+                  }
+                />
+              ))}
+            </FormGroup>
+
+            <ManageAlertsChannels
+              channel={jailedTrueToFalseChannel}
+              setChannel={setJailedTrueToFalseChannel}
+              channels={jailedTrueToFalseSetting?.channels || []}
             />
           </CardContent>
         </Card>
@@ -244,7 +264,10 @@ const JailedTab = (props: IManageUserAlertsTabProps) => {
         handleClearAlerts={handleClearAlerts}
         handleDeleteAlerts={handleDeleteAlerts}
         isDisabledSave={!jailedFalseToTrueSetting && !jailedTrueToFalseSetting}
-        isCanDelete={jailedStatusUserSetting}
+        isCanDelete={
+          jailedFalseToTrueUserSetting || jailedTrueToFalseUserSetting
+        }
+        isHideClear={true}
       />
     </Grid>
   );

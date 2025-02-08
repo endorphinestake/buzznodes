@@ -26,6 +26,7 @@ const ManageAlertsButtons = (props: IManageUserAlertsButtonProps) => {
     handleDeleteAlerts,
     isDisabledSave,
     isCanDelete,
+    isHideClear,
   } = props;
 
   // ** Hooks
@@ -70,13 +71,15 @@ const ManageAlertsButtons = (props: IManageUserAlertsButtonProps) => {
             {t(`Save`)}
           </LoadingButton>
 
-          <LoadingButton
-            variant="outlined"
-            color="primary"
-            onClick={handleClearAlerts}
-          >
-            {t(`Clear`)}
-          </LoadingButton>
+          {!isHideClear ? (
+            <LoadingButton
+              variant="outlined"
+              color="primary"
+              onClick={handleClearAlerts}
+            >
+              {t(`Clear`)}
+            </LoadingButton>
+          ) : null}
         </Grid>
 
         <Grid

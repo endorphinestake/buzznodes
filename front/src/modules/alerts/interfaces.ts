@@ -16,6 +16,7 @@ export interface IManageUserAlertsButtonProps {
   handleDeleteAlerts: () => void;
   isDisabledSave: boolean;
   isCanDelete: boolean;
+  isHideClear?: boolean;
 }
 
 export interface IManageUserAlertsTabProps {

@@ -384,19 +384,55 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 )
 
         elif isinstance(setting_instance, AlertSettingJailedStatus):
-            if user.user_alert_settings_jailed_status.filter(
-                blockchain_validator=blockchain_validator
-            ).exists():
-                raise serializers.ValidationError(
-                    {"setting_id": [_("The Alert already exists!")]}
+            # Delete
+            if validated_data.get("is_delete"):
+                if not user_setting_instance:
+                    raise serializers.ValidationError(
+                        {"setting_id": [_("Not passed required params!")]}
+                    )
+
+                user_setting_instance.delete()
+                return user_setting_instance
+
+            # Update
+            elif user_setting_instance:
+                user_setting_instance.setting = setting_instance
+                user_setting_instance.channels = validated_data["channel"]
+                user_setting_instance.current_value = blockchain_validator.jailed
+                user_setting_instance.next_value = (
+                    setting_instance.value == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
                 )
-            return UserAlertSettingJailedStatus.objects.create(
-                user=user,
-                channels=validated_data["channel"],
-                blockchain_validator=blockchain_validator,
-                setting=setting_instance,
-                current_value=blockchain_validator.jailed,
-            )
+                user_setting_instance.save()
+                return user_setting_instance
+
+            # Create
+            else:
+                if (
+                    user.user_alert_settings_jailed_status.filter(
+                        blockchain_validator=blockchain_validator,
+                        setting=setting_instance,
+                    ).exists()
+                    or user.user_alert_settings_jailed_status.filter(
+                        blockchain_validator=blockchain_validator
+                    ).count()
+                    >= 2  # 2 total: 1 false to true, 1 true to false
+                ):
+                    raise serializers.ValidationError(
+                        {"setting_id": [_("The Alert already exists!")]}
+                    )
+
+                return UserAlertSettingJailedStatus.objects.create(
+                    user=user,
+                    channels=validated_data["channel"],
+                    blockchain_validator=blockchain_validator,
+                    setting=setting_instance,
+                    current_value=blockchain_validator.jailed,
+                    next_value=(
+                        setting_instance.value
+                        == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
+                    ),
+                )
+
         elif isinstance(setting_instance, AlertSettingTombstonedStatus):
             if user.user_alert_settings_tombstoned_status.filter(
                 blockchain_validator=blockchain_validator
