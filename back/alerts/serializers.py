@@ -234,7 +234,9 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 user_setting_instance.setting = setting_instance
                 user_setting_instance.channels = validated_data["channel"]
                 user_setting_instance.current_value = blockchain_validator.voting_power
-                user_setting_instance.next_value += setting_instance.value
+                user_setting_instance.next_value = (
+                    user_setting_instance.current_value + setting_instance.value
+                )
                 user_setting_instance.save()
                 return user_setting_instance
 
@@ -337,19 +339,56 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                     next_value=next_value,
                 )
         elif isinstance(setting_instance, AlertSettingComission):
-            if user.user_alert_settings_comission.filter(
-                blockchain_validator=blockchain_validator
-            ).exists():
-                raise serializers.ValidationError(
-                    {"setting_id": [_("The Alert already exists!")]}
+            # Delete
+            if validated_data.get("is_delete"):
+                if not user_setting_instance:
+                    raise serializers.ValidationError(
+                        {"setting_id": [_("Not passed required params!")]}
+                    )
+
+                user_setting_instance.delete()
+                return user_setting_instance
+
+            # Update
+            elif user_setting_instance:
+                user_setting_instance.setting = setting_instance
+                user_setting_instance.channels = validated_data["channel"]
+                user_setting_instance.current_value = (
+                    blockchain_validator.commision_rate
                 )
-            return UserAlertSettingComission.objects.create(
-                user=user,
-                channels=validated_data["channel"],
-                blockchain_validator=blockchain_validator,
-                setting=setting_instance,
-                current_value=blockchain_validator.commision_rate,
-            )
+                user_setting_instance.next_value = (
+                    user_setting_instance.current_value + setting_instance.value
+                )
+                user_setting_instance.save()
+                return user_setting_instance
+
+            # Create
+            else:
+                if (
+                    user.user_alert_settings_comission.filter(
+                        blockchain_validator=blockchain_validator,
+                        setting=setting_instance,
+                    ).exists()
+                    or user.user_alert_settings_comission.filter(
+                        blockchain_validator=blockchain_validator
+                    ).count()
+                    >= 2  # 2 total: 1 increased, 1 decreased
+                ):
+                    raise serializers.ValidationError(
+                        {"setting_id": [_("The Alert already exists!")]}
+                    )
+
+                return UserAlertSettingComission.objects.create(
+                    user=user,
+                    channels=validated_data["channel"],
+                    blockchain_validator=blockchain_validator,
+                    setting=setting_instance,
+                    current_value=blockchain_validator.commision_rate,
+                    next_value=(
+                        blockchain_validator.commision_rate + setting_instance.value
+                    ),
+                )
+
         elif isinstance(setting_instance, AlertSettingJailedStatus):
             if user.user_alert_settings_jailed_status.filter(
                 blockchain_validator=blockchain_validator

@@ -42,8 +42,14 @@ class AlertSettingBase(models.Model):
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
 
+    value = None
+    false_to_true = None
+    true_to_false = None
+
     def __str__(self):
-        return f"{self.__class__.__name__} ({', '.join(self.channels)})"
+        return (
+            f"{self.__class__.__name__} ({', '.join(self.channels)}) {self.value or ''}"
+        )
 
     class Meta:
         abstract = True
@@ -138,6 +144,11 @@ class UserAlertSettingBase(AlertSettingBase):
     )
     template_increase = None
     template_decraease = None
+    current_value = None
+    next_value = None
+
+    def __str__(self):
+        return f"{self.__class__.__name__} ({self.channels}) {self.current_value} -> {self.next_value}"
 
     class Meta:
         abstract = True

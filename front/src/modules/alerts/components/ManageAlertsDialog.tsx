@@ -10,6 +10,10 @@ import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
 import {
   TAlertSettingVotingPower,
   TAlertSettingUptime,
+  TAlertSettingComission,
+  TAlertSettingJailedStatus,
+  TAlertSettingTombstonedStatus,
+  TAlertSettingBondedStatus,
 } from "@modules/alerts/types";
 import { TBlockchainValidator } from "@modules/blockchains/types";
 
@@ -18,6 +22,7 @@ import Notify from "@modules/shared/utils/Notify";
 import DialogComponent from "@modules/shared/components/Dialog";
 import VotingPowerTab from "@modules/alerts/components/tabs/VotingPowerTab";
 import UptimeTab from "@modules/alerts/components/tabs/UptimeTab";
+import ComissionTab from "@modules/alerts/components/tabs/ComissionTab";
 
 // ** Mui Imports
 import { Tab, Typography } from "@mui/material";
@@ -71,6 +76,17 @@ const ManageAlertsDialog = (props: IProps) => {
   const [uptimeIncreasedChannel, setUptimeIncreasedChannel] =
     useState<EAlertChannel>(EAlertChannel.SMS);
   const [uptimeDecreasedChannel, setUptimeDecreasedChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
+
+  const [comissionIncreasedSetting, setComissionIncreasedSetting] = useState<
+    TAlertSettingComission | undefined
+  >(undefined);
+  const [comissionDecreasedSetting, setComissionDecreasedSetting] = useState<
+    TAlertSettingComission | undefined
+  >(undefined);
+  const [comissionIncreasedChannel, setComissionIncreasedChannel] =
+    useState<EAlertChannel>(EAlertChannel.SMS);
+  const [comissionDecreasedChannel, setComissionDecreasedChannel] =
     useState<EAlertChannel>(EAlertChannel.SMS);
 
   // ** Handlers
@@ -238,11 +254,17 @@ const ManageAlertsDialog = (props: IProps) => {
               value={EAlertType.COMISSION}
               sx={{ width: "100%", mt: 4 }}
             >
-              <Typography>
-                Danish tiramisu jujubes cupcake chocolate bar cake cheesecake
-                chupa chups. Macaroon ice cream tootsie roll carrot cake gummi
-                bears.
-              </Typography>
+              <ComissionTab
+                blockchainValidator={blockchainValidator}
+                comissionIncreasedSetting={comissionIncreasedSetting}
+                setComissionIncreasedSetting={setComissionIncreasedSetting}
+                comissionDecreasedSetting={comissionDecreasedSetting}
+                setComissionDecreasedSetting={setComissionDecreasedSetting}
+                comissionIncreasedChannel={comissionIncreasedChannel}
+                setComissionIncreasedChannel={setComissionIncreasedChannel}
+                comissionDecreasedChannel={comissionDecreasedChannel}
+                setComissionDecreasedChannel={setComissionDecreasedChannel}
+              />
             </TabPanel>
             <TabPanel value={EAlertType.JAILED} sx={{ width: "100%", mt: 4 }}>
               <Typography>
