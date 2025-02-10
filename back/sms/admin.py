@@ -1,10 +1,17 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from sms.models import SMSAlert, SMSConfirm
+from sms.models import (
+    SMSAlertVotingPower,
+    SMSAlertUptime,
+    SMSAlertComission,
+    SMSAlertJailedStatus,
+    SMSAlertTombstonedStatus,
+    SMSAlertBondedStatus,
+    SMSConfirm,
+)
 
 
-@admin.register(SMSAlert)
 class SMSAlertAdmin(admin.ModelAdmin):
     list_display = (
         "id",
@@ -60,3 +67,11 @@ class SMSConfirmAdmin(admin.ModelAdmin):
     @admin.display(description=_("SMS Text"))
     def short_text(self, obj):
         return obj.sent_text[:50] + "..." if len(obj.sent_text) > 50 else obj.sent_text
+
+
+admin.site.register(SMSAlertVotingPower, SMSAlertAdmin)
+admin.site.register(SMSAlertUptime, SMSAlertAdmin)
+admin.site.register(SMSAlertComission, SMSAlertAdmin)
+admin.site.register(SMSAlertJailedStatus, SMSAlertAdmin)
+admin.site.register(SMSAlertTombstonedStatus, SMSAlertAdmin)
+admin.site.register(SMSAlertBondedStatus, SMSAlertAdmin)

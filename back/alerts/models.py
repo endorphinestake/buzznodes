@@ -69,31 +69,6 @@ class AlertSettingBase(models.Model):
             f"{self.__class__.__name__} ({', '.join(self.channels)}) {self.value or ''}"
         )
 
-    def generate_alert_text(
-        self,
-        increase: bool,
-        from_value: str,
-        to_value: str,
-    ) -> str:
-        template = self.template_increase if increase else self.template_decraease
-        if not template:
-            return ""
-
-        def clean_ascii(text):
-            return re.sub(r"[^\x20-\x7E]", "", text)[:140]
-
-        name = clean_ascii(self.user.first_name)
-        network = clean_ascii(self.blockchain_validator.blockchain.name)
-        moniker = clean_ascii(self.blockchain_validator.moniker)
-
-        return template.format(
-            name=name,
-            network=network,
-            moniker=moniker,
-            from_value=from_value,
-            to_value=to_value,
-        )
-
     class Meta:
         abstract = True
 
@@ -213,6 +188,35 @@ class UserAlertSettingBase(AlertSettingBase):
         next_value_str = f" -> {next_value}" if next_value is not None else ""
 
         return f"{self.__class__.__name__} ({self.channels}) {self.current_value}{next_value_str}"
+
+    def generate_alert_text(
+        self,
+        increase: bool,
+        from_value: str,
+        to_value: str,
+    ) -> str:
+        template = (
+            self.setting.template_increase
+            if increase
+            else self.setting.template_decraease
+        )
+        if not template:
+            return ""
+
+        def clean_ascii(text):
+            return re.sub(r"[^\x20-\x7E]", "", text)[:140]
+
+        name = clean_ascii(self.user.first_name or "Client")
+        network = clean_ascii(self.blockchain_validator.blockchain.name or "")
+        moniker = clean_ascii(self.blockchain_validator.moniker or "")
+
+        return template.format(
+            name=name,
+            network=network,
+            moniker=moniker,
+            from_value=from_value,
+            to_value=to_value,
+        )
 
     class Meta:
         abstract = True

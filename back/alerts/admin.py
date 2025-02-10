@@ -56,6 +56,7 @@ class AlertSettingVotingPowerAdmin(admin.ModelAdmin):
         "value",
         "users_count",
         "sms_count",
+        "voice_count",
         "status",
         "updated",
         "created",
@@ -67,6 +68,7 @@ class AlertSettingVotingPowerAdmin(admin.ModelAdmin):
         return queryset.annotate(
             users_count=Count("alert_setting_voting_power_user_settings"),
             sms_count=Count("alert_setting_voting_power_sms"),
+            voice_count=Count("alert_setting_voting_power_voice"),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -77,6 +79,10 @@ class AlertSettingVotingPowerAdmin(admin.ModelAdmin):
     def sms_count(self, obj):
         return obj.sms_count
 
+    @admin.display(description=_("Sent Voice"))
+    def voice_count(self, obj):
+        return obj.voice_count
+
 
 @admin.register(AlertSettingUptime)
 class AlertSettingUptimeAdmin(admin.ModelAdmin):
@@ -86,6 +92,7 @@ class AlertSettingUptimeAdmin(admin.ModelAdmin):
         "value",
         "users_count",
         "sms_count",
+        "voice_count",
         "status",
         "updated",
         "created",
@@ -97,6 +104,7 @@ class AlertSettingUptimeAdmin(admin.ModelAdmin):
         return queryset.annotate(
             users_count=Count("alert_setting_uptime_user_settings"),
             sms_count=Count("alert_setting_uptime_sms"),
+            voice_count=Count("alert_setting_uptime_voice"),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -107,6 +115,10 @@ class AlertSettingUptimeAdmin(admin.ModelAdmin):
     def sms_count(self, obj):
         return obj.sms_count
 
+    @admin.display(description=_("Sent Voice"))
+    def voice_count(self, obj):
+        return obj.voice_count
+
 
 @admin.register(AlertSettingComission)
 class AlertSettingComissionAdmin(admin.ModelAdmin):
@@ -116,6 +128,7 @@ class AlertSettingComissionAdmin(admin.ModelAdmin):
         "value",
         "users_count",
         "sms_count",
+        "voice_count",
         "status",
         "updated",
         "created",
@@ -127,6 +140,7 @@ class AlertSettingComissionAdmin(admin.ModelAdmin):
         return queryset.annotate(
             users_count=Count("alert_setting_comission_user_settings"),
             sms_count=Count("alert_setting_comission_sms"),
+            voice_count=Count("alert_setting_comission_voice"),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -137,6 +151,10 @@ class AlertSettingComissionAdmin(admin.ModelAdmin):
     def sms_count(self, obj):
         return obj.sms_count
 
+    @admin.display(description=_("Sent Voice"))
+    def voice_count(self, obj):
+        return obj.voice_count
+
 
 @admin.register(AlertSettingJailedStatus)
 class AlertSettingJailedAdmin(admin.ModelAdmin):
@@ -146,6 +164,7 @@ class AlertSettingJailedAdmin(admin.ModelAdmin):
         "value",
         "users_count",
         "sms_count",
+        "voice_count",
         "status",
         "updated",
         "created",
@@ -157,6 +176,7 @@ class AlertSettingJailedAdmin(admin.ModelAdmin):
         return queryset.annotate(
             users_count=Count("alert_setting_jailed_status_user_settings"),
             sms_count=Count("alert_setting_jailed_status_sms"),
+            voice_count=Count("alert_setting_jailed_status_voice"),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -167,6 +187,10 @@ class AlertSettingJailedAdmin(admin.ModelAdmin):
     def sms_count(self, obj):
         return obj.sms_count
 
+    @admin.display(description=_("Sent Voice"))
+    def voice_count(self, obj):
+        return obj.voice_count
+
 
 @admin.register(AlertSettingTombstonedStatus)
 class AlertSettingTombstonedAdmin(admin.ModelAdmin):
@@ -176,6 +200,7 @@ class AlertSettingTombstonedAdmin(admin.ModelAdmin):
         "value",
         "users_count",
         "sms_count",
+        "voice_count",
         "status",
         "updated",
         "created",
@@ -187,6 +212,7 @@ class AlertSettingTombstonedAdmin(admin.ModelAdmin):
         return queryset.annotate(
             users_count=Count("alert_setting_tombstoned_status_user_settings"),
             sms_count=Count("alert_setting_tombstoned_status_sms"),
+            voice_count=Count("alert_setting_tombstoned_status_voice"),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -197,6 +223,10 @@ class AlertSettingTombstonedAdmin(admin.ModelAdmin):
     def sms_count(self, obj):
         return obj.sms_count
 
+    @admin.display(description=_("Sent Voice"))
+    def voice_count(self, obj):
+        return obj.voice_count
+
 
 @admin.register(AlertSettingBondedStatus)
 class AlertSettingBondedAdmin(admin.ModelAdmin):
@@ -206,6 +236,7 @@ class AlertSettingBondedAdmin(admin.ModelAdmin):
         "value",
         "users_count",
         "sms_count",
+        "voice_count",
         "status",
         "updated",
         "created",
@@ -217,6 +248,7 @@ class AlertSettingBondedAdmin(admin.ModelAdmin):
         return queryset.annotate(
             users_count=Count("alert_setting_bonded_status_user_settings"),
             sms_count=Count("alert_setting_bonded_status_sms"),
+            voice_count=Count("alert_setting_bonded_status_voice"),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -226,3 +258,7 @@ class AlertSettingBondedAdmin(admin.ModelAdmin):
     @admin.display(description=_("Sent SMS"))
     def sms_count(self, obj):
         return obj.sms_count
+
+    @admin.display(description=_("Sent Voice"))
+    def voice_count(self, obj):
+        return obj.voice_count

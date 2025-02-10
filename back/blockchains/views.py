@@ -176,9 +176,9 @@ class CosmosBlockchainMetricsView(views.APIView):
 
             if validator:
                 # TODO:
-                # if validator.id == 248:
-                #     validator.jailed = True  # Test Decreased Voting Power
-                #     validator.save()
+                if validator.id == 248:
+                    validator.voting_power += 1  # Test Decreased Voting Power
+                    validator.save()
 
                 updated_fields = {}
                 if validator.pubkey_type != pubkey_type:

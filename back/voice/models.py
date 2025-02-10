@@ -2,6 +2,14 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from users.models import User, UserPhone
+from alerts.models import (
+    AlertSettingVotingPower,
+    AlertSettingUptime,
+    AlertSettingComission,
+    AlertSettingJailedStatus,
+    AlertSettingTombstonedStatus,
+    AlertSettingBondedStatus,
+)
 
 
 class VoiceBase(models.Model):
@@ -56,3 +64,93 @@ class VoiceBase(models.Model):
 
     class Meta:
         abstract = True
+
+
+class VoiceAlertVotingPower(VoiceBase):
+    setting = models.ForeignKey(
+        AlertSettingVotingPower,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="alert_setting_voting_power_voice",
+        verbose_name=_("Voting Power Alert Settings"),
+    )
+
+    class Meta:
+        verbose_name = _("Voting Power Voice Alert")
+        verbose_name_plural = _("Voting Power Voice Alerts")
+
+
+class VoiceAlertUptime(VoiceBase):
+    setting = models.ForeignKey(
+        AlertSettingUptime,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="alert_setting_uptime_voice",
+        verbose_name=_("Uptime Alert Settings"),
+    )
+
+    class Meta:
+        verbose_name = _("Uptime Voice Alert")
+        verbose_name_plural = _("Uptime Voice Alerts")
+
+
+class VoiceAlertComission(VoiceBase):
+    setting = models.ForeignKey(
+        AlertSettingComission,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="alert_setting_comission_voice",
+        verbose_name=_("Comission Alert Settings"),
+    )
+
+    class Meta:
+        verbose_name = _("Comission Voice Alert")
+        verbose_name_plural = _("Comission Voice Alerts")
+
+
+class VoiceAlertJailedStatus(VoiceBase):
+    setting = models.ForeignKey(
+        AlertSettingJailedStatus,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="alert_setting_jailed_status_voice",
+        verbose_name=_("Jailed Alert Setting"),
+    )
+
+    class Meta:
+        verbose_name = _("Jailed Voice Alert")
+        verbose_name_plural = _("jailed Voice Alerts")
+
+
+class VoiceAlertTombstonedStatus(VoiceBase):
+    setting = models.ForeignKey(
+        AlertSettingTombstonedStatus,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="alert_setting_tombstoned_status_voice",
+        verbose_name=_("Tombstoned Alert Settings"),
+    )
+
+    class Meta:
+        verbose_name = _("Tombstoned Voice Alert")
+        verbose_name_plural = _("Tombstoned Voice Alerts")
+
+
+class VoiceAlertBondedStatus(VoiceBase):
+    setting = models.ForeignKey(
+        AlertSettingBondedStatus,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="alert_setting_bonded_status_voice",
+        verbose_name=_("Bond Status Alert Settings"),
+    )
+
+    class Meta:
+        verbose_name = _("Bond Status Voice Alert")
+        verbose_name_plural = _("Bond Status Voice Alerts")

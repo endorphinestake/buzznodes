@@ -25,7 +25,9 @@ def check_alerts(
     queue_sms = get_queue("submit_sms")
     queue_voice = get_queue("submit_voice")
 
-    def _send_alert(user_alert_setting: any, alert_text: str):
+    def _send_alert(
+        user_alert_setting: any, alert_text: str, alert_type: AlertSettingBase.AlertType
+    ):
         phone_number = user_alert_setting.user.user_phones.filter(status=True).first()
         if alert_text and phone_number:
             if user_alert_setting.channels == AlertSettingBase.Channels.SMS:
@@ -34,6 +36,7 @@ def check_alerts(
                     phone_number=phone_number.phone,
                     sms_text=alert_text,
                     stype=SMSBase.SType.ALERT,
+                    atype=alert_type,
                     setting_id=user_alert_setting.setting.id,
                 )
             elif user_alert_setting.channels == AlertSettingBase.Channels.VOICE:
@@ -41,7 +44,8 @@ def check_alerts(
                     submit_voice_main_provider,
                     phone_number=phone_number.phone,
                     voice_text=alert_text,
-                    stype=VoiceBase.VType.ALERT,
+                    vtype=VoiceBase.VType.ALERT,
+                    atype=alert_type,
                     setting_id=user_alert_setting.setting.id,
                 )
             else:

@@ -71,8 +71,8 @@ class SMSBase(models.Model):
         abstract = True
 
 
-class SMSAlert(SMSBase):
-    alert_setting_voting_power = models.ForeignKey(
+class SMSAlertVotingPower(SMSBase):
+    setting = models.ForeignKey(
         AlertSettingVotingPower,
         on_delete=models.SET_NULL,
         null=True,
@@ -80,7 +80,14 @@ class SMSAlert(SMSBase):
         related_name="alert_setting_voting_power_sms",
         verbose_name=_("Voting Power Alert Settings"),
     )
-    alert_setting_uptime = models.ForeignKey(
+
+    class Meta:
+        verbose_name = _("Voting Power SMS Alert")
+        verbose_name_plural = _("Voting Power SMS Alerts")
+
+
+class SMSAlertUptime(SMSBase):
+    setting = models.ForeignKey(
         AlertSettingUptime,
         on_delete=models.SET_NULL,
         null=True,
@@ -88,7 +95,14 @@ class SMSAlert(SMSBase):
         related_name="alert_setting_uptime_sms",
         verbose_name=_("Uptime Alert Settings"),
     )
-    alert_setting_comission = models.ForeignKey(
+
+    class Meta:
+        verbose_name = _("Uptime SMS Alert")
+        verbose_name_plural = _("Uptime SMS Alerts")
+
+
+class SMSAlertComission(SMSBase):
+    setting = models.ForeignKey(
         AlertSettingComission,
         on_delete=models.SET_NULL,
         null=True,
@@ -96,34 +110,55 @@ class SMSAlert(SMSBase):
         related_name="alert_setting_comission_sms",
         verbose_name=_("Comission Alert Settings"),
     )
-    alert_setting_jailed_status = models.ForeignKey(
+
+    class Meta:
+        verbose_name = _("Comission SMS Alert")
+        verbose_name_plural = _("Comission SMS Alerts")
+
+
+class SMSAlertJailedStatus(SMSBase):
+    setting = models.ForeignKey(
         AlertSettingJailedStatus,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="alert_setting_jailed_status_sms",
-        verbose_name=_("Jailed Status Alert Setting"),
+        verbose_name=_("Jailed Alert Setting"),
     )
-    alert_setting_tombstoned_status = models.ForeignKey(
+
+    class Meta:
+        verbose_name = _("Jailed SMS Alert")
+        verbose_name_plural = _("jailed SMS Alerts")
+
+
+class SMSAlertTombstonedStatus(SMSBase):
+    setting = models.ForeignKey(
         AlertSettingTombstonedStatus,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="alert_setting_tombstoned_status_sms",
-        verbose_name=_("Tombstoned Status Alert Settings"),
+        verbose_name=_("Tombstoned Alert Settings"),
     )
-    alert_setting_bonded_status = models.ForeignKey(
+
+    class Meta:
+        verbose_name = _("Tombstoned SMS Alert")
+        verbose_name_plural = _("Tombstoned SMS Alerts")
+
+
+class SMSAlertBondedStatus(SMSBase):
+    setting = models.ForeignKey(
         AlertSettingBondedStatus,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="alert_setting_bonded_status_sms",
-        verbose_name=_("Bonded Status Alert Settings"),
+        verbose_name=_("Bond Status Alert Settings"),
     )
 
     class Meta:
-        verbose_name = _("SMS Alert")
-        verbose_name_plural = _("SMS Alerts")
+        verbose_name = _("Bond Status SMS Alert")
+        verbose_name_plural = _("Bond Status SMS Alerts")
 
 
 class SMSConfirm(SMSBase):
