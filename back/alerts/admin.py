@@ -18,34 +18,42 @@ from alerts.models import (
 )
 
 
-class UserAlertSettingVotingPowerInline(admin.TabularInline):
+class BaseUserAlertSettingInline(admin.TabularInline):
+    extra = 0
+    fields = (
+        "id",
+        "blockchain_validator",
+        "channels",
+        "setting",
+    )
+    readonly_fields = (
+        "blockchain_validator",
+        "setting",
+    )
+
+
+class UserAlertSettingVotingPowerInline(BaseUserAlertSettingInline):
     model = UserAlertSettingVotingPower
-    extra = 0
 
 
-class UserAlertSettingUptimeInline(admin.TabularInline):
+class UserAlertSettingUptimeInline(BaseUserAlertSettingInline):
     model = UserAlertSettingUptime
-    extra = 0
 
 
-class UserAlertSettingComissionInline(admin.TabularInline):
+class UserAlertSettingComissionInline(BaseUserAlertSettingInline):
     model = UserAlertSettingComission
-    extra = 0
 
 
-class UserAlertSettingTombstonedStatusInline(admin.TabularInline):
+class UserAlertSettingTombstonedStatusInline(BaseUserAlertSettingInline):
     model = UserAlertSettingTombstonedStatus
-    extra = 0
 
 
-class UserAlertSettingBondedStatusInline(admin.TabularInline):
+class UserAlertSettingBondedStatusInline(BaseUserAlertSettingInline):
     model = UserAlertSettingBondedStatus
-    extra = 0
 
 
-class UserAlertSettingJailedStatusInline(admin.TabularInline):
+class UserAlertSettingJailedStatusInline(BaseUserAlertSettingInline):
     model = UserAlertSettingJailedStatus
-    extra = 0
 
 
 @admin.register(AlertSettingVotingPower)

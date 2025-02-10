@@ -23,6 +23,10 @@ class BaseUserAlertSettingInline(admin.TabularInline):
         "channels",
         "setting",
     )
+    readonly_fields = (
+        "blockchain_validator",
+        "setting",
+    )
 
     def get_fields(self, request, obj=None):
         fields = list(super().get_fields(request, obj))
