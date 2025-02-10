@@ -22,11 +22,13 @@ class BaseUserAlertSettingInline(admin.TabularInline):
     extra = 0
     fields = (
         "id",
+        "user",
         "blockchain_validator",
         "channels",
         "setting",
     )
     readonly_fields = (
+        "user",
         "blockchain_validator",
         "setting",
     )
