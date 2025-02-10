@@ -33,7 +33,7 @@ def check_alerts(
             if user_alert_setting.channels == AlertSettingBase.Channels.SMS:
                 queue_sms.enqueue(
                     submit_sms_main_provider,
-                    phone_number=phone_number.phone,
+                    phone_number_id=phone_number.id,
                     sms_text=alert_text,
                     stype=SMSBase.SType.ALERT,
                     atype=alert_type,
@@ -42,7 +42,7 @@ def check_alerts(
             elif user_alert_setting.channels == AlertSettingBase.Channels.VOICE:
                 queue_voice.enqueue(
                     submit_voice_main_provider,
-                    phone_number=phone_number.phone,
+                    phone_number_id=phone_number.id,
                     voice_text=alert_text,
                     vtype=VoiceBase.VType.ALERT,
                     atype=alert_type,
@@ -85,6 +85,7 @@ def check_alerts(
                         _send_alert(
                             user_alert_setting=user_alert_setting,
                             alert_text=alert_text,
+                            alert_type=AlertSettingBase.AlertType.VOTING_POWER,
                         )
 
                 # Decreased Voting Power
@@ -110,6 +111,7 @@ def check_alerts(
                         _send_alert(
                             user_alert_setting=user_alert_setting,
                             alert_text=alert_text,
+                            alert_type=AlertSettingBase.AlertType.VOTING_POWER,
                         )
         # Uptime
         if "uptime" in updated_fields:
@@ -140,6 +142,7 @@ def check_alerts(
                         _send_alert(
                             user_alert_setting=user_alert_setting,
                             alert_text=alert_text,
+                            alert_type=AlertSettingBase.AlertType.UPTIME,
                         )
 
                 # Decreased Uptime
@@ -156,6 +159,7 @@ def check_alerts(
                         _send_alert(
                             user_alert_setting=user_alert_setting,
                             alert_text=alert_text,
+                            alert_type=AlertSettingBase.AlertType.UPTIME,
                         )
 
         # Comission
@@ -190,6 +194,7 @@ def check_alerts(
                         _send_alert(
                             user_alert_setting=user_alert_setting,
                             alert_text=alert_text,
+                            alert_type=AlertSettingBase.AlertType.COMISSION,
                         )
 
                 # Decreased Comission
@@ -218,6 +223,7 @@ def check_alerts(
                         _send_alert(
                             user_alert_setting=user_alert_setting,
                             alert_text=alert_text,
+                            alert_type=AlertSettingBase.AlertType.COMISSION,
                         )
 
         # Jailed Status
@@ -247,6 +253,7 @@ def check_alerts(
                     _send_alert(
                         user_alert_setting=user_alert_setting,
                         alert_text=alert_text,
+                        alert_type=AlertSettingBase.AlertType.JAILED,
                     )
 
                 # True To False
@@ -265,6 +272,7 @@ def check_alerts(
                     _send_alert(
                         user_alert_setting=user_alert_setting,
                         alert_text=alert_text,
+                        alert_type=AlertSettingBase.AlertType.JAILED,
                     )
 
         # Bond Status
@@ -294,6 +302,7 @@ def check_alerts(
                     _send_alert(
                         user_alert_setting=user_alert_setting,
                         alert_text=alert_text,
+                        alert_type=AlertSettingBase.AlertType.BONDED,
                     )
 
                 # True To False
@@ -313,6 +322,7 @@ def check_alerts(
                     _send_alert(
                         user_alert_setting=user_alert_setting,
                         alert_text=alert_text,
+                        alert_type=AlertSettingBase.AlertType.BONDED,
                     )
 
         # Tombstoned Status
@@ -337,5 +347,6 @@ def check_alerts(
                     _send_alert(
                         user_alert_setting=user_alert_setting,
                         alert_text=alert_text,
+                        alert_type=AlertSettingBase.AlertType.TOMBSTONED,
                     )
                     user_alert_setting.delete()

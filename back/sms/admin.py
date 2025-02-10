@@ -26,7 +26,7 @@ class SMSAlertAdmin(admin.ModelAdmin):
     )
     list_filter = ("status", "provider", "user")
     search_fields = ("sms_id", "phone__phone", "sent_text")
-    ordering = ("-created",)
+    ordering = ("-id",)
     readonly_fields = ("updated", "created")
 
     @admin.display(description=_("Phone Number"))

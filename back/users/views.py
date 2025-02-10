@@ -333,7 +333,7 @@ class CreateUserPhoneView(views.APIView):
         )
 
         job = submit_sms_main_provider.delay(
-            phone_number=sms_confirm.phone,
+            phone_number_id=user_phone.id,
             sms_text=sms_confirm.sent_text,
             stype=SMSBase.SType.CONFIRM_PHONE,
         )
@@ -381,7 +381,7 @@ class ResendUserPhoneConfirm(views.APIView):
         )
 
         job = submit_sms_main_provider.delay(
-            phone_number=sms_confirm.phone,
+            phone_number_id=user_phone.id,
             sms_text=sms_confirm.sent_text,
             stype=SMSBase.SType.CONFIRM_PHONE,
         )
