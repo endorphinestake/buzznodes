@@ -22,8 +22,13 @@ class BaseUserAlertSettingInline(admin.TabularInline):
         "blockchain_validator",
         "channels",
         "setting",
-        "current_value",
     )
+
+    def get_fields(self, request, obj=None):
+        fields = list(super().get_fields(request, obj))
+        if obj and hasattr(obj, "current_value"):
+            fields.append("current_value")
+        return fields
 
 
 class UserAlertSettingVotingPowerInline(BaseUserAlertSettingInline):

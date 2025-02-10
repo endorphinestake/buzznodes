@@ -136,14 +136,14 @@ class CosmosBlockchainMetricsView(views.APIView):
         }
 
         validators_to_update = []
+        validators_to_update_prev = {
+            "uptime": {},
+            "jailed": {},
+            "status": {},
+        }
         for validator_row in validators_serializer.validated_data:
             operator_address = validator_row["operator_address"]
             validator = validators_local.get(operator_address)
-
-            # TODO:
-            if validator.id == 248:
-                validator.voting_power = 70664049  # Test Decreased Voting Power
-                validator.save()
 
             pubkey_type = validator_row["consensus_pubkey"]["type"]
             pubkey_key = validator_row["consensus_pubkey"]["key"]
@@ -175,6 +175,11 @@ class CosmosBlockchainMetricsView(views.APIView):
             )
 
             if validator:
+                # TODO:
+                # if validator.id == 248:
+                #     validator.jailed = True  # Test Decreased Voting Power
+                #     validator.save()
+
                 updated_fields = {}
                 if validator.pubkey_type != pubkey_type:
                     updated_fields["pubkey_type"] = pubkey_type
@@ -210,12 +215,18 @@ class CosmosBlockchainMetricsView(views.APIView):
                     updated_fields["missed_blocks_counter"] = missed_blocks_counter
                 if validator.uptime != uptime:
                     updated_fields["uptime"] = uptime
+                    validators_to_update_prev["uptime"][validator.id] = validator.uptime
                 if validator.jailed != jailed:
                     updated_fields["jailed"] = jailed
+                    validators_to_update_prev["jailed"][validator.id] = validator.jailed
                 if validator.tombstoned != tombstoned:
                     updated_fields["tombstoned"] = tombstoned
                 if validator.status != validator_status:
                     updated_fields["status"] = validator_status
+                    validators_to_update_prev["status"][validator.id] = (
+                        validator.status
+                        == BlockchainValidator.Status.BOND_STATUS_BONDED
+                    )
 
                 if updated_fields:
                     validators_to_update.append((validator.id, updated_fields))
@@ -273,7 +284,10 @@ class CosmosBlockchainMetricsView(views.APIView):
                         updated=now(),
                     )
 
-            job = check_alerts.delay(validators_to_update=validators_to_update)
+            job = check_alerts.delay(
+                validators_to_update=validators_to_update,
+                validators_to_update_prev=validators_to_update_prev,
+            )
 
         return HttpResponse(
             generate_latest(),

@@ -164,18 +164,15 @@ class UserAlertSettingBase(AlertSettingBase):
 
     def __str__(self):
         next_value = None
-        if type(self.setting.value) in [int, Decimal]:
-            if self.setting.value > 0:
-                next_value = self.current_value + self.setting.value
-            else:
-                next_value = self.current_value - self.setting.value
+        if (
+            isinstance(self.setting.value, (int, Decimal))
+            and hasattr(self, "current_value")
+            and self.current_value
+        ):
+            next_value = self.current_value + self.setting.value
+        next_value_str = f" -> {next_value}" if next_value is not None else ""
 
-        elif type(self.setting.value) in [bool]:
-            next_value = (
-                self.setting.value == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
-            )
-
-        return f"{self.__class__.__name__} ({self.channels}) {self.current_value} -> {next_value}"
+        return f"{self.__class__.__name__} ({self.channels}) {self.current_value}{next_value_str}"
 
     class Meta:
         abstract = True
@@ -222,11 +219,6 @@ class UserAlertSettingUptime(UserAlertSettingBase):
         AlertSettingUptime,
         on_delete=models.CASCADE,
         related_name="alert_setting_uptime_user_settings",
-    )
-    current_value = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        verbose_name=_("Current Value"),
     )
 
     class Meta:
@@ -285,7 +277,6 @@ class UserAlertSettingJailedStatus(UserAlertSettingBase):
         on_delete=models.CASCADE,
         related_name="alert_setting_jailed_status_user_settings",
     )
-    current_value = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = _("User Alert Setting Jailed Status")
@@ -314,7 +305,6 @@ class UserAlertSettingTombstonedStatus(UserAlertSettingBase):
         on_delete=models.CASCADE,
         related_name="alert_setting_tombstoned_status_user_settings",
     )
-    current_value = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = _("User Alert Setting Tombstoned Status")
@@ -343,7 +333,6 @@ class UserAlertSettingBondedStatus(UserAlertSettingBase):
         on_delete=models.CASCADE,
         related_name="alert_setting_bonded_status_user_settings",
     )
-    current_value = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = _("User Alert Setting Bond Status")
