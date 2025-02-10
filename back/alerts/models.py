@@ -1,3 +1,4 @@
+import re
 from multiselectfield import MultiSelectField
 from decimal import Decimal
 
@@ -37,11 +38,25 @@ class AlertSettingBase(models.Model):
         null=True,
         blank=True,
         verbose_name=_("Text Template for increase (False to True)"),
+        help_text="""
+{name} - will be replaced to full name;<br>
+{network} - will be replaced to blockchain network (Celestia Mainnet);<br>
+{moniker} - will be replaced to validator moniker;<br>
+{from_value} - will be replaced to from value (int, float or bool);<br>
+{to_value} - will be replaced to from value (int, float or bool);<br>
+""",
     )
     template_decraease = models.TextField(
         null=True,
         blank=True,
         verbose_name=_("Text Template for decrease (True to False)"),
+        help_text="""
+{name} - will be replaced to full name;<br>
+{network} - will be replaced to blockchain network (Celestia Mainnet);<br>
+{moniker} - will be replaced to validator moniker;<br>
+{from_value} - will be replaced to from value (int, float or bool);<br>
+{to_value} - will be replaced to from value (int, float or bool);<br>
+""",
     )
     status = models.BooleanField(default=True, verbose_name=_("Enabled"))
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
@@ -52,6 +67,31 @@ class AlertSettingBase(models.Model):
     def __str__(self):
         return (
             f"{self.__class__.__name__} ({', '.join(self.channels)}) {self.value or ''}"
+        )
+
+    def generate_alert_text(
+        self,
+        increase: bool,
+        from_value: str,
+        to_value: str,
+    ) -> str:
+        template = self.template_increase if increase else self.template_decraease
+        if not template:
+            return ""
+
+        def clean_ascii(text):
+            return re.sub(r"[^\x20-\x7E]", "", text)[:140]
+
+        name = clean_ascii(self.user.first_name)
+        network = clean_ascii(self.blockchain_validator.blockchain.name)
+        moniker = clean_ascii(self.blockchain_validator.moniker)
+
+        return template.format(
+            name=name,
+            network=network,
+            moniker=moniker,
+            from_value=from_value,
+            to_value=to_value,
         )
 
     class Meta:

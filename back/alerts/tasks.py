@@ -1,8 +1,7 @@
 from decimal import Decimal, ROUND_HALF_UP
-from django_rq import job
+from django_rq import job, get_queue
 from django.utils.translation import gettext_lazy as _
 
-from blockchains.models import BlockchainValidator
 from alerts.models import (
     AlertSettingBase,
     UserAlertSettingVotingPower,
@@ -12,12 +11,43 @@ from alerts.models import (
     UserAlertSettingTombstonedStatus,
     UserAlertSettingBondedStatus,
 )
+from sms.models import SMSBase
+from voice.models import VoiceBase
+from sms.tasks import submit_sms_main_provider
+from voice.tasks import submit_voice_main_provider
+from logs.models import Log
 
 
 @job("alerts")
 def check_alerts(
     validators_to_update: list[tuple[int, dict]], validators_to_update_prev: dict
 ):
+    queue_sms = get_queue("submit_sms")
+    queue_voice = get_queue("submit_voice")
+
+    def _send_alert(user_alert_setting: any, alert_text: str):
+        phone_number = user_alert_setting.user.user_phones.filter(status=True).first()
+        if alert_text and phone_number:
+            if user_alert_setting.channels == AlertSettingBase.Channels.SMS:
+                queue_sms.enqueue(
+                    submit_sms_main_provider,
+                    phone_number=phone_number.phone,
+                    sms_text=alert_text,
+                    stype=SMSBase.SType.ALERT,
+                    setting_id=user_alert_setting.setting.id,
+                )
+            elif user_alert_setting.channels == AlertSettingBase.Channels.VOICE:
+                queue_voice.enqueue(
+                    submit_voice_main_provider,
+                    phone_number=phone_number.phone,
+                    voice_text=alert_text,
+                    stype=VoiceBase.VType.ALERT,
+                    setting_id=user_alert_setting.setting.id,
+                )
+            else:
+                Log.warning(f"Unknown UserAlertChannel: {user_alert_setting.channels}!")
+        else:
+            Log.warning(f"No AlertText or UserPhone for Alert: {user_alert_setting}!")
 
     for validator_id, updated_fields in validators_to_update:
         # Voting Power Alerts
@@ -33,12 +63,25 @@ def check_alerts(
                         user_alert_setting.current_value
                         + user_alert_setting.setting.value
                     ):
+                        alert_text = user_alert_setting.generate_alert_text(
+                            increase=True,
+                            from_value=str(user_alert_setting.current_value),
+                            to_value=str(updated_fields["voting_power"]),
+                        )
+
                         user_alert_setting.current_value = int(
                             updated_fields["voting_power"]
                         )
                         user_alert_setting.save()
 
-                        print("SUBMIT ALERT VOTING_POWER INCREASED!!!")
+                        print(
+                            f"SUBMIT ALERT VOTING_POWER INCREASED: {alert_text}^",
+                        )
+
+                        _send_alert(
+                            user_alert_setting=user_alert_setting,
+                            alert_text=alert_text,
+                        )
 
                 # Decreased Voting Power
                 else:
@@ -46,13 +89,24 @@ def check_alerts(
                         user_alert_setting.current_value
                         - abs(user_alert_setting.setting.value)
                     ):
+
+                        alert_text = user_alert_setting.generate_alert_text(
+                            increase=False,
+                            from_value=str(user_alert_setting.current_value),
+                            to_value=str(updated_fields["voting_power"]),
+                        )
+
                         user_alert_setting.current_value = int(
                             updated_fields["voting_power"]
                         )
                         user_alert_setting.save()
 
-                        print("SUBMIT ALERT VOTING_POWER DECREASED!!!")
+                        print(f"SUBMIT ALERT VOTING_POWER DECREASED: {alert_text}^")
 
+                        _send_alert(
+                            user_alert_setting=user_alert_setting,
+                            alert_text=alert_text,
+                        )
         # Uptime
         if "uptime" in updated_fields:
             for user_alert_setting in UserAlertSettingUptime.objects.select_related(
@@ -71,12 +125,34 @@ def check_alerts(
                 # Increased Uptime
                 if user_alert_setting.setting.value > 0:
                     if prev_value < level_value and next_value >= level_value:
-                        print("SUBMIT ALERT UPTIME INCREASED!!!")
+                        alert_text = user_alert_setting.generate_alert_text(
+                            increase=True,
+                            from_value=str(prev_value),
+                            to_value=str(next_value),
+                        )
+
+                        print("SUBMIT ALERT UPTIME INCREASED: ", alert_text)
+
+                        _send_alert(
+                            user_alert_setting=user_alert_setting,
+                            alert_text=alert_text,
+                        )
 
                 # Decreased Uptime
                 else:
                     if prev_value > level_value and next_value <= level_value:
-                        print("SUBMIT ALERT UPTIME DECREASED!!!")
+                        alert_text = user_alert_setting.generate_alert_text(
+                            increase=False,
+                            from_value=str(prev_value),
+                            to_value=str(next_value),
+                        )
+
+                        print("SUBMIT ALERT UPTIME DECREASED: ", alert_text)
+
+                        _send_alert(
+                            user_alert_setting=user_alert_setting,
+                            alert_text=alert_text,
+                        )
 
         # Comission
         if "commision_rate" in updated_fields:
@@ -89,12 +165,28 @@ def check_alerts(
                         user_alert_setting.current_value
                         + user_alert_setting.setting.value
                     ):
+
+                        alert_text = user_alert_setting.generate_alert_text(
+                            increase=True,
+                            from_value=str(user_alert_setting.current_value),
+                            to_value=str(
+                                Decimal(updated_fields["commision_rate"]).quantize(
+                                    Decimal("0.01"), rounding=ROUND_HALF_UP
+                                )
+                            ),
+                        )
+
                         user_alert_setting.current_value = Decimal(
                             updated_fields["commision_rate"]
                         )
                         user_alert_setting.save()
 
-                        print("SUBMIT ALERT COMISSION INCREASED!!!")
+                        print("SUBMIT ALERT COMISSION INCREASED: ", alert_text)
+
+                        _send_alert(
+                            user_alert_setting=user_alert_setting,
+                            alert_text=alert_text,
+                        )
 
                 # Decreased Comission
                 else:
@@ -102,12 +194,27 @@ def check_alerts(
                         user_alert_setting.current_value
                         - abs(user_alert_setting.setting.value)
                     ):
+                        alert_text = user_alert_setting.generate_alert_text(
+                            increase=False,
+                            from_value=str(user_alert_setting.current_value),
+                            to_value=str(
+                                Decimal(updated_fields["commision_rate"]).quantize(
+                                    Decimal("0.01"), rounding=ROUND_HALF_UP
+                                )
+                            ),
+                        )
+
                         user_alert_setting.current_value = Decimal(
                             updated_fields["commision_rate"]
                         )
                         user_alert_setting.save()
 
-                        print("SUBMIT ALERT COMISSION DECREASED!!!")
+                        print("SUBMIT ALERT COMISSION DECREASED: ", alert_text)
+
+                        _send_alert(
+                            user_alert_setting=user_alert_setting,
+                            alert_text=alert_text,
+                        )
 
         # Jailed Status
         if "jailed" in updated_fields:
@@ -125,7 +232,18 @@ def check_alerts(
                     and user_alert_setting.setting.value
                     == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
                 ):
-                    print("SUBMIT ALERT JAILED FALSE_TO_TRUE!!!")
+                    alert_text = user_alert_setting.generate_alert_text(
+                        increase=True,
+                        from_value="False",
+                        to_value="True",
+                    )
+
+                    print("SUBMIT ALERT JAILED FALSE_TO_TRUE: ", alert_text)
+
+                    _send_alert(
+                        user_alert_setting=user_alert_setting,
+                        alert_text=alert_text,
+                    )
 
                 # True To False
                 if (
@@ -133,9 +251,17 @@ def check_alerts(
                     and user_alert_setting.setting.value
                     == AlertSettingBase.ValueStatus.TRUE_TO_FALSE
                 ):
-                    print("SUBMIT ALERT JAILED TRUE_TO_FALSE!!!")
+                    alert_text = user_alert_setting.generate_alert_text(
+                        increase=False,
+                        from_value="True",
+                        to_value="False",
+                    )
+                    print("SUBMIT ALERT JAILED TRUE_TO_FALSE: ", alert_text)
 
-                # Jailed Status
+                    _send_alert(
+                        user_alert_setting=user_alert_setting,
+                        alert_text=alert_text,
+                    )
 
         # Bond Status
         if "status" in updated_fields:
@@ -153,7 +279,18 @@ def check_alerts(
                     and user_alert_setting.setting.value
                     == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
                 ):
-                    print("SUBMIT ALERT BONDED FALSE_TO_TRUE!!!")
+                    alert_text = user_alert_setting.generate_alert_text(
+                        increase=True,
+                        from_value="False",
+                        to_value="True",
+                    )
+
+                    print("SUBMIT ALERT BONDED FALSE_TO_TRUE: ", alert_text)
+
+                    _send_alert(
+                        user_alert_setting=user_alert_setting,
+                        alert_text=alert_text,
+                    )
 
                 # True To False
                 if (
@@ -161,9 +298,18 @@ def check_alerts(
                     and user_alert_setting.setting.value
                     == AlertSettingBase.ValueStatus.TRUE_TO_FALSE
                 ):
-                    print("SUBMIT ALERT BONDED TRUE_TO_FALSE!!!")
+                    alert_text = user_alert_setting.generate_alert_text(
+                        increase=False,
+                        from_value="True",
+                        to_value="False",
+                    )
 
-                # Bond Status
+                    print("SUBMIT ALERT BONDED TRUE_TO_FALSE: ", alert_text)
+
+                    _send_alert(
+                        user_alert_setting=user_alert_setting,
+                        alert_text=alert_text,
+                    )
 
         # Tombstoned Status
         if "tombstoned" in updated_fields:
@@ -177,5 +323,15 @@ def check_alerts(
                 next_value = updated_fields["status"]
 
                 if next_value:
-                    user_alert_setting.dlete()
-                    print("SUBMIT ALERT TOMBSTONED FALSE_TO_TRUE!!!")
+                    alert_text = user_alert_setting.generate_alert_text(
+                        increase=True,
+                        from_value="False",
+                        to_value="True",
+                    )
+
+                    print("SUBMIT ALERT TOMBSTONED FALSE_TO_TRUE: ", alert_text)
+                    _send_alert(
+                        user_alert_setting=user_alert_setting,
+                        alert_text=alert_text,
+                    )
+                    user_alert_setting.delete()
