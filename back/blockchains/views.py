@@ -32,6 +32,7 @@ from blockchains.utils.convert_valoper_to_wallet import convert_valoper_to_walle
 from blockchains.utils.calculate_uptime import calculate_uptime
 from blockchains.utils.grafana_fetch_metrics import grafana_fetch_metrics
 from logs.models import Log
+from alerts.tasks import check_alerts
 
 
 class CosmosBlockchainMetricsView(views.APIView):
@@ -139,6 +140,11 @@ class CosmosBlockchainMetricsView(views.APIView):
             operator_address = validator_row["operator_address"]
             validator = validators_local.get(operator_address)
 
+            # TODO:
+            if validator.id == 248:
+                validator.voting_power = 70664049  # Test Decreased Voting Power
+                validator.save()
+
             pubkey_type = validator_row["consensus_pubkey"]["type"]
             pubkey_key = validator_row["consensus_pubkey"]["key"]
             moniker = validator_row["description"].get("moniker")
@@ -212,7 +218,7 @@ class CosmosBlockchainMetricsView(views.APIView):
                     updated_fields["status"] = validator_status
 
                 if updated_fields:
-                    validators_to_update.append((validator, updated_fields))
+                    validators_to_update.append((validator.id, updated_fields))
 
             else:
                 # Create Validator (if not exists)
@@ -261,11 +267,13 @@ class CosmosBlockchainMetricsView(views.APIView):
         if validators_to_update:
             print("INFO: Updating BlockchainValidator: ", validators_to_update)
             with transaction.atomic():
-                for validator, updated_fields in validators_to_update:
-                    BlockchainValidator.objects.filter(id=validator.id).update(
+                for validator_id, updated_fields in validators_to_update:
+                    BlockchainValidator.objects.filter(id=validator_id).update(
                         **updated_fields,
                         updated=now(),
                     )
+
+            job = check_alerts.delay(validators_to_update=validators_to_update)
 
         return HttpResponse(
             generate_latest(),

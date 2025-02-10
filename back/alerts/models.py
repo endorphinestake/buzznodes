@@ -1,4 +1,5 @@
 from multiselectfield import MultiSelectField
+from decimal import Decimal
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -160,10 +161,21 @@ class UserAlertSettingBase(AlertSettingBase):
     template_increase = None
     template_decraease = None
     current_value = None
-    next_value = None
 
     def __str__(self):
-        return f"{self.__class__.__name__} ({self.channels}) {self.current_value} -> {self.next_value}"
+        next_value = None
+        if type(self.setting.value) in [int, Decimal]:
+            if self.setting.value > 0:
+                next_value = self.current_value + self.setting.value
+            else:
+                next_value = self.current_value - self.setting.value
+
+        elif type(self.setting.value) in [bool]:
+            next_value = (
+                self.setting.value == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
+            )
+
+        return f"{self.__class__.__name__} ({self.channels}) {self.current_value} -> {next_value}"
 
     class Meta:
         abstract = True
@@ -185,7 +197,6 @@ class UserAlertSettingVotingPower(UserAlertSettingBase):
         related_name="alert_setting_voting_power_user_settings",
     )
     current_value = models.IntegerField(verbose_name=_("Current Value"))
-    next_value = models.IntegerField(verbose_name=_("Next Value"))
 
     class Meta:
         verbose_name = _("User Alert Setting Voting Power")
@@ -216,11 +227,6 @@ class UserAlertSettingUptime(UserAlertSettingBase):
         max_digits=5,
         decimal_places=2,
         verbose_name=_("Current Value"),
-    )
-    next_value = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        verbose_name=_("Next Value"),
     )
 
     class Meta:
@@ -253,11 +259,6 @@ class UserAlertSettingComission(UserAlertSettingBase):
         decimal_places=2,
         verbose_name=_("Current Value"),
     )
-    next_value = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        verbose_name=_("Next Value"),
-    )
 
     class Meta:
         verbose_name = _("User Alert Setting Comission")
@@ -285,7 +286,6 @@ class UserAlertSettingJailedStatus(UserAlertSettingBase):
         related_name="alert_setting_jailed_status_user_settings",
     )
     current_value = models.BooleanField(default=False)
-    next_value = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = _("User Alert Setting Jailed Status")
@@ -315,7 +315,6 @@ class UserAlertSettingTombstonedStatus(UserAlertSettingBase):
         related_name="alert_setting_tombstoned_status_user_settings",
     )
     current_value = models.BooleanField(default=False)
-    next_value = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = _("User Alert Setting Tombstoned Status")
@@ -345,7 +344,6 @@ class UserAlertSettingBondedStatus(UserAlertSettingBase):
         related_name="alert_setting_bonded_status_user_settings",
     )
     current_value = models.BooleanField(default=False)
-    next_value = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = _("User Alert Setting Bond Status")

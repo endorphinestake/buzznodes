@@ -227,9 +227,6 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 user_setting_instance.setting = setting_instance
                 user_setting_instance.channels = validated_data["channel"]
                 user_setting_instance.current_value = blockchain_validator.voting_power
-                user_setting_instance.next_value = (
-                    user_setting_instance.current_value + setting_instance.value
-                )
                 user_setting_instance.save()
                 return user_setting_instance
 
@@ -254,30 +251,14 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 blockchain_validator=blockchain_validator,
                 setting=setting_instance,
                 current_value=blockchain_validator.voting_power,
-                next_value=(blockchain_validator.voting_power + setting_instance.value),
             )
 
         elif isinstance(setting_instance, AlertSettingUptime):
             # Update
             if user_setting_instance:
-                if setting_instance.value < 0:
-                    next_value = (
-                        (100 - abs(setting_instance.value))
-                        if blockchain_validator.uptime
-                        > (100 - abs(setting_instance.value))
-                        else 0
-                    )
-                else:
-                    next_value = (
-                        (100 - setting_instance.value)
-                        if blockchain_validator.uptime < (100 - setting_instance.value)
-                        else 0
-                    )
-
                 user_setting_instance.setting = setting_instance
                 user_setting_instance.channels = validated_data["channel"]
                 user_setting_instance.current_value = blockchain_validator.uptime
-                user_setting_instance.next_value = next_value
                 user_setting_instance.save()
                 return user_setting_instance
 
@@ -296,26 +277,12 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                     {"setting_id": [_("The Alert already exists!")]}
                 )
 
-            if setting_instance.value < 0:
-                next_value = (
-                    (100 - abs(setting_instance.value))
-                    if blockchain_validator.uptime > (100 - abs(setting_instance.value))
-                    else 0
-                )
-            else:
-                next_value = (
-                    (100 - setting_instance.value)
-                    if blockchain_validator.uptime < (100 - setting_instance.value)
-                    else 0
-                )
-
             return UserAlertSettingUptime.objects.create(
                 user=user,
                 channels=validated_data["channel"],
                 blockchain_validator=blockchain_validator,
                 setting=setting_instance,
                 current_value=blockchain_validator.uptime,
-                next_value=next_value,
             )
 
         elif isinstance(setting_instance, AlertSettingComission):
@@ -325,9 +292,6 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 user_setting_instance.channels = validated_data["channel"]
                 user_setting_instance.current_value = (
                     blockchain_validator.commision_rate
-                )
-                user_setting_instance.next_value = (
-                    user_setting_instance.current_value + setting_instance.value
                 )
                 user_setting_instance.save()
                 return user_setting_instance
@@ -353,9 +317,6 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 blockchain_validator=blockchain_validator,
                 setting=setting_instance,
                 current_value=blockchain_validator.commision_rate,
-                next_value=(
-                    blockchain_validator.commision_rate + setting_instance.value
-                ),
             )
 
         elif isinstance(setting_instance, AlertSettingJailedStatus):
@@ -364,9 +325,6 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 user_setting_instance.setting = setting_instance
                 user_setting_instance.channels = validated_data["channel"]
                 user_setting_instance.current_value = blockchain_validator.jailed
-                user_setting_instance.next_value = (
-                    setting_instance.value == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
-                )
                 user_setting_instance.save()
                 return user_setting_instance
 
@@ -391,9 +349,6 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 blockchain_validator=blockchain_validator,
                 setting=setting_instance,
                 current_value=blockchain_validator.jailed,
-                next_value=(
-                    setting_instance.value == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
-                ),
             )
 
         elif isinstance(setting_instance, AlertSettingTombstonedStatus):
@@ -402,9 +357,6 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 user_setting_instance.setting = setting_instance
                 user_setting_instance.channels = validated_data["channel"]
                 user_setting_instance.current_value = blockchain_validator.tombstoned
-                user_setting_instance.next_value = (
-                    setting_instance.value == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
-                )
                 user_setting_instance.save()
                 return user_setting_instance
 
@@ -429,9 +381,6 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 blockchain_validator=blockchain_validator,
                 setting=setting_instance,
                 current_value=blockchain_validator.tombstoned,
-                next_value=(
-                    setting_instance.value == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
-                ),
             )
 
         elif isinstance(setting_instance, AlertSettingBondedStatus):
@@ -442,9 +391,6 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 user_setting_instance.current_value = (
                     blockchain_validator.status
                     == BlockchainValidator.Status.BOND_STATUS_BONDED
-                )
-                user_setting_instance.next_value = (
-                    setting_instance.value == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
                 )
                 user_setting_instance.save()
                 return user_setting_instance
@@ -471,9 +417,6 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 setting=setting_instance,
                 current_value=blockchain_validator.status
                 == BlockchainValidator.Status.BOND_STATUS_BONDED,
-                next_value=(
-                    setting_instance.value == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
-                ),
             )
 
         else:

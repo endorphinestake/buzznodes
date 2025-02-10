@@ -23,7 +23,6 @@ class BaseUserAlertSettingInline(admin.TabularInline):
         "channels",
         "setting",
         "current_value",
-        "next_value",
     )
 
 

@@ -30,7 +30,8 @@ build_local:
 rq:
 	.venv/bin/python back/manage.py rqworker submit_voice & \
 	.venv/bin/python back/manage.py rqworker submit_sms & \
-	.venv/bin/python back/manage.py rqworker submit_email
+	.venv/bin/python back/manage.py rqworker submit_email & \
+	.venv/bin/python back/manage.py rqworker alerts
 
 .PHONY: po
 po:

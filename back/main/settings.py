@@ -151,6 +151,13 @@ RQ_QUEUES = {
         "PASSWORD": "",
         "DEFAULT_TIMEOUT": 360,
     },
+    "alerts": {
+        "HOST": "localhost",
+        "PORT": 6379,
+        "DB": 3,
+        "PASSWORD": "",
+        "DEFAULT_TIMEOUT": 360,
+    },
 }
 
 AUTH_USER_MODEL = "users.User"
