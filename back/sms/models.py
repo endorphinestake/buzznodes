@@ -3,12 +3,12 @@ from django.utils.translation import gettext_lazy as _
 
 from users.models import User, UserPhone
 from alerts.models import (
-    UserAlertSettingVotingPower,
-    UserAlertSettingUptime,
-    UserAlertSettingComission,
-    UserAlertSettingJailedStatus,
-    UserAlertSettingTombstonedStatus,
-    UserAlertSettingBondedStatus,
+    AlertSettingVotingPower,
+    AlertSettingUptime,
+    AlertSettingComission,
+    AlertSettingJailedStatus,
+    AlertSettingTombstonedStatus,
+    AlertSettingBondedStatus,
 )
 
 
@@ -72,53 +72,53 @@ class SMSBase(models.Model):
 
 
 class SMSAlert(SMSBase):
-    user_alert_setting_voting_power = models.ForeignKey(
-        UserAlertSettingVotingPower,
+    alert_setting_voting_power = models.ForeignKey(
+        AlertSettingVotingPower,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="user_alert_setting_voting_power_sms",
+        related_name="alert_setting_voting_power_sms",
         verbose_name=_("Voting Power Alert Settings"),
     )
-    user_alert_setting_uptime = models.ForeignKey(
-        UserAlertSettingUptime,
+    alert_setting_uptime = models.ForeignKey(
+        AlertSettingUptime,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="user_alert_setting_uptime_sms",
-        verbose_name=_("User Alert Setting Uptime"),
+        related_name="alert_setting_uptime_sms",
+        verbose_name=_("Uptime Alert Settings"),
     )
-    user_alert_setting_comission = models.ForeignKey(
-        UserAlertSettingComission,
+    alert_setting_comission = models.ForeignKey(
+        AlertSettingComission,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="user_alert_setting_comission_sms",
-        verbose_name=_("User Alert Setting Comission"),
+        related_name="alert_setting_comission_sms",
+        verbose_name=_("Comission Alert Settings"),
     )
-    user_alert_setting_jailed_status = models.ForeignKey(
-        UserAlertSettingJailedStatus,
+    alert_setting_jailed_status = models.ForeignKey(
+        AlertSettingJailedStatus,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="user_alert_setting_jailed_status_sms",
-        verbose_name=_("User Alert Setting Jailed Status"),
+        related_name="alert_setting_jailed_status_sms",
+        verbose_name=_("Jailed Status Alert Setting"),
     )
-    user_alert_setting_tombstoned_status = models.ForeignKey(
-        UserAlertSettingTombstonedStatus,
+    alert_setting_tombstoned_status = models.ForeignKey(
+        AlertSettingTombstonedStatus,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="user_alert_setting_tombstoned_status_sms",
-        verbose_name=_("User Alert Setting Tombstoned Status"),
+        related_name="alert_setting_tombstoned_status_sms",
+        verbose_name=_("Tombstoned Status Alert Settings"),
     )
-    user_alert_setting_bonded_status = models.ForeignKey(
-        UserAlertSettingBondedStatus,
+    alert_setting_bonded_status = models.ForeignKey(
+        AlertSettingBondedStatus,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="user_alert_setting_bonded_status_sms",
-        verbose_name=_("User Alert Setting Bonded Status"),
+        related_name="alert_setting_bonded_status_sms",
+        verbose_name=_("Bonded Status Alert Settings"),
     )
 
     class Meta:

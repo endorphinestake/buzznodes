@@ -66,9 +66,7 @@ class AlertSettingVotingPowerAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         return queryset.annotate(
             users_count=Count("alert_setting_voting_power_user_settings"),
-            sms_count=Count(
-                "alert_setting_voting_power_user_settings__user_alert_setting_voting_power_sms"
-            ),
+            sms_count=Count("alert_setting_voting_power_sms"),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -98,9 +96,7 @@ class AlertSettingUptimeAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         return queryset.annotate(
             users_count=Count("alert_setting_uptime_user_settings"),
-            sms_count=Count(
-                "alert_setting_uptime_user_settings__user_alert_setting_uptime_sms"
-            ),
+            sms_count=Count("alert_setting_uptime_sms"),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -130,9 +126,7 @@ class AlertSettingComissionAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         return queryset.annotate(
             users_count=Count("alert_setting_comission_user_settings"),
-            sms_count=Count(
-                "alert_setting_comission_user_settings__user_alert_setting_comission_sms"
-            ),
+            sms_count=Count("alert_setting_comission_sms"),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -162,9 +156,7 @@ class AlertSettingJailedAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         return queryset.annotate(
             users_count=Count("alert_setting_jailed_status_user_settings"),
-            sms_count=Count(
-                "alert_setting_jailed_status_user_settings__user_alert_setting_jailed_status_sms"
-            ),
+            sms_count=Count("alert_setting_jailed_status_sms"),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -194,9 +186,7 @@ class AlertSettingTombstonedAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         return queryset.annotate(
             users_count=Count("alert_setting_tombstoned_status_user_settings"),
-            sms_count=Count(
-                "alert_setting_tombstoned_status_user_settings__user_alert_setting_tombstoned_status_sms"
-            ),
+            sms_count=Count("alert_setting_tombstoned_status_sms"),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -226,9 +216,7 @@ class AlertSettingBondedAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         return queryset.annotate(
             users_count=Count("alert_setting_bonded_status_user_settings"),
-            sms_count=Count(
-                "alert_setting_bonded_status_user_settings__user_alert_setting_bonded_status_sms"
-            ),
+            sms_count=Count("alert_setting_bonded_status_sms"),
         )
 
     @admin.display(description=_("Uses Users"))

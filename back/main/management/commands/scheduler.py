@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
+from django.db import connection
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 
@@ -7,10 +8,12 @@ import asyncio
 
 
 def autoremove_logs():
+    connection.close()
     call_command("autoremove_logs")
 
 
 def validators_pictures():
+    connection.close()
     call_command("validators_pictures")
 
 
