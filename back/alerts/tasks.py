@@ -14,7 +14,7 @@ from alerts.models import (
 from sms.models import SMSBase
 from voice.models import VoiceBase
 from sms.tasks import submit_sms_alert
-from voice.tasks import submit_voice_alert_main_provider
+from voice.tasks import submit_voice_alert
 from logs.models import Log
 
 
@@ -41,7 +41,8 @@ def check_alerts(
                 )
             elif user_alert_setting.channels == AlertSettingBase.Channels.VOICE:
                 queue_voice.enqueue(
-                    submit_voice_alert_main_provider,
+                    submit_voice_alert,
+                    provider=VoiceBase.Provider.MAIN,
                     phone_number_id=phone_number.id,
                     text=alert_text,
                     atype=alert_type,

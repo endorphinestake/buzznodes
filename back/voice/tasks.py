@@ -13,17 +13,20 @@ from voice.models import (
     VoiceAlertBondedStatus,
 )
 from logs.models import Log
+from voice.providers.bird.utils import bird_submit_voice
 
 
 @job("submit_voice")
-def submit_voice_alert_main_provider(
+def submit_voice_alert(
+    provider: VoiceBase.Provider,
     phone_number_id: int,
     text: str,
     atype: AlertSettingBase.AlertType,
     setting_id: int = None,
 ):
+
     print(
-        f"submit_voice_alert_main_provider: {phone_number_id} -> {text} -> {atype} -> {setting_id}"
+        f"submit_voice_alert: {provider} -> {phone_number_id} -> {text} -> {atype} -> {setting_id}"
     )
 
     try:
@@ -54,4 +57,18 @@ def submit_voice_alert_main_provider(
         setting_id=setting_id,
     )
 
-    # TODO: Submit Voice and update voice_id & status
+    if provider == VoiceBase.Provider.MAIN:
+        err, voice_id = bird_submit_voice(phone=phone_number.phone, text=text)
+        # elif provider == SMSBase.Provider.RESERVE1:
+        #     err, sms_id = bird_submit_sms(phone=phone_number.phone, text=text)
+    else:
+        err, voice_id = f"Unknown Voice provider: {provider}", None
+
+    if err is None:
+        voice_instance.voice_id = voice_id
+        voice_instance.status = VoiceBase.Status.SENT
+        voice_instance.save()
+    else:
+        voice_instance.err = err
+        voice_instance.status = VoiceBase.Status.ERROR
+        voice_instance.save()

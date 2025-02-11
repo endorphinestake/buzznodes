@@ -6,9 +6,9 @@ from logs.models import Log
 
 
 def bird_submit_sms(phone: str, text: str) -> tuple[str | None, str | None]:
-    url = f"https://api.bird.com/workspaces/{settings.BIRD_SMS_WORKSPACE_ID}/channels/{settings.BIRD_SMS_CHANNEL_ID}/messages"
+    url = f"https://api.bird.com/workspaces/{settings.BIRD_WORKSPACE_ID}/channels/{settings.BIRD_SMS_CHANNEL_ID}/messages"
     headers = {
-        "Authorization": f"AccessKey {settings.BIRD_SMS_ACCESS_KEY}",
+        "Authorization": f"AccessKey {settings.BIRD_ACCESS_KEY}",
         "Content-Type": "application/json",
     }
     payload = {

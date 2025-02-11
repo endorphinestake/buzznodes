@@ -22,6 +22,9 @@ class VoiceBase(models.Model):
 
     class Status(models.TextChoices):
         NEW = "NEW", _("New")
+        SENT = "SENT", _("Sent")
+        DELIVERED = "DELIVERED", _("Delivered")
+        UNDELIVERED = "UNDELIVERED", _("Undelivered")
         ERROR = "ERROR", _("Error")
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("User"))
