@@ -20,6 +20,7 @@ class SMSAlertAdmin(admin.ModelAdmin):
         "sms_id",
         "short_text",
         "provider",
+        "is_resent",
         "status",
         "updated",
         "created",
@@ -50,6 +51,7 @@ class SMSConfirmAdmin(admin.ModelAdmin):
         "status",
         "code",
         "is_used",
+        "is_resent",
         "expire_code",
         "updated",
         "created",
@@ -58,7 +60,6 @@ class SMSConfirmAdmin(admin.ModelAdmin):
     search_fields = ("sms_id", "phone__phone", "sent_text", "code")
     ordering = ("-created",)
     readonly_fields = ("updated", "created")
-    list_editable = ("is_used",)
 
     @admin.display(description=_("Phone Number"))
     def display_phone(self, obj):

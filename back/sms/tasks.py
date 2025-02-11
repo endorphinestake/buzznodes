@@ -15,18 +15,19 @@ from sms.models import (
     SMSAlertBondedStatus,
     SMSConfirm,
 )
-from sms.providers.hicell.utils import hicell_submit_sms
-from sms.providers.bird.utils import bird_submit_sms
+from sms.providers.hicell.utils import hicell_submit_sms  # SMS Main channel
+from sms.providers.bird.utils import bird_submit_sms  # SMS Reserverd channel
 from logs.models import Log
 
 
 @job("submit_sms")
-def submit_sms_confirm_main_provider(
+def submit_sms_confirm(
+    provider: SMSBase.Provider,
     phone_number_id: int,
     text: str,
     code: str,
 ):
-    print(f"submit_sms_confirm_main_provider: {phone_number_id} -> {text} -> {code}")
+    print(f"submit_sms_confirm: {provider} -> {phone_number_id} -> {text} -> {code}")
 
     try:
         phone_number = UserPhone.objects.get(pk=phone_number_id)
@@ -38,13 +39,19 @@ def submit_sms_confirm_main_provider(
         user=phone_number.user,
         phone=phone_number,
         sent_text=text,
-        provider=SMSBase.Provider.MAIN,
+        provider=provider,
         code=code,
         expire_code=now() + settings.PHONE_NUMBER_CODE_EXPIRED,
         is_used=False,
     )
 
-    err, sms_id = hicell_submit_sms(phone=phone_number.phone, text=text)
+    if provider == SMSBase.Provider.MAIN:
+        err, sms_id = hicell_submit_sms(phone=phone_number.phone, text=text)
+    elif provider == SMSBase.Provider.RESERVE1:
+        err, sms_id = bird_submit_sms(phone=phone_number.phone, text=text)
+    else:
+        err, sms_id = f"Unknown SMS provider: {provider}", None
+
     if err is None:
         sms_instance.sms_id = sms_id
         sms_instance.status = SMSBase.Status.SENT
@@ -56,14 +63,15 @@ def submit_sms_confirm_main_provider(
 
 
 @job("submit_sms")
-def submit_sms_alert_main_provider(
+def submit_sms_alert(
+    provider: SMSBase.Provider,
     phone_number_id: int,
     text: str,
     atype: AlertSettingBase.AlertType,
     setting_id: int = None,
 ):
     print(
-        f"submit_sms_alert_main_provider: {phone_number_id} -> {text} -> {atype} -> {setting_id}"
+        f"submit_sms_alert: {provider} -> {phone_number_id} -> {text} -> {atype} -> {setting_id}"
     )
 
     try:
@@ -90,11 +98,17 @@ def submit_sms_alert_main_provider(
         user=phone_number.user,
         phone=phone_number,
         sent_text=text,
-        provider=SMSBase.Provider.MAIN,
+        provider=provider,
         setting_id=setting_id,
     )
 
-    err, sms_id = hicell_submit_sms(phone=phone_number.phone, text=text)
+    if provider == SMSBase.Provider.MAIN:
+        err, sms_id = hicell_submit_sms(phone=phone_number.phone, text=text)
+    elif provider == SMSBase.Provider.RESERVE1:
+        err, sms_id = bird_submit_sms(phone=phone_number.phone, text=text)
+    else:
+        err, sms_id = f"Unknown SMS provider: {provider}", None
+
     if err is None:
         sms_instance.sms_id = sms_id
         sms_instance.status = SMSBase.Status.SENT

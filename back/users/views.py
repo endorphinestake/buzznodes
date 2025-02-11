@@ -36,7 +36,7 @@ from mails.tasks import (
     send_change_email_mail,
 )
 
-from sms.tasks import submit_sms_confirm_main_provider
+from sms.tasks import submit_sms_confirm
 
 
 class LoginView(views.APIView):
@@ -322,7 +322,8 @@ class CreateUserPhoneView(views.APIView):
         user_phone = serializer.create(validated_data=serializer.validated_data)
         code = str(random.randint(10000, 99999))
 
-        job = submit_sms_confirm_main_provider.delay(
+        job = submit_sms_confirm.delay(
+            provider=SMSBase.Provider.MAIN,
             phone_number_id=user_phone.id,
             text=settings.PHONE_NUMBER_CODE_SMS_TEXT.format(code=code),
             code=code,
@@ -360,7 +361,8 @@ class ResendUserPhoneConfirm(views.APIView):
 
         code = str(random.randint(10000, 99999))
 
-        job = submit_sms_confirm_main_provider.delay(
+        job = submit_sms_confirm.delay(
+            provider=SMSBase.Provider.MAIN,
             phone_number_id=user_phone.id,
             text=settings.PHONE_NUMBER_CODE_SMS_TEXT.format(code=code),
             code=code,
