@@ -76,9 +76,11 @@ class AlertSettingVotingPowerAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.annotate(
-            users_count=Count("alert_setting_voting_power_user_settings"),
-            sms_count=Count("alert_setting_voting_power_sms"),
-            voice_count=Count("alert_setting_voting_power_voice"),
+            users_count=Count(
+                "alert_setting_voting_power_user_settings", distinct=True
+            ),
+            sms_count=Count("alert_setting_voting_power_sms", distinct=True),
+            voice_count=Count("alert_setting_voting_power_voice", distinct=True),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -112,9 +114,9 @@ class AlertSettingUptimeAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.annotate(
-            users_count=Count("alert_setting_uptime_user_settings"),
-            sms_count=Count("alert_setting_uptime_sms"),
-            voice_count=Count("alert_setting_uptime_voice"),
+            users_count=Count("alert_setting_uptime_user_settings", distinct=True),
+            sms_count=Count("alert_setting_uptime_sms", distinct=True),
+            voice_count=Count("alert_setting_uptime_voice", distinct=True),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -148,9 +150,9 @@ class AlertSettingComissionAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.annotate(
-            users_count=Count("alert_setting_comission_user_settings"),
-            sms_count=Count("alert_setting_comission_sms"),
-            voice_count=Count("alert_setting_comission_voice"),
+            users_count=Count("alert_setting_comission_user_settings", distinct=True),
+            sms_count=Count("alert_setting_comission_sms", distinct=True),
+            voice_count=Count("alert_setting_comission_voice", distinct=True),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -184,9 +186,11 @@ class AlertSettingJailedAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.annotate(
-            users_count=Count("alert_setting_jailed_status_user_settings"),
-            sms_count=Count("alert_setting_jailed_status_sms"),
-            voice_count=Count("alert_setting_jailed_status_voice"),
+            users_count=Count(
+                "alert_setting_jailed_status_user_settings", distinct=True
+            ),
+            sms_count=Count("alert_setting_jailed_status_sms", distinct=True),
+            voice_count=Count("alert_setting_jailed_status_voice", distinct=True),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -220,9 +224,11 @@ class AlertSettingTombstonedAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.annotate(
-            users_count=Count("alert_setting_tombstoned_status_user_settings"),
-            sms_count=Count("alert_setting_tombstoned_status_sms"),
-            voice_count=Count("alert_setting_tombstoned_status_voice"),
+            users_count=Count(
+                "alert_setting_tombstoned_status_user_settings", distinct=True
+            ),
+            sms_count=Count("alert_setting_tombstoned_status_sms", distinct=True),
+            voice_count=Count("alert_setting_tombstoned_status_voice", distinct=True),
         )
 
     @admin.display(description=_("Uses Users"))
@@ -256,9 +262,11 @@ class AlertSettingBondedAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         return queryset.annotate(
-            users_count=Count("alert_setting_bonded_status_user_settings"),
-            sms_count=Count("alert_setting_bonded_status_sms"),
-            voice_count=Count("alert_setting_bonded_status_voice"),
+            users_count=Count(
+                "alert_setting_bonded_status_user_settings", distinct=True
+            ),
+            sms_count=Count("alert_setting_bonded_status_sms", distinct=True),
+            voice_count=Count("alert_setting_bonded_status_voice", distinct=True),
         )
 
     @admin.display(description=_("Uses Users"))
