@@ -27,8 +27,8 @@ class VoiceBase(models.Model):
         RINGING = "RINGING", _("Ringing")  # Идет вызов, абонент слышыт звонок
         ONGOING = "ONGOING", _("Ongoing")  # Абонент принял и слышыт голос робота
         COMPLETED = "COMPLETED", _("Сompleted")  # Робот успешно завершил звонок (final)
-        NO_ANSWER = "NO_ANSWER", _("No answer")  # Абонент не принял вызов (final)
-        BUSY = "BUSY", _("Busy")  # Абонент занят или отклонил вызов (final)
+        NO_ANSWER = "NO_ANSWER", _("No answer")  # Не принял или отклонил вызов (final)
+        BUSY = "BUSY", _("Busy")  # Абонент занят (final)
         ERROR = "ERROR", _("Error")  # Ошибка при создании звонка (final)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("User"))

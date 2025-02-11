@@ -30,7 +30,9 @@ class WebhookVoiceBirdView(views.APIView):
                 "failed": VoiceBase.Status.ERROR,
             }
 
-            voice_instance.status = statuses.get(voice_status, VoiceBase.Status.ERROR)
+            print("VOICE_STATUS: ", voice_status)
+            if statuses.get(voice_status):
+                voice_instance.status = statuses[voice_status]
             voice_instance.save()
 
         return response.Response("OK", status=status.HTTP_200_OK)
