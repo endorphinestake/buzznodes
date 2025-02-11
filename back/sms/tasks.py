@@ -1,5 +1,7 @@
 from django_rq import job
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from django.utils.timezone import now
 
 from users.models import UserPhone
 from alerts.models import AlertSettingBase
@@ -13,19 +15,54 @@ from sms.models import (
     SMSAlertBondedStatus,
     SMSConfirm,
 )
+from sms.providers.hicell.utils import hicell_submit_sms
 from logs.models import Log
 
 
 @job("submit_sms")
-def submit_sms_main_provider(
+def submit_sms_confirm_main_provider(
     phone_number_id: int,
-    sms_text: str,
-    stype: SMSBase.SType,
-    atype: AlertSettingBase.AlertType = None,
+    text: str,
+    code: str,
+):
+    print(f"submit_sms_confirm_main_provider: {phone_number_id} -> {text} -> {code}")
+
+    try:
+        phone_number = UserPhone.objects.get(pk=phone_number_id)
+    except UserPhone.DoesNotExist:
+        Log.error(f"UserPhone not found: {phone_number_id}")
+        return
+
+    sms_instance = SMSConfirm.objects.create(
+        user=phone_number.user,
+        phone=phone_number,
+        sent_text=text,
+        provider=SMSBase.Provider.MAIN,
+        code=code,
+        expire_code=now() + settings.PHONE_NUMBER_CODE_EXPIRED,
+        is_used=False,
+    )
+
+    err, sms_id = hicell_submit_sms(phone=phone_number.phone, text=text)
+    if err is None:
+        sms_instance.sms_id = sms_id
+        sms_instance.status = SMSBase.Status.SENT
+        sms_instance.save()
+    else:
+        sms_instance.err = err
+        sms_instance.status = SMSBase.Status.ERROR
+        sms_instance.save()
+
+
+@job("submit_sms")
+def submit_sms_alert_main_provider(
+    phone_number_id: int,
+    text: str,
+    atype: AlertSettingBase.AlertType,
     setting_id: int = None,
 ):
     print(
-        f"submit_sms_main_provider: {phone_number_id} -> {sms_text} -> {stype} -> {atype} -> {setting_id}"
+        f"submit_sms_alert_main_provider: {phone_number_id} -> {text} -> {atype} -> {setting_id}"
     )
 
     try:
@@ -43,18 +80,25 @@ def submit_sms_main_provider(
         AlertSettingBase.AlertType.BONDED: SMSAlertBondedStatus,
     }
 
-    sms_instance = None
-    if stype == SMSBase.SType.ALERT:
-        model_class = alert_model_map.get(atype)
-        if model_class:
-            sms_instance = model_class.objects.create(
-                user=phone_number.user,
-                phone=phone_number,
-                sent_text=sms_text,
-                setting_id=setting_id,
-            )
-        else:
-            Log.error(f"Unknown AlertType: {atype}")
-            return
+    model_class = alert_model_map.get(atype)
+    if not model_class:
+        Log.error(f"Unknown AlertType: {atype}")
+        return
 
-    # TODO: Submit SMS and update sms_id & status
+    sms_instance = model_class.objects.create(
+        user=phone_number.user,
+        phone=phone_number,
+        sent_text=text,
+        provider=SMSBase.Provider.MAIN,
+        setting_id=setting_id,
+    )
+
+    err, sms_id = hicell_submit_sms(phone=phone_number.phone, text=text)
+    if err is None:
+        sms_instance.sms_id = sms_id
+        sms_instance.status = SMSBase.Status.SENT
+        sms_instance.save()
+    else:
+        sms_instance.err = err
+        sms_instance.status = SMSBase.Status.ERROR
+        sms_instance.save()

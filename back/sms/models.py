@@ -13,10 +13,6 @@ from alerts.models import (
 
 
 class SMSBase(models.Model):
-    class SType(models.TextChoices):
-        ALERT = "ALERT", _("Alert")
-        CONFIRM_PHONE = "CONFIRM_PHONE", _("Confirm Phone")
-
     class Provider(models.TextChoices):
         MAIN = "MAIN", _("Main (Hicell)")
         RESERVE1 = "RESERVE1", _("Reserve (Bird)")
