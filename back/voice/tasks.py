@@ -57,7 +57,7 @@ def submit_voice_alert(
         setting_id=setting_id,
     )
 
-    if provider == VoiceBase.Provider.MAIN:
+    if provider == VoiceBase.Provider.MAIN:  # TODO: use reserve provider
         err, voice_id = bird_submit_voice(phone=phone_number.phone, text=text)
         # elif provider == SMSBase.Provider.RESERVE1:
         #     err, sms_id = bird_submit_sms(phone=phone_number.phone, text=text)

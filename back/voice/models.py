@@ -21,11 +21,15 @@ class VoiceBase(models.Model):
         RESERVE1 = "RESERVE1", _("Reserve (Bird)")
 
     class Status(models.TextChoices):
-        NEW = "NEW", _("New")
-        SENT = "SENT", _("Sent")
-        DELIVERED = "DELIVERED", _("Delivered")
-        UNDELIVERED = "UNDELIVERED", _("Undelivered")
-        ERROR = "ERROR", _("Error")
+        NEW = "NEW", _("New")  # Создан и поставлен в очередь
+        SENT = "SENT", _("Sent")  # Отправлено провайдеру
+        STARTING = "STARTING", _("starting")  # Произведен вызов
+        RINGING = "RINGING", _("Ringing")  # Идет вызов, абонент слышыт звонок
+        ONGOING = "ONGOING", _("Ongoing")  # Абонент принял и слышыт голос робота
+        COMPLETED = "COMPLETED", _("Сompleted")  # Робот успешно завершил звонок (final)
+        NO_ANSWER = "NO_ANSWER", _("No answer")  # Абонент не принял вызов (final)
+        BUSY = "BUSY", _("Busy")  # Абонент занят или отклонил вызов (final)
+        ERROR = "ERROR", _("Error")  # Ошибка при создании звонка (final)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("User"))
     phone = models.ForeignKey(

@@ -77,15 +77,6 @@ class UserAlertSettingsView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-
-        # TODO: test
-        # from voice.providers.bird.utils import bird_submit_voice
-        # voice_id = bird_submit_voice(
-        #     phone="380997849464",
-        #     text="Hi Vitaliy! I'm your BuzzNodes assistant for Celestia Mainnet. Uptime for Astria validator has increased to 99.90",
-        # )
-        # print("voice_id: ", voice_id)
-
         voting_power_settings = request.user.user_alert_settings_voting_power.all()
         voting_power_serializer = UserAlertSettingVotingPowerSerializer(
             voting_power_settings, many=True
