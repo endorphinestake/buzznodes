@@ -1,39 +1,16 @@
 from rest_framework import views, permissions, response, status
 
-from sms.models import (
-    SMSBase,
-    SMSConfirm,
-    SMSAlertVotingPower,
-    SMSAlertUptime,
-    SMSAlertComission,
-    SMSAlertJailedStatus,
-    SMSAlertTombstonedStatus,
-    SMSAlertBondedStatus,
-)
+from sms.models import SMSBase
 from sms.providers.hicell.serializers import HicellMessageStatusSerializer
+from sms.utils import find_sms_by_id
 
 
-class WebhookHicellView(views.APIView):
+class WebhookSMSHicellView(views.APIView):
     permission_classes = (permissions.AllowAny,)
 
-    def _find_sms_by_id(self, sms_id):
-        for model in [
-            SMSConfirm,
-            SMSAlertVotingPower,
-            SMSAlertUptime,
-            SMSAlertComission,
-            SMSAlertJailedStatus,
-            SMSAlertTombstonedStatus,
-            SMSAlertBondedStatus,
-        ]:
-            sms = model.objects.filter(sms_id=sms_id, status=SMSBase.Status.SENT).last()
-            if sms:
-                return sms
-        return None
-
     def get(self, request):
-        print("WebhookHicellView GET:", request.GET)
-        print("WebhookHicellView DATA:", request.data)
+        print("WebhookSMSHicellView GET:", request.GET)
+        print("WebhookSMSHicellView DATA:", request.data)
 
         serializer = HicellMessageStatusSerializer(data=request.GET)
         if not serializer.is_valid():
@@ -41,7 +18,7 @@ class WebhookHicellView(views.APIView):
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
 
-        sms_instance = self._find_sms_by_id(serializer.validated_data["msgid"])
+        sms_instance = find_sms_by_id(serializer.validated_data["msgid"])
 
         if sms_instance:
             statuses = {
@@ -57,4 +34,14 @@ class WebhookHicellView(views.APIView):
                 serializer.validated_data["dlr_status"], SMSBase.Status.ERROR
             )
             sms_instance.save()
+        return response.Response("OK", status=status.HTTP_200_OK)
+
+
+class WebhookSMSBirdView(views.APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        print("WebhookSMSBirdView POST:", request.POST)
+        print("WebhookHicellView DATA:", request.data)
+
         return response.Response("OK", status=status.HTTP_200_OK)

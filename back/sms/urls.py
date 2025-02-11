@@ -1,7 +1,8 @@
 from django.urls import path
 
-from sms.views import WebhookHicellView
+from sms.views import WebhookSMSHicellView, WebhookSMSBirdView
 
 urlpatterns = [
-    path("webhook/hicell/", WebhookHicellView.as_view()),
+    path("webhook/hicell/", WebhookSMSHicellView.as_view()),
+    path("webhook/bird/", WebhookSMSBirdView.as_view()),
 ]
