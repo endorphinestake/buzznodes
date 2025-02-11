@@ -11,6 +11,7 @@ from blockchains import urls as blockchains_urls
 from mails import urls as mails_urls
 from alerts import urls as alerts_urls
 from sms import urls as sms_urls
+from voice import urls as voice_urls
 
 
 urlpatterns = [
@@ -19,6 +20,7 @@ urlpatterns = [
     path("api/mails/", include(mails_urls)),
     path("api/alerts/", include(alerts_urls)),
     path("api/sms/", include(sms_urls)),
+    path("api/voice/", include(voice_urls)),
 ]
 
 urlpatterns += i18n_patterns(
