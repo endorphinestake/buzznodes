@@ -1,4 +1,3 @@
-from functools import reduce
 from rest_framework import views, permissions, response, status
 
 from sms.models import (
@@ -18,16 +17,19 @@ class WebhookHicellView(views.APIView):
     permission_classes = (permissions.AllowAny,)
 
     def _find_sms_by_id(self, sms_id):
-        querysets = [
-            SMSAlertVotingPower.objects.filter(sms_id=sms_id),
-            SMSAlertUptime.objects.filter(sms_id=sms_id),
-            SMSAlertComission.objects.filter(sms_id=sms_id),
-            SMSAlertJailedStatus.objects.filter(sms_id=sms_id),
-            SMSAlertTombstonedStatus.objects.filter(sms_id=sms_id),
-            SMSAlertBondedStatus.objects.filter(sms_id=sms_id),
-            SMSConfirm.objects.filter(sms_id=sms_id),
-        ]
-        return reduce(lambda qs1, qs2: qs1.union(qs2), querysets).first()
+        for model in [
+            SMSConfirm,
+            SMSAlertVotingPower,
+            SMSAlertUptime,
+            SMSAlertComission,
+            SMSAlertJailedStatus,
+            SMSAlertTombstonedStatus,
+            SMSAlertBondedStatus,
+        ]:
+            sms = model.objects.filter(sms_id=sms_id).last()
+            if sms:
+                return sms
+        return None
 
     def get(self, request):
         print("WebhookHicellView GET:", request.GET)
@@ -41,17 +43,18 @@ class WebhookHicellView(views.APIView):
 
         sms_instance = self._find_sms_by_id(serializer.validated_data["msgid"])
 
-        statuses = {
-            "delivrd": SMSBase.Status.DELIVERED,
-            "unknown": SMSBase.Status.UNDELIVRED,
-            "rejectd": SMSBase.Status.REJECTED,
-            "expired": SMSBase.Status.UNDELIVRED,
-            "undeliv": SMSBase.Status.UNDELIVRED,
-            "deleted": SMSBase.Status.REJECTED,
-        }
+        if sms_instance:
+            statuses = {
+                "delivrd": SMSBase.Status.DELIVERED,
+                "unknown": SMSBase.Status.UNDELIVRED,
+                "rejectd": SMSBase.Status.REJECTED,
+                "expired": SMSBase.Status.UNDELIVRED,
+                "undeliv": SMSBase.Status.UNDELIVRED,
+                "deleted": SMSBase.Status.REJECTED,
+            }
 
-        sms_instance.status = statuses.get(
-            serializer.validated_data["dlr_status"], SMSBase.Status.ERROR
-        )
-        sms_instance.save()
+            sms_instance.status = statuses.get(
+                serializer.validated_data["dlr_status"], SMSBase.Status.ERROR
+            )
+            sms_instance.save()
         return response.Response("OK", status=status.HTTP_200_OK)
