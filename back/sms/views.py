@@ -26,7 +26,7 @@ class WebhookHicellView(views.APIView):
             SMSAlertTombstonedStatus,
             SMSAlertBondedStatus,
         ]:
-            sms = model.objects.filter(sms_id=sms_id).last()
+            sms = model.objects.filter(sms_id=sms_id, status=SMSBase.Status.SENT).last()
             if sms:
                 return sms
         return None

@@ -10,7 +10,7 @@ def hicell_submit_sms(phone: str, text: str) -> tuple[str | None, str | None]:
     text_encoded = urllib.parse.quote(text)
     url = (
         f"https://api.hicell.net/message/send/?"
-        f"username={settings.HICELL_USERNAME}&api_key={settings.HICELL_API_KEY}"
+        f"username={settings.HICELL_SMS_USERNAME}&api_key={settings.HICELL_SMS_API_KEY}"
         f"&from=Buzznodes&to={phone}&message={text_encoded}"
     )
     try:

@@ -16,6 +16,7 @@ from sms.models import (
     SMSConfirm,
 )
 from sms.providers.hicell.utils import hicell_submit_sms
+from sms.providers.bird.utils import bird_submit_sms
 from logs.models import Log
 
 
