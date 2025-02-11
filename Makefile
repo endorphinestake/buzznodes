@@ -28,9 +28,13 @@ build_local:
 
 .PHONY: rq
 rq:
+	OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES \
 	.venv/bin/python back/manage.py rqworker submit_voice & \
+	OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES \
 	.venv/bin/python back/manage.py rqworker submit_sms & \
+	OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES \
 	.venv/bin/python back/manage.py rqworker submit_email & \
+	OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES \
 	.venv/bin/python back/manage.py rqworker alerts
 
 .PHONY: po

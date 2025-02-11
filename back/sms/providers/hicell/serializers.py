@@ -17,7 +17,8 @@ class HicellSMSReplySerializer(serializers.Serializer):
 
 class HicellMessageStatusSerializer(serializers.Serializer):
     msgid = serializers.UUIDField()
-    status = serializers.ChoiceField(
+    dlr_err = serializers.IntegerField()
+    dlr_status = serializers.ChoiceField(
         choices=["delivrd", "unknown", "rejectd", "expired", "undeliv", "deleted"]
     )
     dlr_timestamp = serializers.DateTimeField()
