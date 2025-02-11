@@ -384,9 +384,12 @@ class ConfirmUserPhoneView(views.APIView):
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
 
-        sms_confirm = get_object_or_404(
-            SMSConfirm, code=serializer.validated_data["code"], is_used=False
-        )
+        sms_confirm = SMSConfirm.objects.filter(
+            code=serializer.validated_data["code"], is_used=False
+        ).last()
+        if not sms_confirm:
+            return response.Response(status=status.HTTP_404_NOT_FOUND)
+
         sms_confirm.is_used = True
         sms_confirm.phone.status = True
         sms_confirm.save()

@@ -16,7 +16,7 @@ from sms.models import (
     SMSConfirm,
 )
 from sms.providers.hicell.utils import hicell_submit_sms  # SMS Main channel
-from sms.providers.bird.utils import bird_submit_sms  # SMS Reserverd channel
+from sms.providers.bird.utils import bird_submit_sms  # SMS Reserve1 channel
 from logs.models import Log
 
 
@@ -42,7 +42,6 @@ def submit_sms_confirm(
         provider=provider,
         code=code,
         expire_code=now() + settings.PHONE_NUMBER_CODE_EXPIRED,
-        is_used=False,
     )
 
     if provider == SMSBase.Provider.MAIN:

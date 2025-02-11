@@ -42,6 +42,7 @@ class SMSBase(models.Model):
     )
     sent_text = models.TextField(verbose_name=_("SMS Text"))
     provider = models.CharField(
+        db_index=True,
         choices=Provider.choices,
         max_length=25,
         default=Provider.MAIN,
@@ -61,7 +62,9 @@ class SMSBase(models.Model):
         default=False, verbose_name=_("Is Resended via Reserved channel")
     )
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
-    created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
+    created = models.DateTimeField(
+        db_index=True, auto_now_add=True, verbose_name=_("Created")
+    )
 
     def __str__(self):
         return f"{self.phone} -> {self.sent_text[:50]}"
