@@ -13,6 +13,7 @@ from voice.models import (
     VoiceAlertBondedStatus,
 )
 from logs.models import Log
+from voice.providers.unitalk.utils import unitalk_submit_voice
 from voice.providers.bird.utils import bird_submit_voice
 
 
@@ -57,10 +58,12 @@ def submit_voice_alert(
         setting_id=setting_id,
     )
 
-    if provider == VoiceBase.Provider.MAIN:  # TODO: use reserve provider
+    if provider == VoiceBase.Provider.MAIN:
+        err, voice_id = unitalk_submit_voice(
+            phone=phone_number.phone, text=text, voice_id=voice_instance.id
+        )
+    elif provider == VoiceBase.Provider.RESERVE1:
         err, voice_id = bird_submit_voice(phone=phone_number.phone, text=text)
-        # elif provider == SMSBase.Provider.RESERVE1:
-        #     err, sms_id = bird_submit_sms(phone=phone_number.phone, text=text)
     else:
         err, voice_id = f"Unknown Voice provider: {provider}", None
 

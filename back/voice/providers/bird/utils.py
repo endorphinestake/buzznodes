@@ -31,7 +31,7 @@ def bird_submit_voice(phone: str, text: str) -> tuple[str | None, str | None]:
     }
 
     try:
-        response = requests.post(url, json=payload, headers=headers, timeout=60)
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
         response.raise_for_status()
         resp_json = response.json()
 

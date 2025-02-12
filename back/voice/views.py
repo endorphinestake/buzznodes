@@ -11,6 +11,48 @@ class WebhookVoiceUnitalkView(views.APIView):
         print("WebhookVoiceUnitalkView POST:", request.POST)
         print("WebhookVoiceUnitalkView DATA:", request.data)
 
+        voice_id = request.data.get("call", {}).get("meta", None)
+        voice_event = request.data.get("event")
+        voice_state = request.data.get("call", {}).get("state", None)
+        if not voice_id:
+            return response.Response(
+                "Voice Meta not found!", status=status.HTTP_400_BAD_REQUEST
+            )
+
+        voice_instance = find_voice_by_id(int(voice_id))
+        if voice_instance:
+            events = {
+                "CALL_NEW": VoiceBase.Status.STARTING,
+                "CALL_REDIRECT": VoiceBase.Status.STARTING,
+                "CALL_ANSWER": VoiceBase.Status.ONGOING,
+                "CALL_END": VoiceBase.Status.COMPLETED,
+            }
+
+            states = {
+                "ANSWER": VoiceBase.Status.COMPLETED,  # Звонок был принят
+                "BUSY": VoiceBase.Status.BUSY,  # Линия была занята
+                "FAIL": VoiceBase.Status.ERROR,  # Сбой
+                "NOANSWER": VoiceBase.Status.NO_ANSWER,  # Звонок не был принят
+                "CHANUNAVAIL": VoiceBase.Status.BUSY,  # Вызываемый номер был недоступен
+                "NOMONEY": VoiceBase.Status.ERROR,  # Недостаточно средств для совершения звонка
+                "BUSYOUT": VoiceBase.Status.ERROR,  # Во время совершения звонка все внешние линии были заняты
+                "WRONGDIR": VoiceBase.Status.ERROR,  # Неверное направление звонка
+                "BLOCKED": VoiceBase.Status.ERROR,  # Звонок был заблокирован согласно настройкам проекта
+                "DIALING": VoiceBase.Status.ONGOING,  # Идет вызов
+                "UNREACHABLE": VoiceBase.Status.ERROR,  # Абонент недоступен или находится вне зоны действия сети
+                "NOT_EXIST": VoiceBase.Status.ERROR,  # Вызываемый номер не существует
+            }
+
+            print("VOICE_EVENT: ", voice_event)
+            print("VOICE_STATE: ", voice_state)
+
+            event = events.get(voice_event)
+            state = states.get(voice_state)
+
+            if state or event:
+                voice_instance.status = state or event
+                voice_instance.save()
+
         return response.Response("OK", status=status.HTTP_200_OK)
 
 
