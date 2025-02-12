@@ -30,10 +30,10 @@ class WebhookSMSHicellView(views.APIView):
                 "deleted": SMSBase.Status.REJECTED,
             }
 
-            sms_instance.status = statuses.get(
-                serializer.validated_data["dlr_status"], SMSBase.Status.ERROR
-            )
-            sms_instance.save()
+            print("SMS_STATUS: ", serializer.validated_data["dlr_status"])
+            if statuses.get(serializer.validated_data["dlr_status"]):
+                sms_instance.status = statuses[serializer.validated_data["dlr_status"]]
+                sms_instance.save()
         return response.Response("OK", status=status.HTTP_200_OK)
 
 
@@ -54,15 +54,17 @@ class WebhookSMSBirdView(views.APIView):
         sms_instance = find_sms_by_id(sms_id)
         if sms_instance:
             statuses = {
-                "delivered": SMSBase.Status.DELIVERED,
                 "accepted": SMSBase.Status.SENT,
-                "processing": SMSBase.Status.SENT,
                 "sent": SMSBase.Status.SENT,
                 "sending_failed": SMSBase.Status.REJECTED,
+                "delivered": SMSBase.Status.DELIVERED,
+                "processing": SMSBase.Status.SENT,
                 "delivery_failed": SMSBase.Status.UNDELIVRED,
             }
 
-            sms_instance.status = statuses.get(sms_status, SMSBase.Status.ERROR)
-            sms_instance.save()
+            print("SMS_STATUS: ", sms_status)
+            if statuses.get(sms_status):
+                sms_instance.status = statuses[sms_status]
+                sms_instance.save()
 
         return response.Response("OK", status=status.HTTP_200_OK)

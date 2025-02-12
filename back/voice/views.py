@@ -33,6 +33,6 @@ class WebhookVoiceBirdView(views.APIView):
             print("VOICE_STATUS: ", voice_status)
             if statuses.get(voice_status):
                 voice_instance.status = statuses[voice_status]
-            voice_instance.save()
+                voice_instance.save()
 
         return response.Response("OK", status=status.HTTP_200_OK)
