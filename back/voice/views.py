@@ -4,6 +4,16 @@ from voice.models import VoiceBase
 from voice.utils import find_voice_by_id
 
 
+class WebhookVoiceUnitalkView(views.APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        print("WebhookVoiceUnitalkView POST:", request.POST)
+        print("WebhookVoiceUnitalkView DATA:", request.data)
+
+        return response.Response("OK", status=status.HTTP_200_OK)
+
+
 class WebhookVoiceBirdView(views.APIView):
     permission_classes = (permissions.AllowAny,)
 

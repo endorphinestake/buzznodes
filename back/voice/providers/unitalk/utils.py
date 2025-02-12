@@ -1,4 +1,3 @@
-import re
 import requests
 
 from django.conf import settings
@@ -6,10 +5,7 @@ from django.conf import settings
 from logs.models import Log
 
 
-def bird_submit_voice(phone: str, text: str) -> tuple[str | None, str | None]:
-    text = re.sub(r"<[^>]+>", "", text).strip()
-    text = re.sub(r"\s+", " ", text).strip()
-
+def unitalk_submit_voice(phone: str, text: str) -> tuple[str | None, str | None]:
     url = f"https://api.bird.com/workspaces/{settings.BIRD_WORKSPACE_ID}/channels/{settings.BIRD_VOICE_CHANNEL_ID}/calls"
     headers = {
         "Authorization": f"AccessKey {settings.BIRD_ACCESS_KEY}",
