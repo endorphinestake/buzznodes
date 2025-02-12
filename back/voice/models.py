@@ -63,6 +63,9 @@ class VoiceBase(models.Model):
     err = models.CharField(
         max_length=256, null=True, blank=True, verbose_name=_("Error Details")
     )
+    is_resent = models.BooleanField(
+        default=False, verbose_name=_("Is Resended via Reserved channel")
+    )
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
 

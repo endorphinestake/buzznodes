@@ -22,6 +22,11 @@ def resend_sms():
     call_command("resend_sms")
 
 
+def resend_voice():
+    connection.close()
+    call_command("resend_voice")
+
+
 class Command(BaseCommand):
     help = "Scheduler Tasks"
 
@@ -33,6 +38,7 @@ class Command(BaseCommand):
         scheduler.add_job(autoremove_logs, "cron", hour="*/12")
         scheduler.add_job(validators_pictures, "cron", hour="*/1")
         scheduler.add_job(resend_sms, "interval", seconds=10)
+        scheduler.add_job(resend_voice, "interval", seconds=15)
 
         scheduler.start()
 
