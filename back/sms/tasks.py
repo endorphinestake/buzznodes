@@ -18,6 +18,7 @@ from sms.models import (
 from sms.providers.hicell.utils import hicell_submit_sms  # SMS Main channel
 from sms.providers.bird.utils import bird_submit_sms  # SMS Reserve1 channel
 from logs.models import Log
+from alerts.utils import clean_tags_from_text
 
 
 @job("submit_sms")
@@ -72,6 +73,8 @@ def submit_sms_alert(
     print(
         f"submit_sms_alert: {provider} -> {phone_number_id} -> {text} -> {atype} -> {setting_id}"
     )
+
+    text = clean_tags_from_text(text)
 
     try:
         phone_number = UserPhone.objects.get(pk=phone_number_id)

@@ -3,12 +3,12 @@ import requests
 
 from django.conf import settings
 
+from alerts.utils import clean_tags_from_text
 from logs.models import Log
 
 
 def bird_submit_voice(phone: str, text: str) -> tuple[str | None, str | None]:
-    text = re.sub(r"<[^>]+>", "", text).strip()
-    text = re.sub(r"\s+", " ", text).strip()
+    text = clean_tags_from_text(text)
 
     url = f"https://api.bird.com/workspaces/{settings.BIRD_WORKSPACE_ID}/channels/{settings.BIRD_VOICE_CHANNEL_ID}/calls"
     headers = {
