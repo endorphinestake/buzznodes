@@ -12,9 +12,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework import views, permissions, response, status
 
 from blockchains.constants import CHART_PERIODS
-from blockchains.models import Blockchain, BlockchainValidator
+from blockchains.models import Blockchain, BlockchainValidator, BlockchainBridge
 from blockchains.serilazers import (
     BlockchainValidatorModelSerializer,
+    BlockchainBridgeModelSerializer,
     BlockchainValidatorDetailModelSerializer,
     RpcValidatorSerializer,
     BlockchainValidatorSerializer,
@@ -23,7 +24,7 @@ from blockchains.serilazers import (
     GrafanaChartSerializer,
 )
 from blockchains.permissions import IsPrometheusUserAgent
-from blockchains.filters import BlockchainValidatorFilter
+from blockchains.filters import BlockchainValidatorFilter, BlockchainBridgeFilter
 from blockchains.utils.cosmos_fetch_rpc_url import cosmos_fetch_rpc_url
 from blockchains.utils.cosmos_fetch_validators_url import cosmos_fetch_validators_url
 from blockchains.utils.cosmos_fetch_infos_url import cosmos_fetch_infos_url
@@ -175,11 +176,6 @@ class CosmosBlockchainMetricsView(views.APIView):
             )
 
             if validator:
-                # TODO:
-                # if validator.id == 248:
-                #     validator.voting_power += 1  # Test Decreased Voting Power
-                #     validator.save()
-
                 updated_fields = {}
                 if validator.pubkey_type != pubkey_type:
                     updated_fields["pubkey_type"] = pubkey_type
@@ -332,6 +328,51 @@ class BlockchainValidatorsView(views.APIView):
                 "voting_power_percentage": (
                     (item["voting_power"] / total_voting_power) * 100
                     if total_voting_power > 0
+                    else 0
+                ),
+            }
+            for index, item in enumerate(serializer.data)
+        ]
+
+        return response.Response(data_with_rank, status=status.HTTP_200_OK)
+
+
+class BlockchainBridgesView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    filterset_class = BlockchainBridgeFilter
+
+    def get(self, request, blockchain_id):
+        blockchain = get_object_or_404(
+            Blockchain, pk=blockchain_id, btype=Blockchain.Type.COSMOS, status=True
+        )
+
+        blockchain_bridges = blockchain.blockchain_bridges.all()
+
+        bridges_filter = self.filterset_class(
+            request.GET,
+            request=request,
+            queryset=blockchain_bridges.select_related("blockchain").order_by(
+                "-node_height"
+            ),
+        )
+
+        total_node_height = (
+            blockchain_bridges.aggregate(total_node_height=Sum("node_height"))[
+                "total_node_height"
+            ]
+            or 0
+        )
+
+        queryset = bridges_filter.qs
+        serializer = BlockchainBridgeModelSerializer(queryset, many=True)
+
+        data_with_rank = [
+            {
+                **item,
+                "rank": index + 1,
+                "node_height_percentage": (
+                    (item["node_height"] / total_node_height) * 100
+                    if total_node_height > 0
                     else 0
                 ),
             }

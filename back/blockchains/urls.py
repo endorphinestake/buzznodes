@@ -4,6 +4,7 @@ from django.urls import path
 from blockchains.views import (
     CosmosBlockchainMetricsView,
     BlockchainValidatorsView,
+    BlockchainBridgesView,
     BlockchainValidatorView,
     BlockchainChartView,
 )
@@ -11,6 +12,7 @@ from blockchains.views import (
 urlpatterns = [
     path("metrics/<int:blockchain_id>/", CosmosBlockchainMetricsView.as_view()),
     path("list/<int:blockchain_id>/", BlockchainValidatorsView.as_view()),
+    path("bridges/<int:blockchain_id>/", BlockchainBridgesView.as_view()),
     path(
         "details/<int:blockchain_id>/<int:validator_id>/",
         BlockchainValidatorView.as_view(),
