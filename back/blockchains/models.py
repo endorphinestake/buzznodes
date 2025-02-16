@@ -25,6 +25,9 @@ class Blockchain(models.Model):
     name = models.CharField(
         max_length=256, default="Celestia Mainnet", verbose_name=_("Blockchain Name")
     )
+    da_url = models.CharField(
+        max_length=256, null=True, blank=True, verbose_name=_("DA API URL")
+    )
     status = models.BooleanField(db_index=True, default=True, verbose_name=_("Status"))
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))

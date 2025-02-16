@@ -2,7 +2,12 @@ from adminsortable2.admin import SortableAdminBase, SortableInlineAdminMixin
 
 from django.contrib import admin
 
-from blockchains.models import Blockchain, BlockchainUrl, BlockchainValidator
+from blockchains.models import (
+    Blockchain,
+    BlockchainUrl,
+    BlockchainValidator,
+    BlockchainBridge,
+)
 
 
 class BlockchainUrlInline(SortableInlineAdminMixin, admin.StackedInline):
@@ -31,6 +36,7 @@ class BlockchainAdmin(SortableAdminBase, admin.ModelAdmin):
     list_display = (
         "name",
         "btype",
+        "da_url",
         "status",
         "updated",
         "created",
@@ -73,6 +79,33 @@ class BlockchainValidatorAdmin(admin.ModelAdmin):
         "valcons_address",
         "wallet_address",
     )
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
+
+
+@admin.register(BlockchainBridge)
+class BlockchainBridgeAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "blockchain",
+        "node_id",
+        "version",
+        "system_version",
+        "node_height",
+        "last_timestamp",
+        "updated",
+        "created",
+    )
+
+    list_filter = ("blockchain",)
+    search_fields = ("node_id",)
 
     def has_change_permission(self, request, obj=None):
         return False
