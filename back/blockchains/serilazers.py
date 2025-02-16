@@ -31,6 +31,20 @@ class BlockchainValidatorModelSerializer(serializers.ModelSerializer):
         )
 
 
+class BlockchainBridgeModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlockchainBridge
+        fields = (
+            "id",
+            "blockchain_id",
+            "node_id",
+            "version",
+            "system_version",
+            "node_height",
+            "last_timestamp",
+        )
+
+
 class BlockchainValidatorDetailModelSerializer(BlockchainValidatorModelSerializer):
     class Meta:
         model = BlockchainValidator
