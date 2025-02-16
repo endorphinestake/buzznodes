@@ -15,12 +15,10 @@ class BlockchainUrlInline(SortableInlineAdminMixin, admin.StackedInline):
         "infos_url",
         "priority",
         "status",
-        "last_sync",
         "updated",
         "created",
     )
     readonly_fields = (
-        "last_sync",
         "updated",
         "created",
     )

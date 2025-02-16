@@ -52,9 +52,6 @@ class BlockchainUrl(models.Model):
     infos_url = models.URLField(verbose_name=_("Signing Infos URL"))
     priority = models.PositiveIntegerField(db_index=True)
     status = models.BooleanField(default=True, verbose_name=_("Status"))
-    last_sync = models.DateTimeField(
-        null=True, blank=True, verbose_name=_("Last Sync date")
-    )
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
 
@@ -63,8 +60,8 @@ class BlockchainUrl(models.Model):
 
     class Meta:
         ordering = ["priority"]
-        verbose_name = _("Blockchain URL")
-        verbose_name_plural = _("Blockchain URLs")
+        verbose_name = _("Blockchain Validator URL")
+        verbose_name_plural = _("Blockchain Validator URLs")
 
 
 class BlockchainValidator(models.Model):
@@ -142,3 +139,30 @@ class BlockchainValidator(models.Model):
     class Meta:
         verbose_name = _("Blockchain Validator")
         verbose_name_plural = _("Blockchain Validators")
+
+
+class BlockchainBridge(models.Model):
+    blockchain = models.ForeignKey(
+        Blockchain,
+        on_delete=models.CASCADE,
+        related_name="blockchain_bridges",
+        verbose_name=_("Blockchain"),
+    )
+    node_id = models.CharField(db_index=True, max_length=255, verbose_name=_("Node ID"))
+    version = models.CharField(max_length=255, verbose_name=_("Version"))
+    system_version = models.CharField(max_length=255, verbose_name=_("System Version"))
+    node_height = models.IntegerField(
+        db_index=True, verbose_name=_("Current Node Height")
+    )
+    last_timestamp = models.BigIntegerField(
+        default=0, verbose_name=_("Last timestamp pfb total")
+    )
+    updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
+    created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
+
+    def __str__(self):
+        return f"{self.node_id} ({self.blockchain})"
+
+    class Meta:
+        verbose_name = _("Blockchain Bridge")
+        verbose_name_plural = _("Blockchain Bridges")
