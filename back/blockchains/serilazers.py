@@ -3,7 +3,7 @@ from django.utils.timezone import now, timedelta
 
 from rest_framework import serializers
 
-from blockchains.models import Blockchain, BlockchainValidator
+from blockchains.models import Blockchain, BlockchainValidator, BlockchainBridge
 
 
 class BlockchainValidatorModelSerializer(serializers.ModelSerializer):
