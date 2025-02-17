@@ -8,6 +8,7 @@ from logs.models import Log
 async def cosmos_fetch_da_url(urls, timeout):
     if len(urls) == 0:
         return {}
+    return {}
 
     for url in urls:
         try:
