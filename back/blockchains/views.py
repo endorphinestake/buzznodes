@@ -356,6 +356,7 @@ class CosmosBlockchainMetricsView(views.APIView):
             blockchain.network_height = status_serializer.validated_data["sync_info"][
                 "latest_block_height"
             ]
+            blockchain = get_object_or_404(Blockchain, pk=blockchain.id)
             blockchain.save()
 
         # Alerts
