@@ -20,6 +20,7 @@ from blockchains.serilazers import (
     RpcValidatorSerializer,
     BlockchainValidatorSerializer,
     InfosValidatorSerializer,
+    RpcStatusValidatorSerializer,
     ValidatorChartsSerializer,
     GrafanaChartSerializer,
 )
@@ -28,6 +29,7 @@ from blockchains.filters import BlockchainValidatorFilter, BlockchainBridgeFilte
 from blockchains.utils.cosmos_fetch_rpc_url import cosmos_fetch_rpc_url
 from blockchains.utils.cosmos_fetch_validators_url import cosmos_fetch_validators_url
 from blockchains.utils.cosmos_fetch_infos_url import cosmos_fetch_infos_url
+from blockchains.utils.cosmos_fetch_rpc_status_url import cosmos_fetch_rpc_status_url
 from blockchains.utils.hex_to_celestiavalcons import hex_to_celestiavalcons
 from blockchains.utils.convert_valoper_to_wallet import convert_valoper_to_wallet
 from blockchains.utils.calculate_uptime import calculate_uptime
@@ -69,6 +71,10 @@ class CosmosBlockchainMetricsView(views.APIView):
                 urls=infos_urls,
                 timeout=settings.METRICS_TIMEOUT_SECONDS,
             ),
+            cosmos_fetch_rpc_status_url(
+                urls=rpc_urls,
+                timeout=settings.METRICS_TIMEOUT_SECONDS,
+            ),
             return_exceptions=True,
         )
         return results
@@ -94,7 +100,7 @@ class CosmosBlockchainMetricsView(views.APIView):
             )
         )
 
-        urls_types = ["RPC", "Validators", "Infos"]
+        urls_types = ["RPC", "Validators", "Infos", "Status"]
         for idx, result in enumerate(results):
             if isinstance(result, Exception):
                 Log.error(f"Can't fetching {urls_types[idx]}: {result}")
@@ -121,6 +127,13 @@ class CosmosBlockchainMetricsView(views.APIView):
         if not infos_serializer.is_valid():
             return response.Response(
                 infos_serializer.errors,
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            )
+
+        status_serializer = RpcStatusValidatorSerializer(data=results[3])
+        if not status_serializer.is_valid():
+            return response.Response(
+                status_serializer.errors,
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
 
@@ -284,6 +297,16 @@ class CosmosBlockchainMetricsView(views.APIView):
                 validators_to_update=validators_to_update,
                 validators_to_update_prev=validators_to_update_prev,
             )
+
+        # Update blockchain status info (latest_block_height)
+        if (
+            blockchain.network_height
+            != status_serializer.validated_data["sync_info"]["latest_block_height"]
+        ):
+            blockchain.network_height = status_serializer.validated_data["sync_info"][
+                "latest_block_height"
+            ]
+            blockchain.save()
 
         return HttpResponse(
             generate_latest(),

@@ -37,11 +37,13 @@ class BlockchainAdmin(SortableAdminBase, admin.ModelAdmin):
         "name",
         "btype",
         "da_url",
+        "network_height",
         "status",
         "updated",
         "created",
     )
     list_filter = ("btype",)
+    readonly_fields = ("network_height",)
 
     def has_delete_permission(self, request, obj=None):
         return False

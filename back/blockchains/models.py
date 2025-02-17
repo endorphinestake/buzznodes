@@ -28,6 +28,7 @@ class Blockchain(models.Model):
     da_url = models.CharField(
         max_length=256, null=True, blank=True, verbose_name=_("DA API URL")
     )
+    network_height = models.BigIntegerField(default=0, verbose_name=_("Network Height"))
     status = models.BooleanField(db_index=True, default=True, verbose_name=_("Status"))
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))

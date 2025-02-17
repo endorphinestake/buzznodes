@@ -37,6 +37,7 @@ class BlockchainBridgeModelSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "blockchain_id",
+            "blockchain__network_height",
             "node_id",
             "version",
             "system_version",
@@ -128,6 +129,14 @@ class InfosValidatorSerializer(serializers.Serializer):
     jailed_until = serializers.DateTimeField()
     tombstoned = serializers.BooleanField()
     missed_blocks_counter = serializers.IntegerField()
+
+
+class RpcStatusSyncInfoSerializer(serializers.Serializer):
+    latest_block_height = serializers.IntegerField(required=True)
+
+
+class RpcStatusValidatorSerializer(serializers.Serializer):
+    sync_info = RpcStatusSyncInfoSerializer()
 
 
 class PrimaryPictureSerializer(serializers.Serializer):
