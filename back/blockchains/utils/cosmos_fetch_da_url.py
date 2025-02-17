@@ -19,50 +19,49 @@ async def cosmos_fetch_da_url(urls, timeout):
                     last_timestamp = int(now().timestamp())
 
                     bridges = {}
-                    for family in text_string_to_metric_families(resp.text):
-                        if family.name == "target_info":
-                            for sample in family.samples:
-                                if "/Bridge" in sample.labels.get(
-                                    "job"
-                                ) and sample.labels.get("instance"):
-                                    bridges[sample.labels.get("instance")] = {}
+                    # for family in text_string_to_metric_families(resp.text):
+                    #     if family.name == "target_info":
+                    #         for sample in family.samples:
+                    #             if "/Bridge" in sample.labels.get(
+                    #                 "job"
+                    #             ) and sample.labels.get("instance"):
+                    #                 bridges[sample.labels.get("instance")] = {}
 
-                    for family in text_string_to_metric_families(resp.text):
-                        continue
-                        # build_info
-                        # if family.name == "build_info":
-                        #     for sample in family.samples:
-                        #         instance = sample.labels.get("instance")
-                        #         if (
-                        #             "/Bridge" in sample.labels.get("job")
-                        #             and instance in bridges
-                        #         ):
-                        #             bridges[instance]["semantic_version"] = (
-                        #                 sample.labels.get("semantic_version")
-                        #             )
-                        #             bridges[instance]["system_version"] = (
-                        #                 sample.labels.get("system_version")
-                        #             )
+                    # for family in text_string_to_metric_families(resp.text):
+                    #     # build_info
+                    #     if family.name == "build_info":
+                    #         for sample in family.samples:
+                    #             instance = sample.labels.get("instance")
+                    #             if (
+                    #                 "/Bridge" in sample.labels.get("job")
+                    #                 and instance in bridges
+                    #             ):
+                    #                 bridges[instance]["semantic_version"] = (
+                    #                     sample.labels.get("semantic_version")
+                    #                 )
+                    #                 bridges[instance]["system_version"] = (
+                    #                     sample.labels.get("system_version")
+                    #                 )
 
-                        # hdr_sync_subjective_head_gauge
-                        # if family.name == "hdr_sync_subjective_head_gauge":
-                        #     for sample in family.samples:
-                        #         instance = sample.labels.get("instance")
-                        #         if (
-                        #             "/Bridge" in sample.labels.get("job")
-                        #             and instance in bridges
-                        #         ):
-                        #             bridges[instance]["node_height"] = int(sample.value)
+                    #     hdr_sync_subjective_head_gauge
+                    #     if family.name == "hdr_sync_subjective_head_gauge":
+                    #         for sample in family.samples:
+                    #             instance = sample.labels.get("instance")
+                    #             if (
+                    #                 "/Bridge" in sample.labels.get("job")
+                    #                 and instance in bridges
+                    #             ):
+                    #                 bridges[instance]["node_height"] = int(sample.value)
 
-                        # last_pfb_timestamp_total
-                        # if family.name == "last_pfb_timestamp":
-                        #     for sample in family.samples:
-                        #         instance = sample.labels.get("instance")
-                        #         if (
-                        #             "/Bridge" in sample.labels.get("job")
-                        #             and instance in bridges
-                        #         ):
-                        #             bridges[instance]["last_timestamp"] = last_timestamp
+                    #     last_pfb_timestamp_total
+                    #     if family.name == "last_pfb_timestamp":
+                    #         for sample in family.samples:
+                    #             instance = sample.labels.get("instance")
+                    #             if (
+                    #                 "/Bridge" in sample.labels.get("job")
+                    #                 and instance in bridges
+                    #             ):
+                    #                 bridges[instance]["last_timestamp"] = last_timestamp
 
                     return bridges
 
