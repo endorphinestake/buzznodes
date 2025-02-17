@@ -155,16 +155,16 @@ class BlockchainBridge(models.Model):
     node_id = models.CharField(db_index=True, max_length=255, verbose_name=_("Node ID"))
     version = models.CharField(max_length=255, verbose_name=_("Version"))
     system_version = models.CharField(max_length=255, verbose_name=_("System Version"))
-    node_height = models.IntegerField(
+    node_height = models.PositiveBigIntegerField(
         db_index=True, verbose_name=_("Current Node Height")
     )
-    node_height_diff = models.PositiveIntegerField(
+    node_height_diff = models.PositiveBigIntegerField(
         verbose_name=_("The diff between Network height")
     )
-    last_timestamp = models.BigIntegerField(
+    last_timestamp = models.PositiveBigIntegerField(
         db_index=True, default=0, verbose_name=_("Last timestamp pfb total")
     )
-    last_timestamp_diff = models.PositiveIntegerField(
+    last_timestamp_diff = models.PositiveBigIntegerField(
         default=0, verbose_name=_("Last timestamp diff (seconds)")
     )
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
