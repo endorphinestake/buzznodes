@@ -341,10 +341,21 @@ class CosmosBlockchainMetricsView(views.APIView):
                     updated_fields["node_height"] = node_height
 
                 if bridge_local.node_height_diff != node_height_diff:
-                    updated_fields["node_height_diff"] = node_height_diff
-                    bridges_from_to_update_alerts["node_height_diff"][
-                        bridge_local.id
-                    ] = (bridge_local.node_height_diff, node_height_diff)
+
+                    if node_height_diff > 0 and node_height_diff < 10000000:
+                        updated_fields["node_height_diff"] = node_height_diff
+                        bridges_from_to_update_alerts["node_height_diff"][
+                            bridge_local.id
+                        ] = (bridge_local.node_height_diff, node_height_diff)
+                    else:
+                        print(
+                            "bridge_local.node_height_diff: ",
+                            bridge_local.node_height_diff,
+                        )
+                        print(
+                            "node_height_diff: ",
+                            node_height_diff,
+                        )
 
                 if bridge_local.last_timestamp != last_timestamp:
                     updated_fields["last_timestamp"] = last_timestamp
