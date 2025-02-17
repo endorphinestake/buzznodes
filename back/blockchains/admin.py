@@ -101,7 +101,9 @@ class BlockchainBridgeAdmin(admin.ModelAdmin):
         "version",
         "system_version",
         "node_height",
+        "node_height_diff",
         "last_timestamp",
+        "last_timestamp_diff",
         "updated",
         "created",
     )

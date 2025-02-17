@@ -22,7 +22,7 @@ from logs.models import Log
 def check_alerts(
     validators_to_update: list[tuple[int, dict]],
     validators_to_update_prev: dict,
-    bridges_to_update: list[tuple[int, dict]],
+    bridges_from_to_update_alerts: dict,
 ):
     queue_sms = get_queue("submit_sms")
     queue_voice = get_queue("submit_voice")
@@ -354,5 +354,4 @@ def check_alerts(
                     )
                     user_alert_setting.delete()
 
-    for bridge_id, updated_fields in bridges_to_update:
-        pass
+    # print("bridges_from_to_update_alerts: ", bridges_from_to_update_alerts)
