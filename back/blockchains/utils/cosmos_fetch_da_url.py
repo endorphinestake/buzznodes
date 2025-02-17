@@ -13,19 +13,19 @@ async def cosmos_fetch_da_url(urls, timeout):
         try:
             async with httpx.AsyncClient(timeout=timeout) as client:
                 while True:
-                    resp = await client.get(url)
+                    resp = await client.get(url, headers={"Accept-Encoding": "gzip"})
                     resp.raise_for_status()
 
                     last_timestamp = int(now().timestamp())
 
                     bridges = {}
-                    # for family in text_string_to_metric_families(resp.text):
-                    #     if family.name == "target_info":
-                    #         for sample in family.samples:
-                    #             if "/Bridge" in sample.labels.get(
-                    #                 "job"
-                    #             ) and sample.labels.get("instance"):
-                    #                 bridges[sample.labels.get("instance")] = {}
+                    for family in text_string_to_metric_families(resp.text):
+                        if family.name == "target_info":
+                            for sample in family.samples:
+                                if "/Bridge" in sample.labels.get(
+                                    "job"
+                                ) and sample.labels.get("instance"):
+                                    bridges[sample.labels.get("instance")] = {}
 
                     # for family in text_string_to_metric_families(resp.text):
                     #     # build_info
