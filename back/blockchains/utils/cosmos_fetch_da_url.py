@@ -34,14 +34,13 @@ async def cosmos_fetch_da_url(urls, timeout):
                 while True:
                     resp = await client.get(url, headers={"Accept-Encoding": "gzip"})
                     resp.raise_for_status()
-
-                    last_timestamp = int(now().timestamp())
-
-                    filtered_metrics = text_string_to_metric_families(
-                        _filter_metrics(resp.content)
+                    filtered_metrics = list(
+                        text_string_to_metric_families(_filter_metrics(resp.content))
                     )
 
                     bridges = {}
+                    last_timestamp = int(now().timestamp())
+
                     for family in filtered_metrics:
                         if family.name == "target_info":
                             for sample in family.samples:
