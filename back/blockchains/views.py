@@ -30,6 +30,7 @@ from blockchains.utils.cosmos_fetch_rpc_url import cosmos_fetch_rpc_url
 from blockchains.utils.cosmos_fetch_validators_url import cosmos_fetch_validators_url
 from blockchains.utils.cosmos_fetch_infos_url import cosmos_fetch_infos_url
 from blockchains.utils.cosmos_fetch_rpc_status_url import cosmos_fetch_rpc_status_url
+from blockchains.utils.cosmos_fetch_da_url import cosmos_fetch_da_url
 from blockchains.utils.hex_to_celestiavalcons import hex_to_celestiavalcons
 from blockchains.utils.convert_valoper_to_wallet import convert_valoper_to_wallet
 from blockchains.utils.calculate_uptime import calculate_uptime
@@ -57,7 +58,7 @@ class CosmosBlockchainMetricsView(views.APIView):
         ["blockchain_id", "validator_id", "moniker"],
     )
 
-    async def _process_urls(self, rpc_urls, validators_urls, infos_urls):
+    async def _process_urls(self, rpc_urls, validators_urls, infos_urls, da_urls):
         results = await asyncio.gather(
             cosmos_fetch_rpc_url(
                 urls=rpc_urls,
@@ -73,6 +74,10 @@ class CosmosBlockchainMetricsView(views.APIView):
             ),
             cosmos_fetch_rpc_status_url(
                 urls=rpc_urls,
+                timeout=settings.METRICS_TIMEOUT_SECONDS,
+            ),
+            cosmos_fetch_da_url(
+                urls=da_urls,
                 timeout=settings.METRICS_TIMEOUT_SECONDS,
             ),
             return_exceptions=True,
@@ -97,10 +102,11 @@ class CosmosBlockchainMetricsView(views.APIView):
                 rpc_urls=rpc_urls,
                 validators_urls=validators_urls,
                 infos_urls=infos_urls,
+                da_urls=[blockchain.da_url] if blockchain.da_url else [],
             )
         )
 
-        urls_types = ["RPC", "Validators", "Infos", "Status"]
+        urls_types = ["RPC", "Validators", "Infos", "Status", "DA"]
         for idx, result in enumerate(results):
             if isinstance(result, Exception):
                 Log.error(f"Can't fetching {urls_types[idx]}: {result}")
@@ -143,12 +149,18 @@ class CosmosBlockchainMetricsView(views.APIView):
         }
         infos_data = {item["address"]: item for item in infos_serializer.validated_data}
 
-        # Get local data
+        # Get local validators data
         validators_local = {
             item.operator_address: item
             for item in blockchain.blockchain_validators.iterator()
         }
 
+        # Get local bridges data
+        bridges_local = {
+            item.node_id: item for item in blockchain.blockchain_bridges.iterator()
+        }
+
+        # Update Validators
         validators_to_update = []
         validators_to_update_prev = {
             "uptime": {},
@@ -297,6 +309,49 @@ class CosmosBlockchainMetricsView(views.APIView):
                 validators_to_update=validators_to_update,
                 validators_to_update_prev=validators_to_update_prev,
             )
+
+        # Update Bridges
+        bridges_to_update = []
+        for node_id, bridge in results[4].items():
+            bridge_local = bridges_local.get(node_id)
+
+            semantic_version = bridge["semantic_version"]
+            system_version = bridge["system_version"]
+            node_height = bridge["node_height"]
+            last_timestamp = bridge["last_timestamp"]
+
+            if bridge_local:
+                updated_fields = {}
+                if bridge_local.version != semantic_version:
+                    updated_fields["version"] = semantic_version
+                if bridge_local.system_version != system_version:
+                    updated_fields["system_version"] = system_version
+                if bridge_local.node_height != node_height:
+                    updated_fields["node_height"] = node_height
+                if bridge_local.last_timestamp != last_timestamp:
+                    updated_fields["last_timestamp"] = last_timestamp
+
+                if updated_fields:
+                    bridges_to_update.append((bridge_local.id, updated_fields))
+
+            else:
+                bridge = BlockchainBridge.objects.create(
+                    blockchain=blockchain,
+                    node_id=node_id,
+                    version=semantic_version,
+                    system_version=system_version,
+                    node_height=node_height,
+                    last_timestamp=last_timestamp,
+                )
+
+        if bridges_to_update:
+            # print("INFO: Updating BlockchainBridges: ", bridges_to_update)
+            with transaction.atomic():
+                for bridge_id, updated_fields in bridges_to_update:
+                    BlockchainBridge.objects.filter(id=bridge_id).update(
+                        **updated_fields,
+                        updated=now(),
+                    )
 
         # Update blockchain status info (latest_block_height)
         if (

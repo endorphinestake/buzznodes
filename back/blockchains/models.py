@@ -26,7 +26,7 @@ class Blockchain(models.Model):
         max_length=256, default="Celestia Mainnet", verbose_name=_("Blockchain Name")
     )
     da_url = models.CharField(
-        max_length=256, null=True, blank=True, verbose_name=_("DA API URL")
+        max_length=256, null=True, blank=True, verbose_name=_("DA Metrics URL")
     )
     network_height = models.BigIntegerField(default=0, verbose_name=_("Network Height"))
     status = models.BooleanField(db_index=True, default=True, verbose_name=_("Status"))
