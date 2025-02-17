@@ -1,8 +1,17 @@
+import re
+import gzip
 import httpx
 from prometheus_client.parser import text_string_to_metric_families
 from django.utils.timezone import now
 
 from logs.models import Log
+
+
+def _filter_metrics(text, target_metric):
+    pattern = rf"^# TYPE {target_metric}.*|{target_metric}{{.*}}"
+    return "\n".join(
+        match.group() for match in re.finditer(pattern, text, re.MULTILINE)
+    )
 
 
 async def cosmos_fetch_da_url(urls, timeout):
@@ -20,12 +29,14 @@ async def cosmos_fetch_da_url(urls, timeout):
 
                     bridges = {}
                     for family in text_string_to_metric_families(resp.text):
-                        if family.name == "target_info":
-                            for sample in family.samples:
-                                if "/Bridge" in sample.labels.get(
-                                    "job"
-                                ) and sample.labels.get("instance"):
-                                    bridges[sample.labels.get("instance")] = {}
+                        continue
+                        # print("family.name: ", family.name)
+                        # if family.name == "target_info":
+                        #     for sample in family.samples:
+                        #         if "/Bridge" in sample.labels.get(
+                        #             "job"
+                        #         ) and sample.labels.get("instance"):
+                        #             bridges[sample.labels.get("instance")] = {}
 
                     # for family in text_string_to_metric_families(resp.text):
                     #     # build_info
