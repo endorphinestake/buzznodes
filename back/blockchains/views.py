@@ -349,15 +349,11 @@ class CosmosBlockchainMetricsView(views.APIView):
                     )
 
         # Update blockchain status info (latest_block_height)
-        if (
-            blockchain.network_height
-            != status_serializer.validated_data["sync_info"]["latest_block_height"]
-        ):
-            blockchain.network_height = status_serializer.validated_data["sync_info"][
+        Blockchain.objects.filter(pk=blockchain.id).update(
+            network_height=status_serializer.validated_data["sync_info"][
                 "latest_block_height"
             ]
-            blockchain = get_object_or_404(Blockchain, pk=blockchain.id)
-            blockchain.save()
+        )
 
         # Alerts
         if validators_to_update or bridges_to_update:
