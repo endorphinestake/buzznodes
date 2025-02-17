@@ -20,7 +20,9 @@ from logs.models import Log
 
 @job("alerts")
 def check_alerts(
-    validators_to_update: list[tuple[int, dict]], validators_to_update_prev: dict
+    validators_to_update: list[tuple[int, dict]],
+    validators_to_update_prev: dict,
+    bridges_to_update: list[tuple[int, dict]],
 ):
     queue_sms = get_queue("submit_sms")
     queue_voice = get_queue("submit_voice")
@@ -113,6 +115,7 @@ def check_alerts(
                             alert_text=alert_text,
                             alert_type=AlertSettingBase.AlertType.VOTING_POWER,
                         )
+
         # Uptime
         if "uptime" in updated_fields:
             for user_alert_setting in UserAlertSettingUptime.objects.select_related(
@@ -350,3 +353,6 @@ def check_alerts(
                         alert_type=AlertSettingBase.AlertType.TOMBSTONED,
                     )
                     user_alert_setting.delete()
+
+    for bridge_id, updated_fields in bridges_to_update:
+        pass

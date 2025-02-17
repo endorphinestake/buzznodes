@@ -305,11 +305,6 @@ class CosmosBlockchainMetricsView(views.APIView):
                         updated=now(),
                     )
 
-            job = check_alerts.delay(
-                validators_to_update=validators_to_update,
-                validators_to_update_prev=validators_to_update_prev,
-            )
-
         # Update Bridges
         bridges_to_update = []
         for node_id, bridge in results[4].items():
@@ -362,6 +357,14 @@ class CosmosBlockchainMetricsView(views.APIView):
                 "latest_block_height"
             ]
             blockchain.save()
+
+        # Alerts
+        if validators_to_update or bridges_to_update:
+            job = check_alerts.delay(
+                validators_to_update=validators_to_update,
+                validators_to_update_prev=validators_to_update_prev,
+                bridges_to_update=bridges_to_update,
+            )
 
         return HttpResponse(
             generate_latest(),
