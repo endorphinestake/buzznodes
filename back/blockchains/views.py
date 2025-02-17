@@ -307,46 +307,46 @@ class CosmosBlockchainMetricsView(views.APIView):
 
         # Update Bridges
         bridges_to_update = []
-        for node_id, bridge in results[4].items():
-            bridge_local = bridges_local.get(node_id)
+        # for node_id, bridge in results[4].items():
+        #     bridge_local = bridges_local.get(node_id)
 
-            semantic_version = bridge["semantic_version"]
-            system_version = bridge["system_version"]
-            node_height = bridge["node_height"]
-            last_timestamp = bridge["last_timestamp"]
+        #     semantic_version = bridge["semantic_version"]
+        #     system_version = bridge["system_version"]
+        #     node_height = bridge["node_height"]
+        #     last_timestamp = bridge["last_timestamp"]
 
-            if bridge_local:
-                updated_fields = {}
-                if bridge_local.version != semantic_version:
-                    updated_fields["version"] = semantic_version
-                if bridge_local.system_version != system_version:
-                    updated_fields["system_version"] = system_version
-                if bridge_local.node_height != node_height:
-                    updated_fields["node_height"] = node_height
-                if bridge_local.last_timestamp != last_timestamp:
-                    updated_fields["last_timestamp"] = last_timestamp
+        #     if bridge_local:
+        #         updated_fields = {}
+        #         if bridge_local.version != semantic_version:
+        #             updated_fields["version"] = semantic_version
+        #         if bridge_local.system_version != system_version:
+        #             updated_fields["system_version"] = system_version
+        #         if bridge_local.node_height != node_height:
+        #             updated_fields["node_height"] = node_height
+        #         if bridge_local.last_timestamp != last_timestamp:
+        #             updated_fields["last_timestamp"] = last_timestamp
 
-                if updated_fields:
-                    bridges_to_update.append((bridge_local.id, updated_fields))
+        #         if updated_fields:
+        #             bridges_to_update.append((bridge_local.id, updated_fields))
 
-            else:
-                bridge = BlockchainBridge.objects.create(
-                    blockchain=blockchain,
-                    node_id=node_id,
-                    version=semantic_version,
-                    system_version=system_version,
-                    node_height=node_height,
-                    last_timestamp=last_timestamp,
-                )
+        #     else:
+        #         bridge = BlockchainBridge.objects.create(
+        #             blockchain=blockchain,
+        #             node_id=node_id,
+        #             version=semantic_version,
+        #             system_version=system_version,
+        #             node_height=node_height,
+        #             last_timestamp=last_timestamp,
+        #         )
 
-        if bridges_to_update:
-            # print("INFO: Updating BlockchainBridges: ", bridges_to_update)
-            with transaction.atomic():
-                for bridge_id, updated_fields in bridges_to_update:
-                    BlockchainBridge.objects.filter(id=bridge_id).update(
-                        **updated_fields,
-                        updated=now(),
-                    )
+        # if bridges_to_update:
+        #     # print("INFO: Updating BlockchainBridges: ", bridges_to_update)
+        #     with transaction.atomic():
+        #         for bridge_id, updated_fields in bridges_to_update:
+        #             BlockchainBridge.objects.filter(id=bridge_id).update(
+        #                 **updated_fields,
+        #                 updated=now(),
+        #             )
 
         # Update blockchain status info (latest_block_height)
         if (
