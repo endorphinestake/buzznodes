@@ -11,6 +11,11 @@ export interface IBlockchainValidatorsDetail {
   validatorId: number;
 }
 
+export interface IBlockchainBridgesFilter {
+  blockchainId: number;
+  is_active?: boolean;
+}
+
 export interface IValidatorChartsFilter {
   validator_ids: number[];
   date_start?: Date;

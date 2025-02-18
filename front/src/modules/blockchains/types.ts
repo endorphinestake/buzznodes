@@ -42,3 +42,15 @@ export type TValidatorChart = {
     [validatorId: string]: [timestamp: string, uptime: string][];
   };
 };
+
+export type TBlockchainBridge = {
+  id: number;
+  blockchain_id: number;
+  network_height: number;
+  node_id: string;
+  version: string;
+  system_version: string;
+  node_height: number;
+  last_timestamp: number;
+  rank: number;
+};

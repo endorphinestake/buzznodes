@@ -379,12 +379,12 @@ class CosmosBlockchainMetricsView(views.APIView):
                         updated=now(),
                     )
 
-        # Update blockchain status info (latest_block_height)
-        Blockchain.objects.filter(pk=blockchain.id).update(
-            network_height=status_serializer.validated_data["sync_info"][
-                "latest_block_height"
-            ]
-        )
+                # Update blockchain status info (latest_block_height)
+                Blockchain.objects.filter(pk=blockchain.id).update(
+                    network_height=status_serializer.validated_data["sync_info"][
+                        "latest_block_height"
+                    ]
+                )
 
         # Alerts
         job = check_alerts.delay(
@@ -464,27 +464,11 @@ class BlockchainBridgesView(views.APIView):
             ),
         )
 
-        total_node_height = (
-            blockchain_bridges.aggregate(total_node_height=Sum("node_height"))[
-                "total_node_height"
-            ]
-            or 0
-        )
-
         queryset = bridges_filter.qs
         serializer = BlockchainBridgeModelSerializer(queryset, many=True)
 
         data_with_rank = [
-            {
-                **item,
-                "rank": index + 1,
-                "node_height_percentage": (
-                    (item["node_height"] / total_node_height) * 100
-                    if total_node_height > 0
-                    else 0
-                ),
-            }
-            for index, item in enumerate(serializer.data)
+            {**item, "rank": index + 1} for index, item in enumerate(serializer.data)
         ]
 
         return response.Response(data_with_rank, status=status.HTTP_200_OK)

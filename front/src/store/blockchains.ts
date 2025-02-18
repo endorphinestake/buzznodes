@@ -8,6 +8,7 @@ import { BlockchainService } from "@modules/blockchains/services";
 import {
   TBlockchainValidator,
   TBlockchainValidatorDetail,
+  TBlockchainBridge,
   TValidatorChart,
 } from "@modules/blockchains/types";
 import { EValidatorChartPeriod } from "@modules/blockchains/enums";
@@ -15,6 +16,7 @@ import { EValidatorChartPeriod } from "@modules/blockchains/enums";
 export type TBlockchainValidatorState = {
   fetchBlockchainValidators: Function;
   fetchBlockchainValidatorDetail: Function;
+  fetchBlockchainBridges: Function;
   fetchValidatorCharts: Function;
 
   isBlockchainValidatorsLoading: boolean;
@@ -26,6 +28,11 @@ export type TBlockchainValidatorState = {
   isBlockchainValidatorDetailLoaded: boolean;
   isBlockchainValidatorDetailError: any;
   blockchainValidator?: TBlockchainValidatorDetail;
+
+  isBlockchainBridgesLoading: boolean;
+  isBlockchainBridgesLoaded: boolean;
+  isBlockchainBridgesError: any;
+  blockchainBridges: TBlockchainBridge[];
 
   isValidatorChartsLoading: boolean;
   isValidatorChartsLoaded: boolean;
@@ -40,6 +47,7 @@ const initialState: TBlockchainValidatorState = {
   fetchValidatorCharts: BlockchainService.fetchValidatorCharts,
   fetchBlockchainValidatorDetail:
     BlockchainService.fetchBlockchainValidatorDetail,
+  fetchBlockchainBridges: BlockchainService.fetchBlockchainBridges,
 
   isBlockchainValidatorsLoading: false,
   isBlockchainValidatorsLoaded: false,
@@ -50,6 +58,11 @@ const initialState: TBlockchainValidatorState = {
   isBlockchainValidatorDetailLoaded: false,
   isBlockchainValidatorDetailError: null,
   blockchainValidator: undefined,
+
+  isBlockchainBridgesLoading: false,
+  isBlockchainBridgesLoaded: false,
+  isBlockchainBridgesError: null,
+  blockchainBridges: [],
 
   isValidatorChartsLoading: false,
   isValidatorChartsLoaded: false,
@@ -70,6 +83,10 @@ export const BlockchainValidatorSlice = createSlice({
     resetBlockchainValidatorDetailState(state) {
       state.isBlockchainValidatorDetailLoading = false;
       state.isBlockchainValidatorDetailError = null;
+    },
+    resetBlockchainBridgesState(state) {
+      state.isBlockchainBridgesLoading = false;
+      state.isBlockchainBridgesError = null;
     },
     resetValidatorChartsState(state) {
       state.isValidatorChartsLoading = false;
@@ -129,6 +146,32 @@ export const BlockchainValidatorSlice = createSlice({
         state.isBlockchainValidatorDetailLoading = false;
         state.isBlockchainValidatorDetailError = action.payload;
         state.blockchainValidator = undefined;
+      }
+    );
+
+    // ** fetchBlockchainBridges
+    builder.addCase(
+      BlockchainService.fetchBlockchainBridges.pending,
+      (state, action) => {
+        state.isBlockchainBridgesLoading = true;
+        state.isBlockchainBridgesLoaded = false;
+        state.isBlockchainBridgesError = null;
+      }
+    );
+    builder.addCase(
+      BlockchainService.fetchBlockchainBridges.fulfilled,
+      (state, action) => {
+        state.isBlockchainBridgesLoading = false;
+        state.isBlockchainBridgesLoaded = true;
+        state.blockchainBridges = action.payload;
+      }
+    );
+    builder.addCase(
+      BlockchainService.fetchBlockchainBridges.rejected,
+      (state, action) => {
+        state.isBlockchainBridgesLoading = false;
+        state.isBlockchainBridgesError = action.payload;
+        state.blockchainBridges = [];
       }
     );
 
