@@ -26,6 +26,13 @@ build:
 build_local:
 	. .nodeenv22.3.0/bin/activate && cd front && npm run build
 
+.PHONY: deploy
+deploy:
+	rsync -avz front/.next front/node_modules root@37.27.90.63:/var/www/monitoring/front/
+	ssh root@37.27.90.63 "\
+		chown -R www-data:www-data /var/www/monitoring/front/ && \
+		service monitoring-front restart"
+
 .PHONY: rq
 rq:
 	OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES \
