@@ -9,6 +9,7 @@ type DomainValue = {
   domain: string;
   name: string;
   symbol: string;
+  isDaEnabled: boolean;
 };
 
 const DEV_DOMAINS = {
@@ -18,6 +19,7 @@ const DEV_DOMAINS = {
     domain: "celestia.local.com",
     name: "Celestia Mainnet",
     symbol: "TIA",
+    isDaEnabled: true,
   },
   "celestia-testnet.local.com": {
     blockchainId: 3,
@@ -25,6 +27,7 @@ const DEV_DOMAINS = {
     domain: "celestia-testnet.local.com",
     name: "Celestia Testnet",
     symbol: "TIA",
+    isDaEnabled: true,
   },
 } as const as Record<string, DomainValue>;
 
@@ -35,6 +38,7 @@ const PROD_DOMAINS = {
     domain: "celestia.buzznodes.com",
     name: "Celestia Mainnet",
     symbol: "TIA",
+    isDaEnabled: true,
   },
   "celestia-testnet.buzznodes.com": {
     blockchainId: 2,
@@ -42,6 +46,7 @@ const PROD_DOMAINS = {
     domain: "celestia-testnet.buzznodes.com",
     name: "Celestia Testnet",
     symbol: "TIA",
+    isDaEnabled: true,
   },
 } as const as Record<string, DomainValue>;
 

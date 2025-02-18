@@ -8,13 +8,17 @@ import Head from "next/head";
 import { Permissions } from "@configs/acl";
 
 // ** Hooks
+import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { useBlockchainService } from "@hooks/useBlockchainService";
 import { useAlertService } from "@hooks/useAlertService";
 import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces
-import { TBlockchainValidator } from "@modules/blockchains/types";
+import {
+  TBlockchainValidator,
+  TBlockchainBridge,
+} from "@modules/blockchains/types";
 import { EAlertType } from "@modules/alerts/enums";
 import { EBlockchainValidatorStatus } from "@modules/blockchains/enums";
 
@@ -26,34 +30,32 @@ import styles from "@styles/Home.module.css";
 import TextSearchOutline from "@modules/shared/components/TextSearchOutline";
 import SelectValidatorStatus from "@modules/blockchains/components/SelectValidatorStatus";
 import ValidatorsTable from "@modules/blockchains/components/ValidatorsTable";
+import BridgesTable from "@modules/blockchains/components/BridgesTable";
 import SelectAutorefresh from "@modules/shared/components/SelectAutorefresh";
 import SelectAlertType from "@modules/alerts/components/SelectAlertType";
 
 // ** Mui Imports
 import { Grid, Card, Box, CardHeader, Typography, Button } from "@mui/material";
-import { BellCog } from "mdi-material-ui";
 
-const HomePage = () => {
+const BridgesPage = () => {
   // ** Hooks
   const { t } = useTranslation();
-  const { blockchainId } = useDomain();
-  const { dispatch, fetchBlockchainValidators, blockchainValidators } =
+  const { blockchainId, isDaEnabled } = useDomain();
+  const { dispatch, fetchBlockchainBridges, blockchainBridges } =
     useBlockchainService();
   const {
     fetchAlertSettings,
     fetchUserAlertSettings,
     isAlertSettingsLoaded,
     isUserAlertSettingsLoaded,
-    userAlertSettings,
   } = useAlertService();
 
   // ** State
   const [isInit, setIsInit] = useState<boolean>(false);
   const [autorefresh, setAutorefresh] = useState<number>(10);
-  const [validatorStatus, setValidatorStatus] =
-    useState<EBlockchainValidatorStatus>(
-      EBlockchainValidatorStatus.BOND_STATUS_BONDED
-    );
+  const [bridgeStatus, setBridgeStatus] = useState<EBlockchainValidatorStatus>(
+    EBlockchainValidatorStatus.BOND_STATUS_BONDED
+  );
   const [alertType, setAlertType] = useState<EAlertType>(EAlertType.ANY);
   const [search, setSearch] = useState<string>("");
 
@@ -61,11 +63,12 @@ const HomePage = () => {
   useEffect(() => {
     if (!isInit) {
       setIsInit(true);
-      // Preload blockchains
+      // Preload bridges
       dispatch(
-        fetchBlockchainValidators({
+        fetchBlockchainBridges({
           blockchainId: blockchainId,
-          status: validatorStatus,
+          status:
+            bridgeStatus === EBlockchainValidatorStatus.BOND_STATUS_BONDED,
         })
       );
 
@@ -88,9 +91,10 @@ const HomePage = () => {
     if (autorefresh > 0) {
       interval = setInterval(() => {
         dispatch(
-          fetchBlockchainValidators({
+          fetchBlockchainBridges({
             blockchainId: blockchainId,
-            status: validatorStatus,
+            status:
+              bridgeStatus === EBlockchainValidatorStatus.BOND_STATUS_BONDED,
           })
         );
       }, autorefresh * 1000);
@@ -101,89 +105,52 @@ const HomePage = () => {
         clearInterval(interval);
       }
     };
-  }, [autorefresh, validatorStatus]);
+  }, [autorefresh, bridgeStatus]);
 
   // Refresh when status changed
   useEffect(() => {
     dispatch(
-      fetchBlockchainValidators({
+      fetchBlockchainBridges({
         blockchainId: blockchainId,
-        status: validatorStatus,
+        status: bridgeStatus === EBlockchainValidatorStatus.BOND_STATUS_BONDED,
       })
     );
-  }, [validatorStatus]);
+  }, [bridgeStatus]);
 
-  var filteredValidators: TBlockchainValidator[] = blockchainValidators;
+  var filteredBridges: TBlockchainBridge[] = blockchainBridges;
 
   // filter by Status
-  if (blockchainValidators.length > 0) {
-    filteredValidators = filteredValidators.filter((item) => {
-      switch (validatorStatus) {
-        case EBlockchainValidatorStatus.BOND_STATUS_BONDED:
-          return item.status === EBlockchainValidatorStatus.BOND_STATUS_BONDED;
-        case EBlockchainValidatorStatus.BOND_STATUS_UNBONDED:
-          return item.status !== EBlockchainValidatorStatus.BOND_STATUS_BONDED;
-      }
-    });
-  }
-
-  // filter by AlertType
-  if (blockchainValidators.length > 0 && userAlertSettings) {
-    filteredValidators = filteredValidators.filter((item) => {
-      switch (alertType) {
-        case EAlertType.VOTING_POWER:
-          return (
-            Array.isArray(
-              userAlertSettings[item.id]?.[EAlertType.VOTING_POWER]
-            ) &&
-            userAlertSettings[item.id]![EAlertType.VOTING_POWER]!.length > 0
-          );
-        case EAlertType.UPTIME:
-          return (
-            Array.isArray(userAlertSettings[item.id]?.[EAlertType.UPTIME]) &&
-            userAlertSettings[item.id]![EAlertType.UPTIME]!.length > 0
-          );
-        case EAlertType.COMISSION:
-          return (
-            Array.isArray(userAlertSettings[item.id]?.[EAlertType.COMISSION]) &&
-            userAlertSettings[item.id]![EAlertType.COMISSION]!.length > 0
-          );
-        case EAlertType.JAILED:
-          return (
-            Array.isArray(userAlertSettings[item.id]?.[EAlertType.JAILED]) &&
-            userAlertSettings[item.id]![EAlertType.JAILED]!.length > 0
-          );
-        case EAlertType.TOMBSTONED:
-          return (
-            Array.isArray(
-              userAlertSettings[item.id]?.[EAlertType.TOMBSTONED]
-            ) && userAlertSettings[item.id]![EAlertType.TOMBSTONED]!.length > 0
-          );
-        case EAlertType.BONDED:
-          return (
-            Array.isArray(userAlertSettings[item.id]?.[EAlertType.BONDED]) &&
-            userAlertSettings[item.id]![EAlertType.BONDED]!.length > 0
-          );
-        default:
-          return true;
-      }
-    });
-  }
+  // if (filteredBridges.length > 0) {
+  //   filteredBridges = filteredBridges.filter((item) => {
+  //     switch (bridgeStatus) {
+  //       case EBlockchainValidatorStatus.BOND_STATUS_BONDED:
+  //         return item.status === EBlockchainValidatorStatus.BOND_STATUS_BONDED;
+  //       case EBlockchainValidatorStatus.BOND_STATUS_UNBONDED:
+  //         return item.status !== EBlockchainValidatorStatus.BOND_STATUS_BONDED;
+  //     }
+  //   });
+  // }
 
   // filter by Search
   if (search.length > 0) {
-    filteredValidators = filteredValidators.filter((item) => {
-      return (
-        (item.moniker ?? "").toLowerCase().includes(search.toLowerCase()) ||
-        item.operator_address.toLowerCase().includes(search.toLowerCase())
-      );
+    filteredBridges = filteredBridges.filter((item) => {
+      return (item.node_id ?? "").toLowerCase().includes(search.toLowerCase());
     });
+  }
+
+  // Event on DA is disabled
+  if (!isDaEnabled) {
+    const router = useRouter();
+    useEffect(() => {
+      router.replace("/404");
+    }, []);
+    return null;
   }
 
   return (
     <div className={styles.container}>
       <Head>
-        <title>{t(`Validators`)}</title>
+        <title>{t(`Bridges`)}</title>
       </Head>
 
       <main>
@@ -191,23 +158,9 @@ const HomePage = () => {
           <Grid item xs={12}>
             <Card>
               <CardHeader
-                title={t(`Validators`)}
+                title={t(`Bridges`)}
                 subheader={t(`Blockchain Monitoring`)}
-                // action={
-                //   <Button
-                //     color="primary"
-                //     size="medium"
-                //     variant="contained"
-                //     onClick={() => {
-                //       console.log("click");
-                //     }}
-                //   >
-                //     <BellCog fontSize="small" sx={{ mb: 1, mr: 2 }} />
-                //     {t(`Manage Alerts`)}
-                //   </Button>
-                // }
               />
-
               <Box
                 sx={{
                   p: 3,
@@ -221,8 +174,8 @@ const HomePage = () => {
                 <Grid container spacing={3}>
                   <Grid item sm={4} xs={12}>
                     <SelectValidatorStatus
-                      value={validatorStatus}
-                      setValue={setValidatorStatus}
+                      value={bridgeStatus}
+                      setValue={setBridgeStatus}
                       label={t(`Status`)}
                     />
                   </Grid>
@@ -238,19 +191,14 @@ const HomePage = () => {
                   <Grid item sm={4} xs={12}>
                     <TextSearchOutline
                       setValue={setSearch}
-                      placeholder={t(`Moniker / Valoper`)}
+                      placeholder={t(`Bridge ID`)}
                     />
                   </Grid>
                 </Grid>
               </Box>
-
-              <ValidatorsTable
-                validators={filteredValidators}
-                status={validatorStatus}
-                onAlertEdit={() => console.log("onAlertEdit triggered")}
-              />
-
-              {!filteredValidators.length ? (
+              Table...
+              <BridgesTable bridges={filteredBridges} />
+              {!filteredBridges.length ? (
                 <Grid
                   container
                   spacing={3}
@@ -270,7 +218,7 @@ const HomePage = () => {
                 <Grid container spacing={3} sx={{ mb: 4 }}>
                   <Grid item xs={10} display="flex" alignItems="center">
                     <Typography variant="body2" sx={{ ml: 4 }}>
-                      {t(`Total`)}: {filteredValidators.length}
+                      {t(`Total`)}: {filteredBridges.length}
                     </Typography>
                   </Grid>
                   <Grid
@@ -296,8 +244,8 @@ const HomePage = () => {
   );
 };
 
-HomePage.authGuard = true;
-HomePage.acl = { action: "read", subject: Permissions.ANY };
-HomePage.getLayout = (page: ReactNode) => <UserLayout>{page}</UserLayout>;
+BridgesPage.authGuard = true;
+BridgesPage.acl = { action: "read", subject: Permissions.ANY };
+BridgesPage.getLayout = (page: ReactNode) => <UserLayout>{page}</UserLayout>;
 
-export default HomePage;
+export default BridgesPage;
