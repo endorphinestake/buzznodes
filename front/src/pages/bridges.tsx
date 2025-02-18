@@ -48,7 +48,7 @@ const BridgesPage = () => {
 
   // ** State
   const [isInit, setIsInit] = useState<boolean>(false);
-  const [autorefresh, setAutorefresh] = useState<number>(10);
+  const [autorefresh, setAutorefresh] = useState<number>(5);
   const [bridgeStatus, setBridgeStatus] = useState<EBlockchainValidatorStatus>(
     EBlockchainValidatorStatus.BOND_STATUS_BONDED
   );
