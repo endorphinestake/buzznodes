@@ -9,12 +9,16 @@ from alerts.models import (
     AlertSettingJailedStatus,
     AlertSettingTombstonedStatus,
     AlertSettingBondedStatus,
+    AlertSettingOtelUpdate,
+    AlertSettingSyncStatus,
     UserAlertSettingVotingPower,
     UserAlertSettingUptime,
     UserAlertSettingComission,
     UserAlertSettingJailedStatus,
     UserAlertSettingTombstonedStatus,
     UserAlertSettingBondedStatus,
+    UserAlertSettingOtelUpdate,
+    UserAlertSettingSyncStatus,
 )
 from blockchains.models import BlockchainValidator
 
@@ -66,6 +70,18 @@ class AlertSettingBondedStatusSerializer(AlertSettingBaseSerializer):
         fields = AlertSettingBaseSerializer.Meta.fields + ("value",)
 
 
+class AlertSettingOtelUpdateSerializer(AlertSettingBaseSerializer):
+    class Meta(AlertSettingBaseSerializer.Meta):
+        model = AlertSettingOtelUpdate
+        fields = AlertSettingBaseSerializer.Meta.fields + ("value",)
+
+
+class AlertSettingSyncStatusSerializer(AlertSettingBaseSerializer):
+    class Meta(AlertSettingBaseSerializer.Meta):
+        model = AlertSettingSyncStatus
+        fields = AlertSettingBaseSerializer.Meta.fields + ("value",)
+
+
 class UserAlertSettingBaseSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
@@ -104,6 +120,20 @@ class UserAlertSettingTombstonedStatusSerializer(UserAlertSettingBaseSerializer)
 class UserAlertSettingBondedStatusSerializer(UserAlertSettingBaseSerializer):
     class Meta(UserAlertSettingBaseSerializer.Meta):
         model = UserAlertSettingBondedStatus
+
+
+class UserAlertSettingOtelUpdateSerializer(UserAlertSettingBaseSerializer):
+    blockchain_validator_id = serializers.IntegerField(source="blockchain_bridge_id")
+
+    class Meta(UserAlertSettingBaseSerializer.Meta):
+        model = UserAlertSettingOtelUpdate
+
+
+class UserAlertSettingSyncStatusSerializer(UserAlertSettingBaseSerializer):
+    blockchain_validator_id = serializers.IntegerField(source="blockchain_bridge_id")
+
+    class Meta(UserAlertSettingBaseSerializer.Meta):
+        model = UserAlertSettingSyncStatus
 
 
 class ManageUserAlertSettingSerializer(serializers.Serializer):

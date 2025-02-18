@@ -9,12 +9,16 @@ from alerts.models import (
     AlertSettingJailedStatus,
     AlertSettingTombstonedStatus,
     AlertSettingBondedStatus,
+    AlertSettingOtelUpdate,
+    AlertSettingSyncStatus,
     UserAlertSettingVotingPower,
     UserAlertSettingUptime,
     UserAlertSettingComission,
     UserAlertSettingJailedStatus,
     UserAlertSettingTombstonedStatus,
     UserAlertSettingBondedStatus,
+    UserAlertSettingOtelUpdate,
+    UserAlertSettingSyncStatus,
 )
 
 
@@ -56,6 +60,14 @@ class UserAlertSettingBondedStatusInline(BaseUserAlertSettingInline):
 
 class UserAlertSettingJailedStatusInline(BaseUserAlertSettingInline):
     model = UserAlertSettingJailedStatus
+
+
+class UserAlertSettingOtelUpdateInline(BaseUserAlertSettingInline):
+    model = UserAlertSettingOtelUpdate
+
+
+class UserAlertSettingSyncStatusInline(BaseUserAlertSettingInline):
+    model = UserAlertSettingSyncStatus
 
 
 @admin.register(AlertSettingVotingPower)
@@ -267,6 +279,78 @@ class AlertSettingBondedAdmin(admin.ModelAdmin):
             ),
             sms_count=Count("alert_setting_bonded_status_sms", distinct=True),
             voice_count=Count("alert_setting_bonded_status_voice", distinct=True),
+        )
+
+    @admin.display(description=_("Uses Users"))
+    def users_count(self, obj):
+        return obj.users_count
+
+    @admin.display(description=_("Sent SMS"))
+    def sms_count(self, obj):
+        return obj.sms_count
+
+    @admin.display(description=_("Sent Voice"))
+    def voice_count(self, obj):
+        return obj.voice_count
+
+
+@admin.register(AlertSettingOtelUpdate)
+class AlertSettingOtelUpdateAdmin(admin.ModelAdmin):
+    inlines = (UserAlertSettingOtelUpdateInline,)
+    list_display = (
+        "__str__",
+        "value",
+        "users_count",
+        "sms_count",
+        "voice_count",
+        "status",
+        "updated",
+        "created",
+    )
+    list_filter = ("status",)
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.annotate(
+            users_count=Count("alert_setting_otel_update_user_settings", distinct=True),
+            sms_count=Count("alert_setting_otel_update_sms", distinct=True),
+            voice_count=Count("alert_setting_otel_update_voice", distinct=True),
+        )
+
+    @admin.display(description=_("Uses Users"))
+    def users_count(self, obj):
+        return obj.users_count
+
+    @admin.display(description=_("Sent SMS"))
+    def sms_count(self, obj):
+        return obj.sms_count
+
+    @admin.display(description=_("Sent Voice"))
+    def voice_count(self, obj):
+        return obj.voice_count
+
+
+@admin.register(AlertSettingSyncStatus)
+class AlertSettingSyncStatusAdmin(admin.ModelAdmin):
+    inlines = (UserAlertSettingSyncStatusInline,)
+    list_display = (
+        "__str__",
+        "value",
+        "users_count",
+        "sms_count",
+        "voice_count",
+        "status",
+        "updated",
+        "created",
+    )
+    list_filter = ("status",)
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.annotate(
+            users_count=Count("alert_setting_sync_status_user_settings", distinct=True),
+            sms_count=Count("alert_setting_sync_status_sms", distinct=True),
+            voice_count=Count("alert_setting_sync_status_voice", distinct=True),
         )
 
     @admin.display(description=_("Uses Users"))

@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 from users.models import User
-from blockchains.models import BlockchainValidator
+from blockchains.models import BlockchainValidator, BlockchainBridge
 
 
 class AlertSettingBase(models.Model):
@@ -150,6 +150,36 @@ class AlertSettingBondedStatus(AlertSettingBase):
     class Meta:
         verbose_name = _("Bond Status Alert Settings")
         verbose_name_plural = _("Bond Status Alerts Settings")
+
+
+class AlertSettingOtelUpdate(AlertSettingBase):
+    value = models.IntegerField(
+        validators=[
+            MinValueValidator(3),
+            MaxValueValidator(600),
+        ],
+        verbose_name=_("Value"),
+        help_text=_("Number of seconds"),
+    )
+
+    class Meta:
+        verbose_name = _("Otel Update Alert Settings")
+        verbose_name_plural = _("Otel Update Alerts Settings")
+
+
+class AlertSettingSyncStatus(AlertSettingBase):
+    value = models.IntegerField(
+        validators=[
+            MinValueValidator(-10000),
+            MaxValueValidator(10000),
+        ],
+        verbose_name=_("Value"),
+        help_text=_("Positive number to increase, negative to decrease"),
+    )
+
+    class Meta:
+        verbose_name = _("Sync Status Alert Settings")
+        verbose_name_plural = _("Sync Status Alerts Settings")
 
 
 class UserAlertSettingBase(AlertSettingBase):
@@ -358,6 +388,60 @@ class UserAlertSettingBondedStatus(UserAlertSettingBase):
     class Meta:
         verbose_name = _("User Alert Setting Bond Status")
         verbose_name_plural = _("User Alert Settings Bond Status")
+        unique_together = (
+            "user",
+            "blockchain_validator",
+            "setting",
+        )
+
+
+class UserAlertSettingOtelUpdate(UserAlertSettingBase):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_alert_settings_otel_update"
+    )
+    blockchain_validator = models.ForeignKey(
+        BlockchainBridge,
+        on_delete=models.CASCADE,
+        related_name="blockchain_validator_user_alert_settings_otel_update",
+        verbose_name=_("Bridge"),
+    )
+    setting = models.ForeignKey(
+        AlertSettingOtelUpdate,
+        on_delete=models.CASCADE,
+        related_name="alert_setting_otel_update_user_settings",
+    )
+    current_value = models.IntegerField(verbose_name=_("Current Value"))
+
+    class Meta:
+        verbose_name = _("User Alert Setting Otel Update")
+        verbose_name_plural = _("User Alert Settings Otel Update")
+        unique_together = (
+            "user",
+            "blockchain_validator",
+            "setting",
+        )
+
+
+class UserAlertSettingSyncStatus(UserAlertSettingBase):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_alert_settings_sync_status"
+    )
+    blockchain_validator = models.ForeignKey(
+        BlockchainBridge,
+        on_delete=models.CASCADE,
+        related_name="blockchain_validator_user_alert_settings_sync_status",
+        verbose_name=_("Bridge"),
+    )
+    setting = models.ForeignKey(
+        AlertSettingSyncStatus,
+        on_delete=models.CASCADE,
+        related_name="alert_setting_sync_status_user_settings",
+    )
+    current_value = models.IntegerField(verbose_name=_("Current Value"))
+
+    class Meta:
+        verbose_name = _("User Alert Setting Sync Status")
+        verbose_name_plural = _("User Alert Settings Sync Status")
         unique_together = (
             "user",
             "blockchain_validator",
