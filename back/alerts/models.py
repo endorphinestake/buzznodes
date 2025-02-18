@@ -34,30 +34,6 @@ class AlertSettingBase(models.Model):
         blank=True,
         verbose_name=_("Alert Channels"),
     )
-    template_increase = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name=_("Text Template for increase (False to True)"),
-        help_text="""
-{name} - will be replaced to full name;<br>
-{network} - will be replaced to blockchain network (Celestia Mainnet);<br>
-{moniker} - will be replaced to validator moniker;<br>
-{from_value} - will be replaced to from value (int, float or bool);<br>
-{to_value} - will be replaced to from value (int, float or bool);<br>
-""",
-    )
-    template_decraease = models.TextField(
-        null=True,
-        blank=True,
-        verbose_name=_("Text Template for decrease (True to False)"),
-        help_text="""
-{name} - will be replaced to full name;<br>
-{network} - will be replaced to blockchain network (Celestia Mainnet);<br>
-{moniker} - will be replaced to validator moniker;<br>
-{from_value} - will be replaced to from value (int, float or bool);<br>
-{to_value} - will be replaced to from value (int, float or bool);<br>
-""",
-    )
     template = models.TextField(
         null=True,
         blank=True,
@@ -185,8 +161,6 @@ class UserAlertSettingBase(AlertSettingBase):
         max_length=10,
         verbose_name=_("Alert Channel"),
     )
-    template_increase = None
-    template_decraease = None
     template = None
     current_value = None
 
