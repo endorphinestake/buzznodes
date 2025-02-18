@@ -12,6 +12,8 @@ from alerts.models import (
     UserAlertSettingJailedStatus,
     UserAlertSettingTombstonedStatus,
     UserAlertSettingBondedStatus,
+    UserAlertSettingOtelUpdate,
+    UserAlertSettingSyncStatus,
 )
 
 
@@ -59,6 +61,14 @@ class UserAlertSettingBondedStatusInline(BaseUserAlertSettingInline):
     model = UserAlertSettingBondedStatus
 
 
+class UserAlertSettingOtelUpdateInline(BaseUserAlertSettingInline):
+    model = UserAlertSettingOtelUpdate
+
+
+class UserAlertSettingSyncStatusInline(BaseUserAlertSettingInline):
+    model = UserAlertSettingSyncStatus
+
+
 class UserPhoneInline(admin.TabularInline):
     model = UserPhone
     extra = 0
@@ -84,6 +94,8 @@ class UserAdmin(DjangoUserAdmin):
         UserAlertSettingJailedStatusInline,
         UserAlertSettingTombstonedStatusInline,
         UserAlertSettingBondedStatusInline,
+        UserAlertSettingOtelUpdateInline,
+        UserAlertSettingSyncStatusInline,
     )
     fieldsets = (
         (None, {"fields": ("email", "password")}),
@@ -132,6 +144,8 @@ class UserAdmin(DjangoUserAdmin):
         "count_commission_alerts",
         "count_jailed_alerts",
         "count_tombstoned_alerts",
+        "count_otel_alerts",
+        "count_sync_alerts",
         "last_login",
         "date_joined",
     )
@@ -171,6 +185,14 @@ class UserAdmin(DjangoUserAdmin):
     @admin.display(description=_("Tombstoned Alerts"))
     def count_tombstoned_alerts(self, obj):
         return obj.user_alert_settings_tombstoned_status.count()
+
+    @admin.display(description=_("Otel Update Alerts"))
+    def count_otel_alerts(self, obj):
+        return obj.user_alert_settings_otel_update.count()
+
+    @admin.display(description=_("Sync Status Alerts"))
+    def count_sync_alerts(self, obj):
+        return obj.user_alert_settings_sync_status.count()
 
 
 admin.site.unregister(Group)

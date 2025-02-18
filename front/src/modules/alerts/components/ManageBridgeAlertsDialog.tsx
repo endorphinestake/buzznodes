@@ -12,12 +12,7 @@ import { TBlockchainBridge } from "@modules/blockchains/types";
 // ** Shared Components Imports
 import Notify from "@modules/shared/utils/Notify";
 import DialogComponent from "@modules/shared/components/Dialog";
-import VotingPowerTab from "@modules/alerts/components/tabs/VotingPowerTab";
-import UptimeTab from "@modules/alerts/components/tabs/UptimeTab";
-import ComissionTab from "@modules/alerts/components/tabs/ComissionTab";
-import JailedTab from "@modules/alerts/components/tabs/JailedTab";
-import BondedTab from "@modules/alerts/components/tabs/BondedTab";
-import TombstonedTab from "@modules/alerts/components/tabs/TombstonedTab";
+import OtelUpdateTab from "@modules/alerts/components/tabs/OtelUpdateTab";
 
 // ** Mui Imports
 import { Tab, Typography } from "@mui/material";
@@ -137,7 +132,7 @@ const ManageBridgeAlertsDialog = (props: IProps) => {
               value={EAlertType.OTEL_UPDATE}
               sx={{ width: "100%", mt: 4 }}
             >
-              {/* <VotingPowerTab blockchainValidator={blockchainValidator} /> */}
+              <OtelUpdateTab blockchainBridge={blockchainBridge} />
             </TabPanel>
             <TabPanel
               value={EAlertType.SYNC_STATUS}

@@ -15,10 +15,7 @@ import { useAlertService } from "@hooks/useAlertService";
 import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces
-import {
-  TBlockchainValidator,
-  TBlockchainBridge,
-} from "@modules/blockchains/types";
+import { TBlockchainBridge } from "@modules/blockchains/types";
 import { EAlertType } from "@modules/alerts/enums";
 import { EBlockchainValidatorStatus } from "@modules/blockchains/enums";
 
@@ -29,7 +26,6 @@ import UserLayout from "@layouts/UserLayout";
 import styles from "@styles/Home.module.css";
 import TextSearchOutline from "@modules/shared/components/TextSearchOutline";
 import SelectValidatorStatus from "@modules/blockchains/components/SelectValidatorStatus";
-import ValidatorsTable from "@modules/blockchains/components/ValidatorsTable";
 import BridgesTable from "@modules/blockchains/components/BridgesTable";
 import SelectAutorefresh from "@modules/shared/components/SelectAutorefresh";
 import SelectAlertType from "@modules/alerts/components/SelectAlertType";

@@ -1,5 +1,8 @@
 import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
-import { TBlockchainValidator } from "@modules/blockchains/types";
+import {
+  TBlockchainValidator,
+  TBlockchainBridge,
+} from "@modules/blockchains/types";
 
 export interface IManageUserAlertSetting {
   blockchain_validator_id: number;
@@ -21,4 +24,8 @@ export interface IManageUserAlertsButtonProps {
 
 export interface IManageUserAlertsTabProps {
   blockchainValidator: TBlockchainValidator;
+}
+
+export interface IManageBridgeUserAlertsTabProps {
+  blockchainBridge: TBlockchainBridge;
 }

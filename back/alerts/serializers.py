@@ -123,15 +123,11 @@ class UserAlertSettingBondedStatusSerializer(UserAlertSettingBaseSerializer):
 
 
 class UserAlertSettingOtelUpdateSerializer(UserAlertSettingBaseSerializer):
-    blockchain_validator_id = serializers.IntegerField(source="blockchain_bridge_id")
-
     class Meta(UserAlertSettingBaseSerializer.Meta):
         model = UserAlertSettingOtelUpdate
 
 
 class UserAlertSettingSyncStatusSerializer(UserAlertSettingBaseSerializer):
-    blockchain_validator_id = serializers.IntegerField(source="blockchain_bridge_id")
-
     class Meta(UserAlertSettingBaseSerializer.Meta):
         model = UserAlertSettingSyncStatus
 
@@ -187,6 +183,16 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 pk=setting_id
             ).first()
 
+        elif setting_type == AlertSettingBase.AlertType.OTEL_UPDATE:
+            setting_instance = AlertSettingOtelUpdate.objects.filter(
+                pk=setting_id
+            ).first()
+
+        elif setting_type == AlertSettingBase.AlertType.SYNC_STATUS:
+            setting_instance = AlertSettingSyncStatus.objects.filter(
+                pk=setting_id
+            ).first()
+
         if not setting_instance:
             raise serializers.ValidationError(_("Unknown setting type."))
 
@@ -225,6 +231,16 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
 
             elif setting_type == AlertSettingBase.AlertType.BONDED:
                 user_setting_instance = UserAlertSettingBondedStatus.objects.filter(
+                    pk=user_setting_id
+                ).first()
+
+            elif setting_type == AlertSettingBase.AlertType.OTEL_UPDATE:
+                user_setting_instance = UserAlertSettingOtelUpdate.objects.filter(
+                    pk=user_setting_id
+                ).first()
+
+            elif setting_type == AlertSettingBase.AlertType.SYNC_STATUS:
+                user_setting_instance = UserAlertSettingSyncStatus.objects.filter(
                     pk=user_setting_id
                 ).first()
 
