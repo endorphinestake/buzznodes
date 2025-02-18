@@ -9,6 +9,8 @@ from alerts.models import (
     AlertSettingJailedStatus,
     AlertSettingTombstonedStatus,
     AlertSettingBondedStatus,
+    AlertSettingOtelUpdate,
+    AlertSettingSyncStatus,
 )
 
 
@@ -161,6 +163,36 @@ class SMSAlertBondedStatus(SMSBase):
     class Meta:
         verbose_name = _("Bond Status SMS Alert")
         verbose_name_plural = _("Bond Status SMS Alerts")
+
+
+class SMSAlertOtelUpdate(SMSBase):
+    setting = models.ForeignKey(
+        AlertSettingOtelUpdate,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="alert_setting_otel_update_sms",
+        verbose_name=_("Otel Update Alert Settings"),
+    )
+
+    class Meta:
+        verbose_name = _("Otel Update SMS Alert")
+        verbose_name_plural = _("Otel Update SMS Alerts")
+
+
+class SMSAlertSyncStatus(SMSBase):
+    setting = models.ForeignKey(
+        AlertSettingSyncStatus,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="alert_setting_sync_status_sms",
+        verbose_name=_("Sync Status Alert Settings"),
+    )
+
+    class Meta:
+        verbose_name = _("Sync Status SMS Alert")
+        verbose_name_plural = _("Sync Status SMS Alerts")
 
 
 class SMSConfirm(SMSBase):

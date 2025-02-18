@@ -8,6 +8,8 @@ from voice.models import (
     VoiceAlertJailedStatus,
     VoiceAlertTombstonedStatus,
     VoiceAlertBondedStatus,
+    VoiceAlertOtelUpdate,
+    VoiceAlertSyncStatus,
 )
 
 
@@ -42,3 +44,5 @@ admin.site.register(VoiceAlertComission, VoiceAdmin)
 admin.site.register(VoiceAlertJailedStatus, VoiceAdmin)
 admin.site.register(VoiceAlertTombstonedStatus, VoiceAdmin)
 admin.site.register(VoiceAlertBondedStatus, VoiceAdmin)
+admin.site.register(VoiceAlertOtelUpdate, VoiceAdmin)
+admin.site.register(VoiceAlertSyncStatus, VoiceAdmin)

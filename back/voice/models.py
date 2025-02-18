@@ -9,6 +9,8 @@ from alerts.models import (
     AlertSettingJailedStatus,
     AlertSettingTombstonedStatus,
     AlertSettingBondedStatus,
+    AlertSettingOtelUpdate,
+    AlertSettingSyncStatus,
 )
 
 
@@ -164,3 +166,33 @@ class VoiceAlertBondedStatus(VoiceBase):
     class Meta:
         verbose_name = _("Bond Status Voice Alert")
         verbose_name_plural = _("Bond Status Voice Alerts")
+
+
+class VoiceAlertOtelUpdate(VoiceBase):
+    setting = models.ForeignKey(
+        AlertSettingOtelUpdate,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="alert_setting_otel_update_voice",
+        verbose_name=_("Otel Update Alert Settings"),
+    )
+
+    class Meta:
+        verbose_name = _("Otel Update Voice Alert")
+        verbose_name_plural = _("Otel Update Voice Alerts")
+
+
+class VoiceAlertSyncStatus(VoiceBase):
+    setting = models.ForeignKey(
+        AlertSettingSyncStatus,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="alert_setting_sync_status_voice",
+        verbose_name=_("Sync Status Alert Settings"),
+    )
+
+    class Meta:
+        verbose_name = _("Sync Status Voice Alert")
+        verbose_name_plural = _("Sync Status Voice Alerts")

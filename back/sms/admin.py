@@ -8,6 +8,8 @@ from sms.models import (
     SMSAlertJailedStatus,
     SMSAlertTombstonedStatus,
     SMSAlertBondedStatus,
+    SMSAlertOtelUpdate,
+    SMSAlertSyncStatus,
     SMSConfirm,
 )
 
@@ -76,3 +78,5 @@ admin.site.register(SMSAlertComission, SMSAlertAdmin)
 admin.site.register(SMSAlertJailedStatus, SMSAlertAdmin)
 admin.site.register(SMSAlertTombstonedStatus, SMSAlertAdmin)
 admin.site.register(SMSAlertBondedStatus, SMSAlertAdmin)
+admin.site.register(SMSAlertOtelUpdate, SMSAlertAdmin)
+admin.site.register(SMSAlertSyncStatus, SMSAlertAdmin)
