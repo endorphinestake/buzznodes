@@ -34,6 +34,14 @@ export type TAlertSettingBondedStatus = TAlertSettingBase & {
   value: EAlertValueStatus;
 };
 
+export type TAlertSettingOtelUpdate = TAlertSettingBase & {
+  value: number;
+};
+
+export type TAlertSettingSyncStatus = TAlertSettingBase & {
+  value: number;
+};
+
 export type TAlertSettingsResponse = {
   [EAlertType.VOTING_POWER]: TAlertSettingVotingPower[];
   [EAlertType.UPTIME]: TAlertSettingUptime[];
@@ -41,6 +49,8 @@ export type TAlertSettingsResponse = {
   [EAlertType.JAILED]: TAlertSettingJailedStatus[];
   [EAlertType.TOMBSTONED]: TAlertSettingTombstonedStatus[];
   [EAlertType.BONDED]: TAlertSettingBondedStatus[];
+  [EAlertType.OTEL_UPDATE]: TAlertSettingOtelUpdate[];
+  [EAlertType.SYNC_STATUS]: TAlertSettingSyncStatus[];
 };
 
 type TUserAlertSettingBase = {
@@ -56,6 +66,8 @@ export type TUserAlertSettingComission = TUserAlertSettingBase & {};
 export type TUserAlertSettingJailedStatus = TUserAlertSettingBase & {};
 export type TUserAlertSettingTombstonedStatus = TUserAlertSettingBase & {};
 export type TUserAlertSettingBondedStatus = TUserAlertSettingBase & {};
+export type TUserAlertSettingOtelUpdate = TUserAlertSettingBase & {};
+export type TUserAlertSettingSyncStatus = TUserAlertSettingBase & {};
 
 export type TUserAlertSettingsResponse = {
   [EAlertType.VOTING_POWER]: TUserAlertSettingVotingPower[];
@@ -64,4 +76,6 @@ export type TUserAlertSettingsResponse = {
   [EAlertType.JAILED]: TUserAlertSettingJailedStatus[];
   [EAlertType.TOMBSTONED]: TUserAlertSettingTombstonedStatus[];
   [EAlertType.BONDED]: TUserAlertSettingBondedStatus[];
+  [EAlertType.OTEL_UPDATE]: TUserAlertSettingOtelUpdate[];
+  [EAlertType.SYNC_STATUS]: TUserAlertSettingSyncStatus[];
 };

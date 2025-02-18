@@ -25,6 +25,7 @@ import { EAlertType } from "@modules/alerts/enums";
 
 // ** Shared Components
 import ManageAlertsDialog from "@modules/alerts/components/ManageAlertsDialog";
+import ManageBridgeAlertsDialog from "@modules/alerts/components/ManageBridgeAlertsDialog";
 
 // ** MUI Imports
 import { Box, Typography, IconButton, Tooltip } from "@mui/material";
@@ -135,13 +136,13 @@ const BridgesTable = (props: IBridgesTableProps) => {
           },
         }}
       />
-      {/* {selectedBridge ? (
-        <ManageAlertsDialog
+      {selectedBridge ? (
+        <ManageBridgeAlertsDialog
           open={isAlertSettingShow}
           setOpen={setIsAlertSettingShow}
-          blockchainValidator={selectedValidator}
+          blockchainBridge={selectedBridge}
         />
-      ) : null} */}
+      ) : null}
     </Fragment>
   );
 };

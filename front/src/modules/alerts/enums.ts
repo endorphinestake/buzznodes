@@ -6,6 +6,8 @@ export enum EAlertType {
   JAILED = "JAILED",
   TOMBSTONED = "TOMBSTONED",
   BONDED = "BONDED",
+  OTEL_UPDATE = "OTEL_UPDATE",
+  SYNC_STATUS = "SYNC_STATUS",
 }
 
 export enum EAlertChannel {

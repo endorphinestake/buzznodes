@@ -10,6 +10,8 @@ from alerts.models import (
     AlertSettingJailedStatus,
     AlertSettingTombstonedStatus,
     AlertSettingBondedStatus,
+    AlertSettingOtelUpdate,
+    AlertSettingSyncStatus,
 )
 from alerts.serializers import (
     AlertSettingVotingPowerSerializer,
@@ -18,12 +20,16 @@ from alerts.serializers import (
     AlertSettingJailedStatusSerializer,
     AlertSettingTombstonedStatusSerializer,
     AlertSettingBondedStatusSerializer,
+    AlertSettingOtelUpdateSerializer,
+    AlertSettingSyncStatusSerializer,
     UserAlertSettingVotingPowerSerializer,
     UserAlertSettingUptimeSerializer,
     UserAlertSettingComissionSerializer,
     UserAlertSettingJailedStatusSerializer,
     UserAlertSettingTombstonedStatusSerializer,
     UserAlertSettingBondedStatusSerializer,
+    UserAlertSettingOtelUpdateSerializer,
+    UserAlertSettingSyncStatusSerializer,
     ManageUserAlertSettingSerializer,
 )
 
@@ -60,6 +66,12 @@ class AlertSettingsView(views.APIView):
             bonded_settings, many=True
         )
 
+        otel_settings = AlertSettingOtelUpdate.objects.filter(status=True)
+        otel_serializer = AlertSettingOtelUpdateSerializer(otel_settings, many=True)
+
+        sync_settings = AlertSettingSyncStatus.objects.filter(status=True)
+        sync_serializer = AlertSettingSyncStatusSerializer(sync_settings, many=True)
+
         return response.Response(
             {
                 AlertSettingBase.AlertType.VOTING_POWER: voting_power_serializer.data,
@@ -68,6 +80,8 @@ class AlertSettingsView(views.APIView):
                 AlertSettingBase.AlertType.JAILED: jailed_serializer.data,
                 AlertSettingBase.AlertType.TOMBSTONED: tombstoned_serializer.data,
                 AlertSettingBase.AlertType.BONDED: bonded_serializer.data,
+                AlertSettingBase.AlertType.OTEL_UPDATE: otel_serializer.data,
+                AlertSettingBase.AlertType.SYNC_STATUS: sync_serializer.data,
             },
             status=status.HTTP_200_OK,
         )
@@ -105,6 +119,12 @@ class UserAlertSettingsView(views.APIView):
             bonded_settings, many=True
         )
 
+        otel_settings = request.user.user_alert_settings_otel_update.all()
+        otel_serializer = UserAlertSettingOtelUpdateSerializer(otel_settings, many=True)
+
+        sync_settings = request.user.user_alert_settings_sync_status.all()
+        sync_serializer = UserAlertSettingSyncStatusSerializer(sync_settings, many=True)
+
         return response.Response(
             {
                 AlertSettingBase.AlertType.VOTING_POWER: voting_power_serializer.data,
@@ -113,6 +133,8 @@ class UserAlertSettingsView(views.APIView):
                 AlertSettingBase.AlertType.JAILED: jailed_serializer.data,
                 AlertSettingBase.AlertType.TOMBSTONED: tombstoned_serializer.data,
                 AlertSettingBase.AlertType.BONDED: bonded_serializer.data,
+                AlertSettingBase.AlertType.OTEL_UPDATE: otel_serializer.data,
+                AlertSettingBase.AlertType.SYNC_STATUS: sync_serializer.data,
             },
             status=status.HTTP_200_OK,
         )

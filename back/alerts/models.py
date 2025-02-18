@@ -18,6 +18,8 @@ class AlertSettingBase(models.Model):
         JAILED = "JAILED", _("Jailed")
         TOMBSTONED = "TOMBSTONED", _("Tombstoned")
         BONDED = "BONDED", _("Bonded")
+        OTEL_UPDATE = "OTEL_UPDATE", _("Otel Update")
+        SYNC_STATUS = "SYNC_STATUS", _("Sync Status")
 
     class Channels(models.TextChoices):
         SMS = "SMS", _("SMS")
@@ -156,7 +158,7 @@ class AlertSettingOtelUpdate(AlertSettingBase):
     value = models.IntegerField(
         validators=[
             MinValueValidator(3),
-            MaxValueValidator(600),
+            MaxValueValidator(10000),
         ],
         verbose_name=_("Value"),
         help_text=_("Number of seconds"),

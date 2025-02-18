@@ -7,6 +7,8 @@ import {
   TUserAlertSettingJailedStatus,
   TUserAlertSettingTombstonedStatus,
   TUserAlertSettingBondedStatus,
+  TUserAlertSettingOtelUpdate,
+  TUserAlertSettingSyncStatus,
 } from "@modules/alerts/types";
 
 type TUserAlertSettingBase =
@@ -15,7 +17,9 @@ type TUserAlertSettingBase =
   | TUserAlertSettingComission
   | TUserAlertSettingJailedStatus
   | TUserAlertSettingTombstonedStatus
-  | TUserAlertSettingBondedStatus;
+  | TUserAlertSettingBondedStatus
+  | TUserAlertSettingOtelUpdate
+  | TUserAlertSettingSyncStatus;
 
 type EAlertTypeWithoutAny = Exclude<EAlertType, EAlertType.ANY>;
 
@@ -33,6 +37,8 @@ export const groupByValidatorId = (data: TUserAlertSettingsResponse) => {
           [EAlertType.JAILED]: [],
           [EAlertType.TOMBSTONED]: [],
           [EAlertType.BONDED]: [],
+          [EAlertType.OTEL_UPDATE]: [],
+          [EAlertType.SYNC_STATUS]: [],
         };
       }
 

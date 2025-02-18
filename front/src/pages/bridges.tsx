@@ -196,8 +196,9 @@ const BridgesPage = () => {
                   </Grid>
                 </Grid>
               </Box>
-              Table...
+
               <BridgesTable bridges={filteredBridges} />
+
               {!filteredBridges.length ? (
                 <Grid
                   container

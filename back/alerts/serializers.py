@@ -20,7 +20,7 @@ from alerts.models import (
     UserAlertSettingOtelUpdate,
     UserAlertSettingSyncStatus,
 )
-from blockchains.models import BlockchainValidator
+from blockchains.models import BlockchainValidator, BlockchainBridge
 
 
 class AlertSettingBaseSerializer(serializers.ModelSerializer):
@@ -138,7 +138,14 @@ class UserAlertSettingSyncStatusSerializer(UserAlertSettingBaseSerializer):
 
 class ManageUserAlertSettingSerializer(serializers.Serializer):
     blockchain_validator_id = serializers.PrimaryKeyRelatedField(
-        queryset=BlockchainValidator.objects.filter(tombstoned=False)
+        queryset=BlockchainValidator.objects.filter(tombstoned=False),
+        required=False,
+        allow_null=True,
+    )
+    blockchain_bridge_id = serializers.PrimaryKeyRelatedField(
+        queryset=BlockchainBridge.objects.all(),
+        required=False,
+        allow_null=True,
     )
     setting_type = serializers.ChoiceField(
         AlertSettingBase.AlertType.choices, required=True
@@ -238,7 +245,8 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
 
     def manage(self, validated_data: dict):
         user = self.context["request"].user
-        blockchain_validator = validated_data["blockchain_validator_id"]
+        blockchain_validator = validated_data.get("blockchain_validator_id")
+        blockchain_bridge = validated_data.get("blockchain_bridge_id")
         setting_instance = self.context["setting"]
         user_setting_instance = self.context.get("user_setting")
 
@@ -435,6 +443,72 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 channels=validated_data["channel"],
                 blockchain_validator=blockchain_validator,
                 setting=setting_instance,
+            )
+
+        elif isinstance(setting_instance, AlertSettingOtelUpdate):
+            # Update
+            if user_setting_instance:
+                user_setting_instance.setting = setting_instance
+                user_setting_instance.channels = validated_data["channel"]
+                user_setting_instance.current_value = (
+                    blockchain_bridge.last_timestamp_diff
+                )
+                user_setting_instance.save()
+                return user_setting_instance
+
+            # Create
+            if (
+                user.user_alert_settings_otel_update.filter(
+                    blockchain_validator=blockchain_bridge,
+                    setting=setting_instance,
+                ).exists()
+                or user.user_alert_settings_otel_update.filter(
+                    blockchain_validator=blockchain_bridge
+                ).count()
+                >= 2  # 2 total: 1 increased, 1 decreased
+            ):
+                raise serializers.ValidationError(
+                    {"setting_id": [_("The Alert already exists!")]}
+                )
+
+            return UserAlertSettingOtelUpdate.objects.create(
+                user=user,
+                channels=validated_data["channel"],
+                blockchain_validator=blockchain_bridge,
+                setting=setting_instance,
+                current_value=blockchain_bridge.last_timestamp_diff,
+            )
+
+        elif isinstance(setting_instance, AlertSettingSyncStatus):
+            # Update
+            if user_setting_instance:
+                user_setting_instance.setting = setting_instance
+                user_setting_instance.channels = validated_data["channel"]
+                user_setting_instance.current_value = blockchain_bridge.node_height_diff
+                user_setting_instance.save()
+                return user_setting_instance
+
+            # Create
+            if (
+                user.user_alert_settings_sync_status.filter(
+                    blockchain_validator=blockchain_bridge,
+                    setting=setting_instance,
+                ).exists()
+                or user.user_alert_settings_sync_status.filter(
+                    blockchain_validator=blockchain_bridge
+                ).count()
+                >= 2  # 2 total: 1 increased, 1 decreased
+            ):
+                raise serializers.ValidationError(
+                    {"setting_id": [_("The Alert already exists!")]}
+                )
+
+            return UserAlertSettingSyncStatus.objects.create(
+                user=user,
+                channels=validated_data["channel"],
+                blockchain_validator=blockchain_bridge,
+                setting=setting_instance,
+                current_value=blockchain_bridge.node_height_diff,
             )
 
         else:
