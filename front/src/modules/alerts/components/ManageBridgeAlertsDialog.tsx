@@ -13,6 +13,7 @@ import { TBlockchainBridge } from "@modules/blockchains/types";
 import Notify from "@modules/shared/utils/Notify";
 import DialogComponent from "@modules/shared/components/Dialog";
 import OtelUpdateTab from "@modules/alerts/components/tabs/OtelUpdateTab";
+import SyncStatusTab from "@modules/alerts/components/tabs/SyncStatusTab";
 
 // ** Mui Imports
 import { Tab, Typography } from "@mui/material";
@@ -138,7 +139,7 @@ const ManageBridgeAlertsDialog = (props: IProps) => {
               value={EAlertType.SYNC_STATUS}
               sx={{ width: "100%", mt: 4 }}
             >
-              {/* <UptimeTab blockchainValidator={blockchainValidator} /> */}
+              <SyncStatusTab blockchainBridge={blockchainBridge} />
             </TabPanel>
           </TabContext>
         }

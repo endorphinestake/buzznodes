@@ -51,6 +51,8 @@ export type TBlockchainBridge = {
   version: string;
   system_version: string;
   node_height: number;
+  node_height_diff: number;
   last_timestamp: number;
+  last_timestamp_diff: number;
   rank: number;
 };

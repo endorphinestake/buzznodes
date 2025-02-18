@@ -15,8 +15,8 @@ import { IManageBridgeUserAlertsTabProps } from "@modules/alerts/interfaces";
 import {
   getSettingByUserSettings,
   getUserSettingBySettings,
-  formatPingTime,
 } from "@modules/alerts/utils";
+import { formatPingTime } from "@modules/shared/utils/text";
 
 // ** Shared Components Imports
 import Notify from "@modules/shared/utils/Notify";

@@ -17,14 +17,14 @@ class BlockchainValidatorFilter(django_filters.FilterSet):
 
 
 class BlockchainBridgeFilter(django_filters.FilterSet):
-    is_active = django_filters.BooleanFilter(method="filter_is_active")
+    status = django_filters.BooleanFilter(method="filter_status")
 
     class Meta:
         model = BlockchainBridge
-        fields = ("is_active",)
+        fields = ("status",)
 
-    def filter_is_active(self, queryset, name, value):
-        threshold = int((now() - timedelta(hours=10)).timestamp() * 1000)
+    def filter_status(self, queryset, name, value):
+        threshold = int((now() - timedelta(hours=10)).timestamp())
         if value:
             return queryset.filter(last_timestamp__gte=threshold)
         else:

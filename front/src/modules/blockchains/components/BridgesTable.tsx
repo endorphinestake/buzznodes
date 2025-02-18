@@ -1,9 +1,5 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from "react";
-import { format } from "date-fns";
-
-// ** NextJS Imports
-import Link from "next/link";
 
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
@@ -12,30 +8,25 @@ import { useAlertService } from "@hooks/useAlertService";
 
 // ** Types & Interfaces
 import {
-  IValidatorsTableProps,
   IBridgesTableProps,
-  IValidatorsTableRow,
   IBridgesTableRow,
 } from "@modules/blockchains/interfaces";
-import {
-  TBlockchainValidator,
-  TBlockchainBridge,
-} from "@modules/blockchains/types";
-import { EAlertType } from "@modules/alerts/enums";
+import { TBlockchainBridge } from "@modules/blockchains/types";
+
+// ** Utils Imports
+import { formatShortText } from "@modules/shared/utils/text";
+import { formatPingTime, getSyncStatus } from "@modules/shared/utils/text";
+import { compareVersions } from "compare-versions";
 
 // ** Shared Components
-import ManageAlertsDialog from "@modules/alerts/components/ManageAlertsDialog";
 import ManageBridgeAlertsDialog from "@modules/alerts/components/ManageBridgeAlertsDialog";
+import Notify from "@modules/shared/utils/Notify";
 
 // ** MUI Imports
 import { Box, Typography, IconButton, Tooltip } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import {
-  BellPlus,
-  BellCheck,
-  BellAlert,
-  ChartAreaspline,
-} from "mdi-material-ui";
+import { BellPlus, BellCheck } from "mdi-material-ui";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 const BridgesTable = (props: IBridgesTableProps) => {
   // ** Props
@@ -64,23 +55,81 @@ const BridgesTable = (props: IBridgesTableProps) => {
       flex: 0.1,
       minWidth: 150,
       field: "node_id",
-      sortable: true,
-      headerName: t(`Node ID`),
+      sortable: false,
+      headerName: t(`Bridge ID`),
       renderCell: ({ row }: IBridgesTableRow) => {
         return (
-          <Fragment>
-            <Typography
-              variant="body2"
-              sx={{
-                color: "text.primary",
-                fontWeight: 500,
-                lineHeight: "22px",
-                ml: 2,
-              }}
-            >
-              {row.node_id}
-            </Typography>
-          </Fragment>
+          <Box>
+            <Tooltip title={row.node_id}>
+              <Box
+                component="span"
+                onClick={() => {
+                  navigator.clipboard.writeText(row.node_id);
+                  Notify("success", t(`Copied to clipboard`));
+                }}
+                sx={{
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                }}
+              >
+                {formatShortText(row.node_id)}
+                <ContentCopyIcon
+                  fontSize="inherit"
+                  sx={{ marginLeft: "4px", verticalAlign: "middle" }}
+                />
+              </Box>
+            </Tooltip>
+          </Box>
+        );
+      },
+    },
+    {
+      flex: 0.1,
+      minWidth: 150,
+      field: "node_height",
+      sortable: true,
+      headerName: t(`Height`),
+      renderCell: ({ row }: IBridgesTableRow) => {
+        return (
+          <Box>
+            {Intl.NumberFormat("ru-RU").format(row.node_height)}
+            <Box>
+              <Typography variant="caption">
+                {t(getSyncStatus(row.node_height_diff))}
+              </Typography>
+            </Box>
+          </Box>
+        );
+      },
+    },
+    {
+      flex: 0.1,
+      minWidth: 150,
+      field: "last_timestamp_diff",
+      sortable: true,
+      headerName: t(`Otel Update`),
+      renderCell: ({ row }: IBridgesTableRow) => {
+        return <Box>{t(formatPingTime(row.last_timestamp_diff))}</Box>;
+      },
+    },
+    {
+      flex: 0.1,
+      minWidth: 150,
+      field: "version",
+      sortable: true,
+      headerName: t(`Version`),
+      sortComparator: (v1: string, v2: string) => {
+        return compareVersions(v1.replace(/^v/, ""), v2.replace(/^v/, ""));
+      },
+      renderCell: ({ row }: IBridgesTableRow) => {
+        return (
+          <Box>
+            {row.version}
+            <Box>
+              <Typography variant="caption">{row.system_version}</Typography>
+            </Box>
+          </Box>
         );
       },
     },
@@ -95,7 +144,6 @@ const BridgesTable = (props: IBridgesTableProps) => {
           <IconButton
             aria-label="capture screenshot"
             color="primary"
-            // disabled={row.tombstoned}
             onClick={() => {
               setSelectedBridge(row);
               setIsAlertSettingShow(true);

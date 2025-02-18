@@ -176,15 +176,15 @@ const BridgesPage = () => {
                     />
                   </Grid>
 
-                  <Grid item sm={4} xs={12}>
+                  {/* <Grid item sm={4} xs={12}>
                     <SelectAlertType
                       value={alertType}
                       setValue={setAlertType}
                       label={t(`With alerts enabled`)}
                     />
-                  </Grid>
+                  </Grid> */}
 
-                  <Grid item sm={4} xs={12}>
+                  <Grid item sm={8} xs={12}>
                     <TextSearchOutline
                       setValue={setSearch}
                       placeholder={t(`Bridge ID`)}

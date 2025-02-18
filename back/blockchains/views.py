@@ -305,70 +305,70 @@ class CosmosBlockchainMetricsView(views.APIView):
                         updated=now(),
                     )
 
-        # Update Bridges
+        # Bridges
         now_timestamp = int(now().timestamp())
         bridges_to_update = []
         bridges_from_to_update_alerts = {
             "node_height_diff": {},
             "last_timestamp_diff": {},
         }
+
+        # Create Bridges
         for node_id, bridge in results[4].items():
-            bridge_local = bridges_local.get(node_id)
-
-            semantic_version = bridge["semantic_version"]
-            system_version = bridge["system_version"]
-            node_height = bridge["node_height"]
-
-            if bridge_local:
-                updated_fields = {}
-
-                last_timestamp = bridge.get(
-                    "last_timestamp", bridge_local.last_timestamp
-                )
-                last_timestamp_diff = int(now_timestamp - last_timestamp)
-                node_height_diff = int(
-                    status_serializer.validated_data["sync_info"]["latest_block_height"]
-                    - node_height
-                )
-                if node_height_diff < 0:
-                    node_height_diff = 0
-
-                if bridge_local.version != semantic_version:
-                    updated_fields["version"] = semantic_version
-
-                if bridge_local.system_version != system_version:
-                    updated_fields["system_version"] = system_version
-
-                if bridge_local.node_height != node_height:
-                    updated_fields["node_height"] = node_height
-
-                if bridge_local.node_height_diff != node_height_diff:
-                    updated_fields["node_height_diff"] = node_height_diff
-                    bridges_from_to_update_alerts["node_height_diff"][
-                        bridge_local.id
-                    ] = (bridge_local.node_height_diff, node_height_diff)
-
-                if bridge_local.last_timestamp != last_timestamp:
-                    updated_fields["last_timestamp"] = last_timestamp
-
-                if bridge_local.last_timestamp_diff != last_timestamp_diff:
-                    updated_fields["last_timestamp_diff"] = last_timestamp_diff
-                    bridges_from_to_update_alerts["last_timestamp_diff"][
-                        bridge_local.id
-                    ] = (bridge_local.last_timestamp_diff, last_timestamp_diff)
-
-                if updated_fields:
-                    bridges_to_update.append((bridge_local.id, updated_fields))
-
-            else:
-                BlockchainBridge.objects.create(
+            if not bridges_local.get(node_id):
+                bridges_local[node_id] = BlockchainBridge.objects.create(
                     blockchain=blockchain,
                     node_id=node_id,
-                    version=semantic_version,
-                    system_version=system_version,
-                    node_height=node_height,
+                    version=bridge["semantic_version"],
+                    system_version=bridge["system_version"],
+                    node_height=bridge["node_height"],
                     last_timestamp=bridge.get("last_timestamp", now_timestamp),
                 )
+
+        # Update Bridges
+        for node_id, bridge in bridges_local.items():
+            updated_data = results[4].get(node_id, {})
+
+            semantic_version = updated_data.get("semantic_version", bridge.version)
+            system_version = updated_data.get("system_version", bridge.system_version)
+            node_height = updated_data.get("node_height", bridge.node_height)
+            last_timestamp = updated_data.get("last_timestamp", bridge.last_timestamp)
+            last_timestamp_diff = int(now_timestamp - last_timestamp)
+            node_height_diff = max(
+                0,
+                status_serializer.validated_data["sync_info"]["latest_block_height"]
+                - node_height,
+            )
+
+            updated_fields = {}
+            if bridge.version != semantic_version:
+                updated_fields["version"] = semantic_version
+
+            if bridge.system_version != system_version:
+                updated_fields["system_version"] = system_version
+
+            if bridge.node_height != node_height:
+                updated_fields["node_height"] = node_height
+
+            if bridge.last_timestamp != last_timestamp:
+                updated_fields["last_timestamp"] = last_timestamp
+
+            if bridge.node_height_diff != node_height_diff:
+                updated_fields["node_height_diff"] = node_height_diff
+                bridges_from_to_update_alerts["node_height_diff"][bridge.id] = (
+                    bridge.node_height_diff,
+                    node_height_diff,
+                )
+
+            if bridge.last_timestamp_diff != last_timestamp_diff:
+                updated_fields["last_timestamp_diff"] = last_timestamp_diff
+                bridges_from_to_update_alerts["last_timestamp_diff"][bridge.id] = (
+                    bridge.last_timestamp_diff,
+                    last_timestamp_diff,
+                )
+
+            if updated_fields:
+                bridges_to_update.append((bridge.id, updated_fields))
 
         if bridges_to_update:
             # print("INFO: Updating BlockchainBridges: ", bridges_to_update)
@@ -392,6 +392,8 @@ class CosmosBlockchainMetricsView(views.APIView):
             validators_to_update_prev=validators_to_update_prev,
             bridges_from_to_update_alerts=bridges_from_to_update_alerts,
         )
+
+        # print("bridges_from_to_update_alerts: ", bridges_from_to_update_alerts)
 
         return HttpResponse(
             generate_latest(),
