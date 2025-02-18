@@ -70,7 +70,6 @@ def check_alerts(
                         + user_alert_setting.setting.value
                     ):
                         alert_text = user_alert_setting.generate_alert_text(
-                            increase=True,
                             from_value=str(user_alert_setting.current_value),
                             to_value=str(updated_fields["voting_power"]),
                         )
@@ -98,7 +97,6 @@ def check_alerts(
                     ):
 
                         alert_text = user_alert_setting.generate_alert_text(
-                            increase=False,
                             from_value=str(user_alert_setting.current_value),
                             to_value=str(updated_fields["voting_power"]),
                         )
@@ -135,7 +133,6 @@ def check_alerts(
                 if user_alert_setting.setting.value > 0:
                     if prev_value < level_value and next_value >= level_value:
                         alert_text = user_alert_setting.generate_alert_text(
-                            increase=True,
                             from_value=str(prev_value),
                             to_value=str(next_value),
                         )
@@ -152,7 +149,6 @@ def check_alerts(
                 else:
                     if prev_value > level_value and next_value <= level_value:
                         alert_text = user_alert_setting.generate_alert_text(
-                            increase=False,
                             from_value=str(prev_value),
                             to_value=str(next_value),
                         )
@@ -178,7 +174,6 @@ def check_alerts(
                     ):
 
                         alert_text = user_alert_setting.generate_alert_text(
-                            increase=True,
                             from_value=str(user_alert_setting.current_value),
                             to_value=str(
                                 Decimal(updated_fields["commision_rate"]).quantize(
@@ -207,7 +202,6 @@ def check_alerts(
                         - abs(user_alert_setting.setting.value)
                     ):
                         alert_text = user_alert_setting.generate_alert_text(
-                            increase=False,
                             from_value=str(user_alert_setting.current_value),
                             to_value=str(
                                 Decimal(updated_fields["commision_rate"]).quantize(
@@ -246,7 +240,6 @@ def check_alerts(
                     == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
                 ):
                     alert_text = user_alert_setting.generate_alert_text(
-                        increase=True,
                         from_value="False",
                         to_value="True",
                     )
@@ -266,7 +259,6 @@ def check_alerts(
                     == AlertSettingBase.ValueStatus.TRUE_TO_FALSE
                 ):
                     alert_text = user_alert_setting.generate_alert_text(
-                        increase=False,
                         from_value="True",
                         to_value="False",
                     )
@@ -295,7 +287,6 @@ def check_alerts(
                     == AlertSettingBase.ValueStatus.FALSE_TO_TRUE
                 ):
                     alert_text = user_alert_setting.generate_alert_text(
-                        increase=True,
                         from_value="False",
                         to_value="True",
                     )
@@ -315,7 +306,6 @@ def check_alerts(
                     == AlertSettingBase.ValueStatus.TRUE_TO_FALSE
                 ):
                     alert_text = user_alert_setting.generate_alert_text(
-                        increase=False,
                         from_value="True",
                         to_value="False",
                     )
@@ -341,7 +331,6 @@ def check_alerts(
 
                 if next_value:
                     alert_text = user_alert_setting.generate_alert_text(
-                        increase=True,
                         from_value="False",
                         to_value="True",
                     )

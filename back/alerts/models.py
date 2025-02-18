@@ -58,6 +58,18 @@ class AlertSettingBase(models.Model):
 {to_value} - will be replaced to from value (int, float or bool);<br>
 """,
     )
+    template = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_("Text Template"),
+        help_text="""
+{name} - will be replaced to full name;<br>
+{network} - will be replaced to blockchain network (Celestia Mainnet);<br>
+{moniker} - will be replaced to validator moniker;<br>
+{from_value} - will be replaced to from value (int, float or bool);<br>
+{to_value} - will be replaced to from value (int, float or bool);<br>
+""",
+    )
     status = models.BooleanField(default=True, verbose_name=_("Enabled"))
     updated = models.DateTimeField(auto_now=True, verbose_name=_("Updated"))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_("Created"))
@@ -175,6 +187,7 @@ class UserAlertSettingBase(AlertSettingBase):
     )
     template_increase = None
     template_decraease = None
+    template = None
     current_value = None
 
     def __str__(self):
@@ -189,18 +202,8 @@ class UserAlertSettingBase(AlertSettingBase):
 
         return f"{self.__class__.__name__} ({self.channels}) {self.current_value}{next_value_str}"
 
-    def generate_alert_text(
-        self,
-        increase: bool,
-        from_value: str,
-        to_value: str,
-    ) -> str:
-        template = (
-            self.setting.template_increase
-            if increase
-            else self.setting.template_decraease
-        )
-        if not template:
+    def generate_alert_text(self, from_value: str, to_value: str) -> str:
+        if not self.setting.template:
             return ""
 
         def clean_ascii(text):
@@ -210,7 +213,7 @@ class UserAlertSettingBase(AlertSettingBase):
         network = clean_ascii(self.blockchain_validator.blockchain.name or "")
         moniker = clean_ascii(self.blockchain_validator.moniker or "")
 
-        return template.format(
+        return self.setting.template.format(
             name=name,
             network=network,
             moniker=moniker,
