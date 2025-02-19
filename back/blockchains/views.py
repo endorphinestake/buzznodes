@@ -38,11 +38,13 @@ from blockchains.utils.calculate_uptime import calculate_uptime
 from blockchains.utils.grafana_fetch_metrics import grafana_fetch_metrics
 from logs.models import Log
 from alerts.tasks import check_alerts
+from blockchains.caches import CachedMetrics
 
 
 class CosmosBlockchainMetricsView(views.APIView):
     permission_classes = (IsPrometheusUserAgent,)
 
+    cached_metrics = CachedMetrics(ttl=5)
     voting_power_metric = Gauge(
         f"{Blockchain.Type.COSMOS}_validator_voting_power",
         "Voting power of the validator",
@@ -414,7 +416,7 @@ class CosmosBlockchainMetricsView(views.APIView):
         # print("bridges_from_to_update_alerts: ", bridges_from_to_update_alerts)
 
         return HttpResponse(
-            generate_latest(),
+            self.cached_metrics.get_latest(),
             content_type="text/plain; version=0.0.4; charset=utf-8",
             status=status.HTTP_200_OK,
         )
