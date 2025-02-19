@@ -21,5 +21,3 @@ CHART_PERIODS = {
         "step": "4h",
     },
 }
-
-METRICS_CACHE_KEY = "blockchain_metrics"
