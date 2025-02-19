@@ -418,7 +418,7 @@ class CosmosBlockchainMetricsView(views.APIView):
 
         print(f"before response: {time.perf_counter() - start:.6f}")
 
-        # print("bridges_from_to_update_alerts: ", bridges_from_to_update_alerts)
+        print("bridges_from_to_update_alerts: ", bridges_from_to_update_alerts)
 
         return HttpResponse(
             self.cached_metrics.get_latest(),
