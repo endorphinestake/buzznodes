@@ -38,7 +38,7 @@ import {
 
 const OtelUpdateTab = (props: IManageBridgeUserAlertsTabProps) => {
   // ** Props
-  const { blockchainBridge } = props;
+  const { blockchainBridge, moniker } = props;
 
   // ** State
   const [otelUpdateLess1MSetting, setOtelUpdateLess1MSetting] = useState<
@@ -88,6 +88,7 @@ const OtelUpdateTab = (props: IManageBridgeUserAlertsTabProps) => {
         setting_id: otelUpdateLess1MSetting.id,
         user_setting_id: otelUpdateLess1MUserSetting?.id,
         channel: otelUpdateLess1MChannel,
+        moniker: moniker,
       });
       // Delete Increase
     } else if (otelUpdateLess1MUserSetting) {
@@ -109,6 +110,7 @@ const OtelUpdateTab = (props: IManageBridgeUserAlertsTabProps) => {
         setting_id: otelUpdateMore1MSetting.id,
         user_setting_id: otelUpdateMore1MUserSetting?.id,
         channel: otelUpdateMore1MChannel,
+        moniker: moniker,
       });
       // Delete Increase
     } else if (otelUpdateMore1MUserSetting) {

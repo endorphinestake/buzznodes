@@ -66,8 +66,12 @@ export type TUserAlertSettingComission = TUserAlertSettingBase & {};
 export type TUserAlertSettingJailedStatus = TUserAlertSettingBase & {};
 export type TUserAlertSettingTombstonedStatus = TUserAlertSettingBase & {};
 export type TUserAlertSettingBondedStatus = TUserAlertSettingBase & {};
-export type TUserAlertSettingOtelUpdate = TUserAlertSettingBase & {};
-export type TUserAlertSettingSyncStatus = TUserAlertSettingBase & {};
+export type TUserAlertSettingOtelUpdate = TUserAlertSettingBase & {
+  moniker: string;
+};
+export type TUserAlertSettingSyncStatus = TUserAlertSettingBase & {
+  moniker: string;
+};
 
 export type TUserAlertSettingsResponse = {
   [EAlertType.VOTING_POWER]: TUserAlertSettingVotingPower[];

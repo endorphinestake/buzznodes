@@ -1,5 +1,12 @@
 // ** React Imports
-import { memo, useState, useEffect, Fragment, SyntheticEvent } from "react";
+import {
+  memo,
+  useState,
+  useEffect,
+  Fragment,
+  SyntheticEvent,
+  ChangeEvent,
+} from "react";
 
 // ** Hooks ImportshandleClose
 import { useTranslation } from "react-i18next";
@@ -9,6 +16,9 @@ import { useAlertService } from "@hooks/useAlertService";
 import { EAlertType } from "@modules/alerts/enums";
 import { TBlockchainBridge } from "@modules/blockchains/types";
 
+// ** Utils Imports
+import { isASCII } from "@modules/shared/utils/text";
+
 // ** Shared Components Imports
 import Notify from "@modules/shared/utils/Notify";
 import DialogComponent from "@modules/shared/components/Dialog";
@@ -16,9 +26,9 @@ import OtelUpdateTab from "@modules/alerts/components/tabs/OtelUpdateTab";
 import SyncStatusTab from "@modules/alerts/components/tabs/SyncStatusTab";
 
 // ** Mui Imports
-import { Tab, Typography } from "@mui/material";
+import { Box, Tooltip, Input, Tab, Typography } from "@mui/material";
 import { TabList, TabPanel, TabContext } from "@mui/lab";
-import { BellPlus, BellCheck } from "mdi-material-ui";
+import { BellPlus, BellCheck, InformationOutline } from "mdi-material-ui";
 
 interface IProps {
   open: boolean;
@@ -48,6 +58,14 @@ const ManageBridgeAlertsDialog = (props: IProps) => {
   const [currentTab, setCurrentTab] = useState<EAlertType>(
     EAlertType.OTEL_UPDATE
   );
+  const [moniker, setMoniker] = useState<string>(
+    userAlertSettings[blockchainBridge.id]?.[EAlertType.OTEL_UPDATE]?.[0]
+      ?.moniker ||
+      userAlertSettings[blockchainBridge.id]?.[EAlertType.SYNC_STATUS]?.[0]
+        ?.moniker ||
+      ""
+  );
+  const [monikerError, setMonikerError] = useState<boolean>(!Boolean(moniker));
 
   // ** Handlers
   const handleTabChange = (event: SyntheticEvent, newValue: EAlertType) => {
@@ -55,6 +73,17 @@ const ManageBridgeAlertsDialog = (props: IProps) => {
   };
 
   const handleClose = () => setOpen(false);
+
+  const handleMonikerChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setMoniker(event.target.value);
+    setMonikerError(
+      Boolean(
+        !event.target.value ||
+          event.target.value.length > 50 ||
+          !isASCII(event.target.value)
+      )
+    );
+  };
 
   // Events for createUserAlertSetting
   useEffect(() => {
@@ -89,62 +118,99 @@ const ManageBridgeAlertsDialog = (props: IProps) => {
   }, [isManageUserAlertSettingLoaded, isManageUserAlertSettingError]);
 
   return (
-    <Fragment>
-      <DialogComponent
-        open={open}
-        setOpen={setOpen}
-        handleClose={handleClose}
-        title={t("Manage Alerts for «{{bridge}}»", {
-          bridge: blockchainBridge.node_id,
-        })}
-        maxWidth="md"
-        content={
-          <TabContext value={currentTab}>
-            <TabList onChange={handleTabChange}>
-              <Tab
-                value={EAlertType.OTEL_UPDATE}
-                label={t(`Latest Otel Update`)}
-                icon={
-                  userAlertSettings[blockchainBridge.id]?.[
-                    EAlertType.OTEL_UPDATE
-                  ]?.[0] ? (
-                    <BellCheck />
-                  ) : (
-                    <BellPlus />
-                  )
-                }
+    <DialogComponent
+      open={open}
+      setOpen={setOpen}
+      handleClose={handleClose}
+      titleNode={
+        <Fragment>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              width: "100%",
+            }}
+          >
+            <Typography variant="body1">
+              {t(`Manage Alerts for Bridge`)}
+            </Typography>
+            <Tooltip
+              title={t(
+                `The name must contain no more than 50 characters only from ASCII symbols`
+              )}
+            >
+              <InformationOutline
+                sx={{ fontSize: 20 }}
+                color={monikerError ? "error" : "primary"}
               />
-              <Tab
-                value={EAlertType.SYNC_STATUS}
-                label={t(`Synchronization Status`)}
-                icon={
-                  userAlertSettings[blockchainBridge.id]?.[
-                    EAlertType.SYNC_STATUS
-                  ]?.[0] ? (
-                    <BellCheck />
-                  ) : (
-                    <BellPlus />
-                  )
-                }
-              />
-            </TabList>
-
-            <TabPanel
+            </Tooltip>
+            <Input
+              sx={{ flex: 0.99 }}
+              value={moniker}
+              onChange={handleMonikerChange}
+              error={monikerError}
+              placeholder={t(`Your Bridge name...`)}
+            />
+          </Box>
+          <Typography variant="body2" sx={{ mt: 2 }}>
+            {t(`Bridge ID`)}: {blockchainBridge.node_id}
+          </Typography>
+        </Fragment>
+      }
+      maxWidth="md"
+      content={
+        <TabContext value={currentTab}>
+          <TabList onChange={handleTabChange}>
+            <Tab
               value={EAlertType.OTEL_UPDATE}
-              sx={{ width: "100%", mt: 4 }}
-            >
-              <OtelUpdateTab blockchainBridge={blockchainBridge} />
-            </TabPanel>
-            <TabPanel
+              label={t(`Latest Otel Update`)}
+              icon={
+                userAlertSettings[blockchainBridge.id]?.[
+                  EAlertType.OTEL_UPDATE
+                ]?.[0] ? (
+                  <BellCheck />
+                ) : (
+                  <BellPlus />
+                )
+              }
+            />
+            <Tab
               value={EAlertType.SYNC_STATUS}
-              sx={{ width: "100%", mt: 4 }}
-            >
-              <SyncStatusTab blockchainBridge={blockchainBridge} />
-            </TabPanel>
-          </TabContext>
-        }
-      />
-    </Fragment>
+              label={t(`Synchronization Status`)}
+              icon={
+                userAlertSettings[blockchainBridge.id]?.[
+                  EAlertType.SYNC_STATUS
+                ]?.[0] ? (
+                  <BellCheck />
+                ) : (
+                  <BellPlus />
+                )
+              }
+            />
+          </TabList>
+
+          <TabPanel
+            value={EAlertType.OTEL_UPDATE}
+            sx={{ width: "100%", mt: 4 }}
+          >
+            <OtelUpdateTab
+              blockchainBridge={blockchainBridge}
+              moniker={moniker}
+            />
+          </TabPanel>
+          <TabPanel
+            value={EAlertType.SYNC_STATUS}
+            sx={{ width: "100%", mt: 4 }}
+          >
+            <SyncStatusTab
+              blockchainBridge={blockchainBridge}
+              moniker={moniker}
+            />
+          </TabPanel>
+        </TabContext>
+      }
+    />
   );
 };
 

@@ -208,7 +208,7 @@ class UserAlertSettingBase(AlertSettingBase):
 
         return f"{self.__class__.__name__} ({self.channels}) {self.current_value}{next_value_str}"
 
-    def generate_alert_text(self, from_value: str, to_value: str) -> str:
+    def generate_validator_alert_text(self, from_value: str, to_value: str) -> str:
         if not self.setting.template:
             return ""
 
@@ -413,6 +413,7 @@ class UserAlertSettingOtelUpdate(UserAlertSettingBase):
         related_name="alert_setting_otel_update_user_settings",
     )
     current_value = models.IntegerField(verbose_name=_("Current Value"))
+    moniker = models.CharField(max_length=100, verbose_name=_("Bridge Name"))
 
     class Meta:
         verbose_name = _("User Alert Setting Otel Update")
@@ -440,6 +441,7 @@ class UserAlertSettingSyncStatus(UserAlertSettingBase):
         related_name="alert_setting_sync_status_user_settings",
     )
     current_value = models.IntegerField(verbose_name=_("Current Value"))
+    moniker = models.CharField(max_length=100, verbose_name=_("Bridge Name"))
 
     class Meta:
         verbose_name = _("User Alert Setting Sync Status")

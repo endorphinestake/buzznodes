@@ -146,7 +146,7 @@ const BridgesPage = () => {
                 subheader={t(`Network Height: {{height}}`, {
                   height:
                     Intl.NumberFormat("ru-RU").format(
-                      blockchainBridges[0].network_height
+                      blockchainBridges[0]?.network_height
                     ) || "-",
                 })}
               />

@@ -64,10 +64,12 @@ class UserAlertSettingJailedStatusInline(BaseUserAlertSettingInline):
 
 class UserAlertSettingOtelUpdateInline(BaseUserAlertSettingInline):
     model = UserAlertSettingOtelUpdate
+    fields = BaseUserAlertSettingInline.fields + ("moniker",)
 
 
 class UserAlertSettingSyncStatusInline(BaseUserAlertSettingInline):
     model = UserAlertSettingSyncStatus
+    fields = BaseUserAlertSettingInline.fields + ("moniker",)
 
 
 @admin.register(AlertSettingVotingPower)

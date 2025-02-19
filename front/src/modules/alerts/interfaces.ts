@@ -10,6 +10,7 @@ export interface IManageUserAlertSetting {
   setting_id: number;
   user_setting_id?: number;
   channel: EAlertChannel;
+  moniker?: string;
   is_delete: boolean;
 }
 
@@ -28,4 +29,5 @@ export interface IManageUserAlertsTabProps {
 
 export interface IManageBridgeUserAlertsTabProps {
   blockchainBridge: TBlockchainBridge;
+  moniker: string;
 }

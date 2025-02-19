@@ -37,7 +37,7 @@ import {
 
 const SyncStatusTab = (props: IManageBridgeUserAlertsTabProps) => {
   // ** Props
-  const { blockchainBridge } = props;
+  const { blockchainBridge, moniker } = props;
 
   // ** State
   const [syncStatusIncreasedSetting, setSyncStatusIncreasedSetting] = useState<
@@ -87,6 +87,7 @@ const SyncStatusTab = (props: IManageBridgeUserAlertsTabProps) => {
         setting_id: syncStatusIncreasedSetting.id,
         user_setting_id: syncStatusIncreasedUserSetting?.id,
         channel: syncStatusIncreasedChannel,
+        moniker: moniker,
       });
       // Delete Increase
     } else if (syncStatusIncreasedUserSetting) {
@@ -108,6 +109,7 @@ const SyncStatusTab = (props: IManageBridgeUserAlertsTabProps) => {
         setting_id: syncStatusDecreasedSetting.id,
         user_setting_id: syncStatusDecreasedUserSetting?.id,
         channel: syncStatusDecreasedChannel,
+        moniker: moniker,
       });
       // Delete Increase
     } else if (syncStatusDecreasedUserSetting) {

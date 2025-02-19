@@ -1,4 +1,5 @@
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MaxLengthValidator, RegexValidator
 from rest_framework import serializers
 
 from alerts.models import (
@@ -125,11 +126,13 @@ class UserAlertSettingBondedStatusSerializer(UserAlertSettingBaseSerializer):
 class UserAlertSettingOtelUpdateSerializer(UserAlertSettingBaseSerializer):
     class Meta(UserAlertSettingBaseSerializer.Meta):
         model = UserAlertSettingOtelUpdate
+        fields = UserAlertSettingBaseSerializer.Meta.fields + ("moniker",)
 
 
 class UserAlertSettingSyncStatusSerializer(UserAlertSettingBaseSerializer):
     class Meta(UserAlertSettingBaseSerializer.Meta):
         model = UserAlertSettingSyncStatus
+        fields = UserAlertSettingBaseSerializer.Meta.fields + ("moniker",)
 
 
 class ManageUserAlertSettingSerializer(serializers.Serializer):
@@ -149,6 +152,17 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
     setting_id = serializers.IntegerField(required=True)
     user_setting_id = serializers.IntegerField(required=False)  # for update
     channel = serializers.ChoiceField(AlertSettingBase.Channels.choices, required=True)
+    moniker = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        validators=[
+            MaxLengthValidator(50),
+            RegexValidator(
+                r"^[\x00-\x7F]+$",
+                "Only ASCII characters are allowed for the bridge name",
+            ),
+        ],
+    )
     is_delete = serializers.BooleanField(required=False)
 
     def validate_setting_id(self, setting_id):
@@ -258,6 +272,11 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
                 _("The alert channel is not available for this setting.")
             )
         return channel
+
+    def validate_moniker(self, value):
+        if self.initial_data.get("blockchain_bridge_id") and not value:
+            raise serializers.ValidationError("Bridge name is required!")
+        return value
 
     def manage(self, validated_data: dict):
         user = self.context["request"].user
@@ -466,6 +485,7 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
             if user_setting_instance:
                 user_setting_instance.setting = setting_instance
                 user_setting_instance.channels = validated_data["channel"]
+                user_setting_instance.moniker = validated_data["moniker"]
                 user_setting_instance.current_value = (
                     blockchain_bridge.last_timestamp_diff
                 )
@@ -490,6 +510,7 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
             return UserAlertSettingOtelUpdate.objects.create(
                 user=user,
                 channels=validated_data["channel"],
+                moniker=validated_data["moniker"],
                 blockchain_validator=blockchain_bridge,
                 setting=setting_instance,
                 current_value=blockchain_bridge.last_timestamp_diff,

@@ -6,13 +6,15 @@ interface IProps {
   open: boolean;
   setOpen: (value: boolean) => void;
   handleClose?: () => void;
-  title: string;
+  title?: string;
+  titleNode?: ReactNode;
   maxWidth?: "xs" | "sm" | "md" | "xl";
   content: ReactNode;
 }
 
 const DialogComponent = (props: IProps) => {
-  const { open, setOpen, handleClose, title, maxWidth, content } = props;
+  const { open, setOpen, handleClose, title, titleNode, maxWidth, content } =
+    props;
 
   const onClose = () => setOpen(false);
 
@@ -30,6 +32,7 @@ const DialogComponent = (props: IProps) => {
       <DialogTitle>
         <>
           {title}
+          {titleNode}
           <IconButton
             color="inherit"
             size="small"
