@@ -346,9 +346,7 @@ def check_alerts(
                     )
                     user_alert_setting.delete()
 
-    # Bridge Alerts
-
-    # Node Height
+    # Bridge Node Height
     for bridge_id, values in bridges_from_to_update_alerts["node_height_diff"].items():
         prev_value = values[0]
         next_value = values[1]
@@ -393,6 +391,32 @@ def check_alerts(
                         alert_type=AlertSettingBase.AlertType.SYNC_STATUS,
                     )
 
-        print("bridge_id: ", bridge_id)
-        print("prev_value: ", prev_value)
-        print("next_value: ", next_value)
+    # Bridge Otel Update
+    for bridge_id, values in bridges_from_to_update_alerts[
+        "last_timestamp_diff"
+    ].items():
+        prev_value = values[0]
+        next_value = values[1]
+
+        if prev_value < 3 and next_value < 3:
+            continue
+
+        for user_alert_setting in UserAlertSettingOtelUpdate.objects.select_related(
+            "setting"
+        ).filter(blockchain_validator_id=bridge_id, setting__status=True):
+            level_value = user_alert_setting.setting.value
+
+            # Increased OtelUpdate Different (Warning)
+            if prev_value < level_value and next_value >= level_value:
+                alert_text = user_alert_setting.generate_alert_text(
+                    from_value=str(prev_value),
+                    to_value=str(next_value),
+                )
+
+                print("SUBMIT ALERT OTEL_UPDATED INCREASED: ", alert_text)
+
+                _send_alert(
+                    user_alert_setting=user_alert_setting,
+                    alert_text=alert_text,
+                    alert_type=AlertSettingBase.AlertType.OTEL_UPDATE,
+                )

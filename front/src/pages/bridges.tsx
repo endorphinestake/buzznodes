@@ -115,18 +115,6 @@ const BridgesPage = () => {
 
   var filteredBridges: TBlockchainBridge[] = blockchainBridges;
 
-  // filter by Status
-  // if (filteredBridges.length > 0) {
-  //   filteredBridges = filteredBridges.filter((item) => {
-  //     switch (bridgeStatus) {
-  //       case EBlockchainValidatorStatus.BOND_STATUS_BONDED:
-  //         return item.status === EBlockchainValidatorStatus.BOND_STATUS_BONDED;
-  //       case EBlockchainValidatorStatus.BOND_STATUS_UNBONDED:
-  //         return item.status !== EBlockchainValidatorStatus.BOND_STATUS_BONDED;
-  //     }
-  //   });
-  // }
-
   // filter by Search
   if (search.length > 0) {
     filteredBridges = filteredBridges.filter((item) => {
@@ -155,7 +143,12 @@ const BridgesPage = () => {
             <Card>
               <CardHeader
                 title={t(`Bridges`)}
-                subheader={t(`Blockchain Monitoring`)}
+                subheader={t(`Network Height: {{height}}`, {
+                  height:
+                    Intl.NumberFormat("ru-RU").format(
+                      blockchainBridges[0].network_height
+                    ) || "-",
+                })}
               />
               <Box
                 sx={{
