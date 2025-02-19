@@ -347,8 +347,13 @@ class CosmosBlockchainMetricsView(views.APIView):
 
             semantic_version = updated_data.get("semantic_version", bridge.version)
             system_version = updated_data.get("system_version", bridge.system_version)
-            node_height = updated_data.get("node_height", bridge.node_height)
-            last_timestamp = updated_data.get("last_timestamp", bridge.last_timestamp)
+            node_height = max(
+                updated_data.get("node_height", bridge.node_height), bridge.node_height
+            )
+            last_timestamp = max(
+                updated_data.get("last_timestamp", bridge.last_timestamp),
+                bridge.last_timestamp,
+            )
             last_timestamp_diff = int(now_timestamp - last_timestamp)
             node_height_diff = max(
                 0,
