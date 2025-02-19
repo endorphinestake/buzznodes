@@ -308,12 +308,12 @@ class CosmosBlockchainMetricsView(views.APIView):
 
         if validators_to_update:
             print("INFO: Updating BlockchainValidator: ", validators_to_update)
-            # with transaction.atomic():
-            for validator_id, updated_fields in validators_to_update:
-                BlockchainValidator.objects.filter(id=validator_id).update(
-                    **updated_fields,
-                    updated=now(),
-                )
+            with transaction.atomic():
+                for validator_id, updated_fields in validators_to_update:
+                    BlockchainValidator.objects.filter(id=validator_id).update(
+                        **updated_fields,
+                        updated=now(),
+                    )
 
         print(f"updated validators: {time.perf_counter() - start:.6f}")
 
@@ -386,12 +386,12 @@ class CosmosBlockchainMetricsView(views.APIView):
 
         if bridges_to_update:
             # print("INFO: Updating BlockchainBridges: ", bridges_to_update)
-            # with transaction.atomic():
-            for bridge_id, updated_fields in bridges_to_update:
-                BlockchainBridge.objects.filter(id=bridge_id).update(
-                    **updated_fields,
-                    updated=now(),
-                )
+            with transaction.atomic():
+                for bridge_id, updated_fields in bridges_to_update:
+                    BlockchainBridge.objects.filter(id=bridge_id).update(
+                        **updated_fields,
+                        updated=now(),
+                    )
 
             # Update blockchain status info (latest_block_height)
             Blockchain.objects.filter(pk=blockchain.id).update(
