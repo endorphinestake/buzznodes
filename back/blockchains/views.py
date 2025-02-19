@@ -9,10 +9,11 @@ from django.db.models import Sum
 from django.utils.timezone import now
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.core.cache import cache
 
 from rest_framework import views, permissions, response, status
 
-from blockchains.constants import CHART_PERIODS
+from blockchains.constants import CHART_PERIODS, METRICS_CACHE_KEY
 from blockchains.models import Blockchain, BlockchainValidator, BlockchainBridge
 from blockchains.serilazers import (
     BlockchainValidatorModelSerializer,
@@ -88,338 +89,361 @@ class CosmosBlockchainMetricsView(views.APIView):
         return results
 
     def get(self, request, blockchain_id):
-        start = time.perf_counter()
-        blockchain = get_object_or_404(
-            Blockchain, pk=blockchain_id, btype=Blockchain.Type.COSMOS, status=True
-        )
-        blockchain_urls = blockchain.blockchain_urls.order_by("priority")
-
-        if not blockchain_urls.count():
-            return response.Response(status=status.HTTP_404_NOT_FOUND)
-
-        rpc_urls, validators_urls, infos_urls = zip(
-            *blockchain_urls.values_list("rpc_url", "validators_url", "infos_url")
-        )
-
-        print(f"get data from db: {time.perf_counter() - start:.6f}")
-
-        results = asyncio.run(
-            self._process_urls(
-                rpc_urls=rpc_urls,
-                validators_urls=validators_urls,
-                infos_urls=infos_urls,
-                da_urls=[blockchain.da_url] if blockchain.da_url else [],
+        if cache.get(f"{METRICS_CACHE_KEY}{blockchain_id}"):
+            return HttpResponse(
+                "Processing, try again later", status=status.HTTP_429_TOO_MANY_REQUESTS
             )
-        )
+        cache.set(f"{METRICS_CACHE_KEY}{blockchain_id}", "locked", timeout=5)
 
-        urls_types = ["RPC", "Validators", "Infos", "Status", "DA"]
-        for idx, result in enumerate(results):
-            if isinstance(result, Exception):
-                Log.error(f"Can't fetching {urls_types[idx]}: {result}")
-                return response.Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        try:
+            start = time.perf_counter()
+            blockchain = get_object_or_404(
+                Blockchain, pk=blockchain_id, btype=Blockchain.Type.COSMOS, status=True
+            )
+            blockchain_urls = blockchain.blockchain_urls.order_by("priority")
 
-        print(f"got API data: {time.perf_counter() - start:.6f}")
+            if not blockchain_urls.count():
+                return response.Response(status=status.HTTP_404_NOT_FOUND)
 
-        # Validate Data
-        rpc_serializer = RpcValidatorSerializer(data=results[0], many=True)
-        if not rpc_serializer.is_valid():
-            return response.Response(
-                rpc_serializer.errors,
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            rpc_urls, validators_urls, infos_urls = zip(
+                *blockchain_urls.values_list("rpc_url", "validators_url", "infos_url")
             )
 
-        validators_serializer = BlockchainValidatorSerializer(
-            data=results[1], many=True
-        )
-        if not validators_serializer.is_valid():
-            return response.Response(
-                validators_serializer.errors,
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            print(f"get data from db: {time.perf_counter() - start:.6f}")
+
+            results = asyncio.run(
+                self._process_urls(
+                    rpc_urls=rpc_urls,
+                    validators_urls=validators_urls,
+                    infos_urls=infos_urls,
+                    da_urls=[blockchain.da_url] if blockchain.da_url else [],
+                )
             )
 
-        infos_serializer = InfosValidatorSerializer(data=results[2], many=True)
-        if not infos_serializer.is_valid():
-            return response.Response(
-                infos_serializer.errors,
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            )
-
-        status_serializer = RpcStatusValidatorSerializer(data=results[3])
-        if not status_serializer.is_valid():
-            return response.Response(
-                status_serializer.errors,
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            )
-
-        print(f"validated serializers: {time.perf_counter() - start:.6f}")
-
-        # Format Data
-        rpc_data = {
-            item["pub_key"]["value"]: item for item in rpc_serializer.validated_data
-        }
-        infos_data = {item["address"]: item for item in infos_serializer.validated_data}
-
-        # Get local validators data
-        validators_local = {
-            item.operator_address: item
-            for item in blockchain.blockchain_validators.iterator()
-        }
-
-        # Get local bridges data
-        bridges_local = {
-            item.node_id: item for item in blockchain.blockchain_bridges.iterator()
-        }
-
-        print(f"got local validators and bridges: {time.perf_counter() - start:.6f}")
-
-        # Update Validators
-        validators_to_update = []
-        validators_to_update_prev = {
-            "uptime": {},
-            "jailed": {},
-            "status": {},
-        }
-        for validator_row in validators_serializer.validated_data:
-            operator_address = validator_row["operator_address"]
-            validator = validators_local.get(operator_address)
-
-            pubkey_type = validator_row["consensus_pubkey"]["type"]
-            pubkey_key = validator_row["consensus_pubkey"]["key"]
-            moniker = validator_row["description"].get("moniker")
-            identity = validator_row["description"].get("identity")
-            website = validator_row["description"].get("website")
-            contact = validator_row["description"].get("security_contact")
-            details = validator_row["description"].get("details")
-            rpc_row = rpc_data.get(validator_row["consensus_pubkey"]["key"], {})
-            wallet_address = convert_valoper_to_wallet(operator_address)
-            hex_address = rpc_row.get("address")
-            valcons_address = hex_to_celestiavalcons(hex_address)
-            infos_row = infos_data.get(valcons_address, {})
-            voting_power = rpc_row.get("voting_power", 0)
-            commision_rate = validator_row["commission"]["commission_rates"]["rate"]
-            commision_max_rate = validator_row["commission"]["commission_rates"][
-                "max_rate"
-            ]
-            commision_max_change_rate = validator_row["commission"]["commission_rates"][
-                "max_change_rate"
-            ]
-            jailed = validator_row["jailed"]
-            tombstoned = infos_row.get("tombstoned", False)
-            validator_status = validator_row["status"]
-            missed_blocks_counter = infos_row.get("missed_blocks_counter", 0)
-            uptime = calculate_uptime(
-                missed_blocks_counter=missed_blocks_counter,
-                validator_status=validator_status,
-            )
-
-            if validator:
-                updated_fields = {}
-                if validator.pubkey_type != pubkey_type:
-                    updated_fields["pubkey_type"] = pubkey_type
-                if validator.pubkey_key != pubkey_key:
-                    updated_fields["pubkey_key"] = pubkey_key
-                if validator.moniker != moniker:
-                    updated_fields["moniker"] = moniker
-                if validator.identity != identity:
-                    updated_fields["identity"] = identity
-                if validator.website != website:
-                    updated_fields["website"] = website
-                if validator.contact != contact:
-                    updated_fields["contact"] = contact
-                if validator.details != details:
-                    updated_fields["details"] = details
-                if validator.wallet_address != wallet_address:
-                    updated_fields["wallet_address"] = wallet_address
-                if validator.hex_address != hex_address:
-                    updated_fields["hex_address"] = hex_address
-                if validator.valcons_address != valcons_address:
-                    updated_fields["valcons_address"] = valcons_address
-                if validator.voting_power != voting_power:
-                    updated_fields["voting_power"] = voting_power
-                if validator.commision_rate != commision_rate:
-                    updated_fields["commision_rate"] = commision_rate
-                if validator.commision_max_rate != commision_max_rate:
-                    updated_fields["commision_max_rate"] = commision_max_rate
-                if validator.commision_max_change_rate != commision_max_change_rate:
-                    updated_fields["commision_max_change_rate"] = (
-                        commision_max_change_rate
+            urls_types = ["RPC", "Validators", "Infos", "Status", "DA"]
+            for idx, result in enumerate(results):
+                if isinstance(result, Exception):
+                    Log.error(f"Can't fetching {urls_types[idx]}: {result}")
+                    return response.Response(
+                        status=status.HTTP_422_UNPROCESSABLE_ENTITY
                     )
-                if validator.missed_blocks_counter != missed_blocks_counter:
-                    updated_fields["missed_blocks_counter"] = missed_blocks_counter
-                if validator.uptime != uptime:
-                    updated_fields["uptime"] = uptime
-                    validators_to_update_prev["uptime"][validator.id] = validator.uptime
-                if validator.jailed != jailed:
-                    updated_fields["jailed"] = jailed
-                    validators_to_update_prev["jailed"][validator.id] = validator.jailed
-                if validator.tombstoned != tombstoned:
-                    updated_fields["tombstoned"] = tombstoned
-                if validator.status != validator_status:
-                    updated_fields["status"] = validator_status
-                    validators_to_update_prev["status"][validator.id] = (
-                        validator.status
-                        == BlockchainValidator.Status.BOND_STATUS_BONDED
+
+            print(f"got API data: {time.perf_counter() - start:.6f}")
+
+            # Validate Data
+            rpc_serializer = RpcValidatorSerializer(data=results[0], many=True)
+            if not rpc_serializer.is_valid():
+                return response.Response(
+                    rpc_serializer.errors,
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                )
+
+            validators_serializer = BlockchainValidatorSerializer(
+                data=results[1], many=True
+            )
+            if not validators_serializer.is_valid():
+                return response.Response(
+                    validators_serializer.errors,
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                )
+
+            infos_serializer = InfosValidatorSerializer(data=results[2], many=True)
+            if not infos_serializer.is_valid():
+                return response.Response(
+                    infos_serializer.errors,
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                )
+
+            status_serializer = RpcStatusValidatorSerializer(data=results[3])
+            if not status_serializer.is_valid():
+                return response.Response(
+                    status_serializer.errors,
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                )
+
+            print(f"validated serializers: {time.perf_counter() - start:.6f}")
+
+            # Format Data
+            rpc_data = {
+                item["pub_key"]["value"]: item for item in rpc_serializer.validated_data
+            }
+            infos_data = {
+                item["address"]: item for item in infos_serializer.validated_data
+            }
+
+            # Get local validators data
+            validators_local = {
+                item.operator_address: item
+                for item in blockchain.blockchain_validators.iterator()
+            }
+
+            # Get local bridges data
+            bridges_local = {
+                item.node_id: item for item in blockchain.blockchain_bridges.iterator()
+            }
+
+            print(
+                f"got local validators and bridges: {time.perf_counter() - start:.6f}"
+            )
+
+            # Update Validators
+            validators_to_update = []
+            validators_to_update_prev = {
+                "uptime": {},
+                "jailed": {},
+                "status": {},
+            }
+            for validator_row in validators_serializer.validated_data:
+                operator_address = validator_row["operator_address"]
+                validator = validators_local.get(operator_address)
+
+                pubkey_type = validator_row["consensus_pubkey"]["type"]
+                pubkey_key = validator_row["consensus_pubkey"]["key"]
+                moniker = validator_row["description"].get("moniker")
+                identity = validator_row["description"].get("identity")
+                website = validator_row["description"].get("website")
+                contact = validator_row["description"].get("security_contact")
+                details = validator_row["description"].get("details")
+                rpc_row = rpc_data.get(validator_row["consensus_pubkey"]["key"], {})
+                wallet_address = convert_valoper_to_wallet(operator_address)
+                hex_address = rpc_row.get("address")
+                valcons_address = hex_to_celestiavalcons(hex_address)
+                infos_row = infos_data.get(valcons_address, {})
+                voting_power = rpc_row.get("voting_power", 0)
+                commision_rate = validator_row["commission"]["commission_rates"]["rate"]
+                commision_max_rate = validator_row["commission"]["commission_rates"][
+                    "max_rate"
+                ]
+                commision_max_change_rate = validator_row["commission"][
+                    "commission_rates"
+                ]["max_change_rate"]
+                jailed = validator_row["jailed"]
+                tombstoned = infos_row.get("tombstoned", False)
+                validator_status = validator_row["status"]
+                missed_blocks_counter = infos_row.get("missed_blocks_counter", 0)
+                uptime = calculate_uptime(
+                    missed_blocks_counter=missed_blocks_counter,
+                    validator_status=validator_status,
+                )
+
+                if validator:
+                    updated_fields = {}
+                    if validator.pubkey_type != pubkey_type:
+                        updated_fields["pubkey_type"] = pubkey_type
+                    if validator.pubkey_key != pubkey_key:
+                        updated_fields["pubkey_key"] = pubkey_key
+                    if validator.moniker != moniker:
+                        updated_fields["moniker"] = moniker
+                    if validator.identity != identity:
+                        updated_fields["identity"] = identity
+                    if validator.website != website:
+                        updated_fields["website"] = website
+                    if validator.contact != contact:
+                        updated_fields["contact"] = contact
+                    if validator.details != details:
+                        updated_fields["details"] = details
+                    if validator.wallet_address != wallet_address:
+                        updated_fields["wallet_address"] = wallet_address
+                    if validator.hex_address != hex_address:
+                        updated_fields["hex_address"] = hex_address
+                    if validator.valcons_address != valcons_address:
+                        updated_fields["valcons_address"] = valcons_address
+                    if validator.voting_power != voting_power:
+                        updated_fields["voting_power"] = voting_power
+                    if validator.commision_rate != commision_rate:
+                        updated_fields["commision_rate"] = commision_rate
+                    if validator.commision_max_rate != commision_max_rate:
+                        updated_fields["commision_max_rate"] = commision_max_rate
+                    if validator.commision_max_change_rate != commision_max_change_rate:
+                        updated_fields["commision_max_change_rate"] = (
+                            commision_max_change_rate
+                        )
+                    if validator.missed_blocks_counter != missed_blocks_counter:
+                        updated_fields["missed_blocks_counter"] = missed_blocks_counter
+                    if validator.uptime != uptime:
+                        updated_fields["uptime"] = uptime
+                        validators_to_update_prev["uptime"][
+                            validator.id
+                        ] = validator.uptime
+                    if validator.jailed != jailed:
+                        updated_fields["jailed"] = jailed
+                        validators_to_update_prev["jailed"][
+                            validator.id
+                        ] = validator.jailed
+                    if validator.tombstoned != tombstoned:
+                        updated_fields["tombstoned"] = tombstoned
+                    if validator.status != validator_status:
+                        updated_fields["status"] = validator_status
+                        validators_to_update_prev["status"][validator.id] = (
+                            validator.status
+                            == BlockchainValidator.Status.BOND_STATUS_BONDED
+                        )
+
+                    if updated_fields:
+                        validators_to_update.append((validator.id, updated_fields))
+
+                else:
+                    # Create Validator (if not exists)
+                    print("INFO: Creating BlockchainValidator: ", operator_address)
+                    validator = BlockchainValidator.objects.create(
+                        blockchain=blockchain,
+                        operator_address=operator_address,
+                        pubkey_type=pubkey_type,
+                        pubkey_key=pubkey_key,
+                        moniker=moniker,
+                        identity=identity,
+                        website=website,
+                        contact=contact,
+                        details=details,
+                        voting_power=voting_power,
+                        commision_rate=commision_rate,
+                        commision_max_rate=commision_max_rate,
+                        commision_max_change_rate=commision_max_change_rate,
+                        missed_blocks_counter=missed_blocks_counter,
+                        uptime=uptime,
+                        hex_address=hex_address,
+                        valcons_address=valcons_address,
+                        wallet_address=wallet_address,
+                        jailed=jailed,
+                        tombstoned=tombstoned,
+                        status=validator_status,
+                    )
+
+                # Prometheus metrics
+                self.voting_power_metric.labels(
+                    blockchain_id=blockchain_id,
+                    validator_id=validator.id,
+                    moniker=moniker,
+                ).set(voting_power)
+                self.commission_rate_metric.labels(
+                    blockchain_id=blockchain_id,
+                    validator_id=validator.id,
+                    moniker=moniker,
+                ).set(commision_rate)
+                self.uptime_metric.labels(
+                    blockchain_id=blockchain_id,
+                    validator_id=validator.id,
+                    moniker=moniker,
+                ).set(uptime)
+
+            if validators_to_update:
+                print("INFO: Updating BlockchainValidator: ", validators_to_update)
+                with transaction.atomic():
+                    for validator_id, updated_fields in validators_to_update:
+                        BlockchainValidator.objects.filter(id=validator_id).update(
+                            **updated_fields,
+                            updated=now(),
+                        )
+
+            print(f"updated validators: {time.perf_counter() - start:.6f}")
+
+            # Bridges
+            now_timestamp = int(now().timestamp())
+            bridges_to_update = []
+            bridges_from_to_update_alerts = {
+                "node_height_diff": {},
+                "last_timestamp_diff": {},
+            }
+
+            # Create Bridges
+            for node_id, bridge in results[4].items():
+                if not bridges_local.get(node_id):
+                    bridges_local[node_id] = BlockchainBridge.objects.create(
+                        blockchain=blockchain,
+                        node_id=node_id,
+                        version=bridge["semantic_version"],
+                        system_version=bridge["system_version"],
+                        node_height=bridge["node_height"],
+                        last_timestamp=bridge.get("last_timestamp", now_timestamp),
+                    )
+
+            print(f"created bridges: {time.perf_counter() - start:.6f}")
+
+            # Update Bridges
+            for node_id, bridge in bridges_local.items():
+                updated_data = results[4].get(node_id, {})
+
+                semantic_version = updated_data.get("semantic_version", bridge.version)
+                system_version = updated_data.get(
+                    "system_version", bridge.system_version
+                )
+                node_height = updated_data.get("node_height", bridge.node_height)
+                last_timestamp = updated_data.get(
+                    "last_timestamp", bridge.last_timestamp
+                )
+                last_timestamp_diff = int(now_timestamp - last_timestamp)
+                node_height_diff = max(
+                    0,
+                    status_serializer.validated_data["sync_info"]["latest_block_height"]
+                    - node_height,
+                )
+
+                updated_fields = {}
+                if bridge.version != semantic_version:
+                    updated_fields["version"] = semantic_version
+
+                if bridge.system_version != system_version:
+                    updated_fields["system_version"] = system_version
+
+                if bridge.node_height != node_height:
+                    updated_fields["node_height"] = node_height
+
+                if bridge.last_timestamp != last_timestamp:
+                    updated_fields["last_timestamp"] = last_timestamp
+
+                if bridge.node_height_diff != node_height_diff:
+                    updated_fields["node_height_diff"] = node_height_diff
+                    bridges_from_to_update_alerts["node_height_diff"][bridge.id] = (
+                        bridge.node_height_diff,
+                        node_height_diff,
+                    )
+
+                if bridge.last_timestamp_diff != last_timestamp_diff:
+                    updated_fields["last_timestamp_diff"] = last_timestamp_diff
+                    bridges_from_to_update_alerts["last_timestamp_diff"][bridge.id] = (
+                        bridge.last_timestamp_diff,
+                        last_timestamp_diff,
                     )
 
                 if updated_fields:
-                    validators_to_update.append((validator.id, updated_fields))
+                    bridges_to_update.append((bridge.id, updated_fields))
 
-            else:
-                # Create Validator (if not exists)
-                print("INFO: Creating BlockchainValidator: ", operator_address)
-                validator = BlockchainValidator.objects.create(
-                    blockchain=blockchain,
-                    operator_address=operator_address,
-                    pubkey_type=pubkey_type,
-                    pubkey_key=pubkey_key,
-                    moniker=moniker,
-                    identity=identity,
-                    website=website,
-                    contact=contact,
-                    details=details,
-                    voting_power=voting_power,
-                    commision_rate=commision_rate,
-                    commision_max_rate=commision_max_rate,
-                    commision_max_change_rate=commision_max_change_rate,
-                    missed_blocks_counter=missed_blocks_counter,
-                    uptime=uptime,
-                    hex_address=hex_address,
-                    valcons_address=valcons_address,
-                    wallet_address=wallet_address,
-                    jailed=jailed,
-                    tombstoned=tombstoned,
-                    status=validator_status,
+            if bridges_to_update:
+                # print("INFO: Updating BlockchainBridges: ", bridges_to_update)
+                with transaction.atomic():
+                    for bridge_id, updated_fields in bridges_to_update:
+                        BlockchainBridge.objects.filter(id=bridge_id).update(
+                            **updated_fields,
+                            updated=now(),
+                        )
+
+                # Update blockchain status info (latest_block_height)
+                Blockchain.objects.filter(pk=blockchain.id).update(
+                    network_height=status_serializer.validated_data["sync_info"][
+                        "latest_block_height"
+                    ]
                 )
 
-            # Prometheus metrics
-            self.voting_power_metric.labels(
-                blockchain_id=blockchain_id,
-                validator_id=validator.id,
-                moniker=moniker,
-            ).set(voting_power)
-            self.commission_rate_metric.labels(
-                blockchain_id=blockchain_id,
-                validator_id=validator.id,
-                moniker=moniker,
-            ).set(commision_rate)
-            self.uptime_metric.labels(
-                blockchain_id=blockchain_id,
-                validator_id=validator.id,
-                moniker=moniker,
-            ).set(uptime)
+            print(f"updated bridges: {time.perf_counter() - start:.6f}")
 
-        if validators_to_update:
-            print("INFO: Updating BlockchainValidator: ", validators_to_update)
-            with transaction.atomic():
-                for validator_id, updated_fields in validators_to_update:
-                    BlockchainValidator.objects.filter(id=validator_id).update(
-                        **updated_fields,
-                        updated=now(),
-                    )
-
-        print(f"updated validators: {time.perf_counter() - start:.6f}")
-
-        # Bridges
-        now_timestamp = int(now().timestamp())
-        bridges_to_update = []
-        bridges_from_to_update_alerts = {
-            "node_height_diff": {},
-            "last_timestamp_diff": {},
-        }
-
-        # Create Bridges
-        for node_id, bridge in results[4].items():
-            if not bridges_local.get(node_id):
-                bridges_local[node_id] = BlockchainBridge.objects.create(
-                    blockchain=blockchain,
-                    node_id=node_id,
-                    version=bridge["semantic_version"],
-                    system_version=bridge["system_version"],
-                    node_height=bridge["node_height"],
-                    last_timestamp=bridge.get("last_timestamp", now_timestamp),
-                )
-
-        print(f"created bridges: {time.perf_counter() - start:.6f}")
-
-        # Update Bridges
-        for node_id, bridge in bridges_local.items():
-            updated_data = results[4].get(node_id, {})
-
-            semantic_version = updated_data.get("semantic_version", bridge.version)
-            system_version = updated_data.get("system_version", bridge.system_version)
-            node_height = updated_data.get("node_height", bridge.node_height)
-            last_timestamp = updated_data.get("last_timestamp", bridge.last_timestamp)
-            last_timestamp_diff = int(now_timestamp - last_timestamp)
-            node_height_diff = max(
-                0,
-                status_serializer.validated_data["sync_info"]["latest_block_height"]
-                - node_height,
+            # Alerts
+            job = check_alerts.delay(
+                validators_to_update=validators_to_update,
+                validators_to_update_prev=validators_to_update_prev,
+                bridges_from_to_update_alerts=bridges_from_to_update_alerts,
             )
 
-            updated_fields = {}
-            if bridge.version != semantic_version:
-                updated_fields["version"] = semantic_version
+            print(f"before response: {time.perf_counter() - start:.6f}")
 
-            if bridge.system_version != system_version:
-                updated_fields["system_version"] = system_version
+            # print("bridges_from_to_update_alerts: ", bridges_from_to_update_alerts)
 
-            if bridge.node_height != node_height:
-                updated_fields["node_height"] = node_height
-
-            if bridge.last_timestamp != last_timestamp:
-                updated_fields["last_timestamp"] = last_timestamp
-
-            if bridge.node_height_diff != node_height_diff:
-                updated_fields["node_height_diff"] = node_height_diff
-                bridges_from_to_update_alerts["node_height_diff"][bridge.id] = (
-                    bridge.node_height_diff,
-                    node_height_diff,
-                )
-
-            if bridge.last_timestamp_diff != last_timestamp_diff:
-                updated_fields["last_timestamp_diff"] = last_timestamp_diff
-                bridges_from_to_update_alerts["last_timestamp_diff"][bridge.id] = (
-                    bridge.last_timestamp_diff,
-                    last_timestamp_diff,
-                )
-
-            if updated_fields:
-                bridges_to_update.append((bridge.id, updated_fields))
-
-        if bridges_to_update:
-            # print("INFO: Updating BlockchainBridges: ", bridges_to_update)
-            with transaction.atomic():
-                for bridge_id, updated_fields in bridges_to_update:
-                    BlockchainBridge.objects.filter(id=bridge_id).update(
-                        **updated_fields,
-                        updated=now(),
-                    )
-
-            # Update blockchain status info (latest_block_height)
-            Blockchain.objects.filter(pk=blockchain.id).update(
-                network_height=status_serializer.validated_data["sync_info"][
-                    "latest_block_height"
-                ]
+            return HttpResponse(
+                self.cached_metrics.get_latest(),
+                content_type="text/plain; version=0.0.4; charset=utf-8",
+                status=status.HTTP_200_OK,
             )
-
-        print(f"updated bridges: {time.perf_counter() - start:.6f}")
-
-        # Alerts
-        job = check_alerts.delay(
-            validators_to_update=validators_to_update,
-            validators_to_update_prev=validators_to_update_prev,
-            bridges_from_to_update_alerts=bridges_from_to_update_alerts,
-        )
-
-        print(f"before response: {time.perf_counter() - start:.6f}")
-
-        # print("bridges_from_to_update_alerts: ", bridges_from_to_update_alerts)
-
-        return HttpResponse(
-            self.cached_metrics.get_latest(),
-            content_type="text/plain; version=0.0.4; charset=utf-8",
-            status=status.HTTP_200_OK,
-        )
+        finally:
+            cache.delete(f"{METRICS_CACHE_KEY}{blockchain_id}")
 
 
 class BlockchainValidatorsView(views.APIView):
