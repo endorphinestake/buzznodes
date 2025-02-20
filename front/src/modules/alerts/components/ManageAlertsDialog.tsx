@@ -112,7 +112,7 @@ const ManageAlertsDialog = (props: IProps) => {
                   userAlertSettings[blockchainValidator.id]?.[
                     EAlertType.VOTING_POWER
                   ]?.[0] ? (
-                    <BellCheck />
+                    <BellCheck color="success" />
                   ) : (
                     <BellPlus />
                   )
@@ -125,7 +125,7 @@ const ManageAlertsDialog = (props: IProps) => {
                   userAlertSettings[blockchainValidator.id]?.[
                     EAlertType.UPTIME
                   ]?.[0] ? (
-                    <BellCheck />
+                    <BellCheck color="success" />
                   ) : (
                     <BellPlus />
                   )
@@ -138,7 +138,7 @@ const ManageAlertsDialog = (props: IProps) => {
                   userAlertSettings[blockchainValidator.id]?.[
                     EAlertType.COMISSION
                   ]?.[0] ? (
-                    <BellCheck />
+                    <BellCheck color="success" />
                   ) : (
                     <BellPlus />
                   )
@@ -151,7 +151,7 @@ const ManageAlertsDialog = (props: IProps) => {
                   userAlertSettings[blockchainValidator.id]?.[
                     EAlertType.JAILED
                   ]?.[0] ? (
-                    <BellCheck />
+                    <BellCheck color="success" />
                   ) : (
                     <BellPlus />
                   )
@@ -164,7 +164,7 @@ const ManageAlertsDialog = (props: IProps) => {
                   userAlertSettings[blockchainValidator.id]?.[
                     EAlertType.TOMBSTONED
                   ]?.[0] ? (
-                    <BellCheck />
+                    <BellCheck color="success" />
                   ) : (
                     <BellPlus />
                   )
@@ -177,7 +177,7 @@ const ManageAlertsDialog = (props: IProps) => {
                   userAlertSettings[blockchainValidator.id]?.[
                     EAlertType.BONDED
                   ]?.[0] ? (
-                    <BellCheck />
+                    <BellCheck color="success" />
                   ) : (
                     <BellPlus />
                   )

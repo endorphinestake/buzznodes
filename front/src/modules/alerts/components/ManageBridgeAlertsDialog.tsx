@@ -175,7 +175,7 @@ const ManageBridgeAlertsDialog = (props: IProps) => {
                 userAlertSettings[blockchainBridge.id]?.[
                   EAlertType.OTEL_UPDATE
                 ]?.[0] ? (
-                  <BellCheck />
+                  <BellCheck color="success" />
                 ) : (
                   <BellPlus />
                 )
@@ -188,7 +188,7 @@ const ManageBridgeAlertsDialog = (props: IProps) => {
                 userAlertSettings[blockchainBridge.id]?.[
                   EAlertType.SYNC_STATUS
                 ]?.[0] ? (
-                  <BellCheck />
+                  <BellCheck color="success" />
                 ) : (
                   <BellPlus />
                 )

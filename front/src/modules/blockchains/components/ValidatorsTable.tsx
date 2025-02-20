@@ -159,7 +159,7 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
             >
               {userAlertSettings[row.id] ? (
                 <Tooltip title={t(`Managing Alert Settings`)}>
-                  <BellCheck />
+                  <BellCheck color="success" />
                 </Tooltip>
               ) : (
                 <BellPlus />
