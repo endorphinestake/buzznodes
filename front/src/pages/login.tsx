@@ -258,7 +258,7 @@ const LoginPage = () => {
         </Card>
       </main>
 
-      <FooterIllustrationsV1 />
+      {/* <FooterIllustrationsV1 /> */}
     </Box>
   );
 };

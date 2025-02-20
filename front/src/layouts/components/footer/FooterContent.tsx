@@ -18,7 +18,7 @@ const FooterContent = () => {
       }}
     >
       <Typography sx={{ mr: 2 }}>
-        {`© ${new Date().getFullYear()} BuzzNodes. All rights reserved`}
+        {`Copyright © ${new Date().getFullYear()} Endorphine Stake. All rights reserved.`}
       </Typography>
     </Box>
   );
