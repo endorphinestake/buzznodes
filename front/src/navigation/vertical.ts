@@ -35,13 +35,13 @@ const navigation = (): VerticalNavItemsType => {
           },
         ]
       : []),
-    // {
-    //   title: t(`Validator Details`),
-    //   icon: AccountDetails,
-    //   path: "/details",
-    //   action: "read",
-    //   subject: Permissions.ANY,
-    // },
+    {
+      title: t(`Validator Details`),
+      icon: AccountDetails,
+      path: "/details",
+      action: "read",
+      subject: Permissions.ANY,
+    },
     {
       title: t(`Charts`),
       icon: ChartAreaspline,

@@ -93,6 +93,8 @@ const ValidatorDetailsPage = () => {
     }
   }, [validator]);
 
+  console.log("blockchainValidator: ", blockchainValidator);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -153,15 +155,10 @@ const ValidatorDetailsPage = () => {
                     }}
                   >
                     <Typography variant="h6" sx={{ mb: 2 }}>
-                      Lifetime Membership
+                      {blockchainValidator?.moniker}
                     </Typography>
                     <Typography variant="body2">
-                      Here, I focus on a range of items and features that we use
-                      in life without giving them a second thought such as Coca
-                      Cola, body muscles and holding ones own breath. Though,
-                      most of these notes are not fundamentally necessary, they
-                      are such that you can use them for a good laugh, at a
-                      drinks party or for picking up women or men.
+                      {blockchainValidator?.details}
                     </Typography>
                     <Divider sx={{ my: 7 }} />
                     <Grid container spacing={4}>

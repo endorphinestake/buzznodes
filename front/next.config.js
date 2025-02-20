@@ -12,6 +12,7 @@ const nextConfig = {
   env: {
     DEBUG: process.env.DEBUG,
     API_URL: process.env.API_URL || "https://buzznodes.com",
+    SOCIAL_AUTH_GOOGLE_CLIENT_ID: process.env.SOCIAL_AUTH_GOOGLE_CLIENT_ID,
   },
 };
 
