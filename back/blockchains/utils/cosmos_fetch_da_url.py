@@ -4,6 +4,7 @@ import httpx
 from prometheus_client.parser import text_string_to_metric_families
 from django.utils.timezone import now
 
+from blockchains.models import Blockchain
 from logs.models import Log
 
 
@@ -24,7 +25,7 @@ def _filter_metrics(text: bytes) -> str:
     return "\n".join(line for line in lines if any(sub in line for sub in substrings))
 
 
-async def cosmos_fetch_da_url(urls, timeout):
+async def cosmos_fetch_da_url(ntype, urls, timeout):
     if len(urls) == 0:
         return {}
 
@@ -41,10 +42,16 @@ async def cosmos_fetch_da_url(urls, timeout):
                     bridges = {}
                     last_timestamp = int(now().timestamp())
 
+                    job_key = "/Bridge"
+                    if ntype == Blockchain.NetworkType.CELESTIA_TESTNET:
+                        job_key = "mocha-4/Bridge"
+                    elif ntype == Blockchain.NetworkType.CELESTIA_MAINNET:
+                        job_key = "celestia/Bridge"
+
                     for family in filtered_metrics:
                         if family.name == "target_info":
                             for sample in family.samples:
-                                if "/Bridge" in sample.labels.get(
+                                if job_key in sample.labels.get(
                                     "job"
                                 ) and sample.labels.get("instance"):
                                     bridges[sample.labels.get("instance")] = {}
@@ -55,7 +62,7 @@ async def cosmos_fetch_da_url(urls, timeout):
                             for sample in family.samples:
                                 instance = sample.labels.get("instance")
                                 if (
-                                    "/Bridge" in sample.labels.get("job")
+                                    job_key in sample.labels.get("job")
                                     and instance in bridges
                                 ):
                                     bridges[instance]["semantic_version"] = (
@@ -70,7 +77,7 @@ async def cosmos_fetch_da_url(urls, timeout):
                             for sample in family.samples:
                                 instance = sample.labels.get("instance")
                                 if (
-                                    "/Bridge" in sample.labels.get("job")
+                                    job_key in sample.labels.get("job")
                                     and instance in bridges
                                 ):
                                     bridges[instance]["node_height"] = int(sample.value)
@@ -80,7 +87,7 @@ async def cosmos_fetch_da_url(urls, timeout):
                             for sample in family.samples:
                                 instance = sample.labels.get("instance")
                                 if (
-                                    "/Bridge" in sample.labels.get("job")
+                                    job_key in sample.labels.get("job")
                                     and instance in bridges
                                 ):
                                     bridges[instance]["last_timestamp"] = last_timestamp

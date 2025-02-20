@@ -61,7 +61,9 @@ class CosmosBlockchainMetricsView(views.APIView):
         ["blockchain_id", "validator_id", "moniker"],
     )
 
-    async def _process_urls(self, rpc_urls, validators_urls, infos_urls, da_urls):
+    async def _process_urls(
+        self, ntype, rpc_urls, validators_urls, infos_urls, da_urls
+    ):
         results = await asyncio.gather(
             cosmos_fetch_rpc_url(
                 urls=rpc_urls,
@@ -80,6 +82,7 @@ class CosmosBlockchainMetricsView(views.APIView):
                 timeout=settings.METRICS_TIMEOUT_SECONDS,
             ),
             cosmos_fetch_da_url(
+                ntype,
                 urls=da_urls,
                 timeout=settings.METRICS_TIMEOUT_SECONDS,
             ),
@@ -105,6 +108,7 @@ class CosmosBlockchainMetricsView(views.APIView):
 
         results = asyncio.run(
             self._process_urls(
+                ntype=blockchain.ntype,
                 rpc_urls=rpc_urls,
                 validators_urls=validators_urls,
                 infos_urls=infos_urls,
