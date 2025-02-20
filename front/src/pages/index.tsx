@@ -30,8 +30,7 @@ import SelectAutorefresh from "@modules/shared/components/SelectAutorefresh";
 import SelectAlertType from "@modules/alerts/components/SelectAlertType";
 
 // ** Mui Imports
-import { Grid, Card, Box, CardHeader, Typography, Button } from "@mui/material";
-import { BellCog } from "mdi-material-ui";
+import { Grid, Card, Box, CardHeader, Typography } from "@mui/material";
 
 const HomePage = () => {
   // ** Hooks

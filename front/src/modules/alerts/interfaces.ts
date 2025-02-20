@@ -1,4 +1,5 @@
 import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
+import { TUserAlertSettingsResponse } from "@modules/alerts/types";
 import {
   TBlockchainValidator,
   TBlockchainBridge,
@@ -30,4 +31,12 @@ export interface IManageUserAlertsTabProps {
 export interface IManageBridgeUserAlertsTabProps {
   blockchainBridge: TBlockchainBridge;
   moniker: string;
+}
+
+export interface IAlertsTableProps {
+  alerts: Record<number, Partial<TUserAlertSettingsResponse>>;
+}
+
+export interface IAlertsTableRow {
+  row: Partial<TUserAlertSettingsResponse>;
 }
