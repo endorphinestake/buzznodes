@@ -17,6 +17,7 @@ from sms.models import SMSBase
 from voice.models import VoiceBase
 from sms.tasks import submit_sms_alert
 from voice.tasks import submit_voice_alert
+from alerts.utils import format_ping_time, get_sync_status
 from logs.models import Log
 
 
@@ -365,7 +366,7 @@ def check_alerts(
                 if prev_value < level_value and next_value >= level_value:
                     alert_text = user_alert_setting.generate_bridge_alert_text(
                         from_value=str(prev_value),
-                        to_value=str(next_value),
+                        to_value=get_sync_status(next_value),
                     )
 
                     print("SUBMIT ALERT SYNC_STATUS INCREASED: ", alert_text)
@@ -381,7 +382,7 @@ def check_alerts(
                 if prev_value > level_value and next_value <= level_value:
                     alert_text = user_alert_setting.generate_bridge_alert_text(
                         from_value=str(prev_value),
-                        to_value=str(next_value),
+                        to_value=get_sync_status(next_value),
                     )
 
                     print("SUBMIT ALERT SYNC_STATUS DECREASED: ", alert_text)
@@ -412,7 +413,7 @@ def check_alerts(
             if prev_value < level_value and next_value >= level_value:
                 alert_text = user_alert_setting.generate_bridge_alert_text(
                     from_value=str(prev_value),
-                    to_value=str(next_value),
+                    to_value=format_ping_time(next_value),
                 )
 
                 print("SUBMIT ALERT OTEL_UPDATED INCREASED: ", alert_text)

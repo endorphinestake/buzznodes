@@ -236,7 +236,7 @@ class UserAlertSettingBase(AlertSettingBase):
 
         template = self.setting.template
         name = clean_ascii(self.user.first_name or "Client")
-        network = clean_ascii(self.blockchain_bridge.blockchain.name or "")
+        network = clean_ascii(self.blockchain_validator.blockchain.name or "")
         moniker = clean_ascii(self.moniker or "")
 
         if self.channels == AlertSettingBase.Channels.VOICE:
