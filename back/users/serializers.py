@@ -1,9 +1,10 @@
 import phonenumbers
 
 from django.contrib.auth.password_validation import validate_password
-from django.contrib.auth.base_user import BaseUserManager
+
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
+from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 
@@ -117,7 +118,7 @@ class RegisterGoogleSerializer(serializers.ModelSerializer):
             is_active=True,
         )
 
-        password = BaseUserManager().make_random_password()
+        password = get_random_string(8)
         user.set_password(password)
         user.save()
 

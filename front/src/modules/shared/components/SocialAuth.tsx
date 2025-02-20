@@ -76,9 +76,10 @@ const SocialAuthComponent = (props: IProps) => {
   }, [isLoginGoogleError, isLoginGoogleLoaded]);
 
   return (
-    <Grid container>
-      <Grid item xs={12} md={4}>
+    <Grid container justifyContent="center">
+      <Grid item xs={12} md={3}>
         <GoogleLoginButton
+          // align="center"
           text="Google"
           size="45px"
           onClick={() => loginUserGoogle()}

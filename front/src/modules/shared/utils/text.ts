@@ -122,13 +122,7 @@ export const formatPingTime = (seconds: number): string => {
 export const getSyncStatus = (blocksBehind: number): string => {
   if (blocksBehind < 100) {
     return "Synced";
-  } else if (blocksBehind < 500) {
-    return "100 blocks behind";
-  } else if (blocksBehind < 1000) {
-    return "500 blocks behind";
-  } else if (blocksBehind < 10000) {
-    return "1000 blocks behind";
-  } else {
-    return "more than 10000 blocks behind";
   }
+  const threshold = Math.floor((blocksBehind - 100) / 100) * 100 + 100;
+  return `${Intl.NumberFormat("ru-RU").format(threshold)} blocks behind`;
 };

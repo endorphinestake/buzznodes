@@ -4,7 +4,7 @@ import random
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
-from django.utils.timezone import now, timedelta
+from django.utils.timezone import now
 from django.contrib.auth import authenticate, login, logout
 
 from rest_framework import views, response, status, permissions, utils
@@ -131,7 +131,8 @@ class LoginGoogleView(views.APIView):
             )
 
         resp_raw = requests.get(
-            f"https://www.googleapis.com/oauth2/v2/userinfo?access_token={serializer.validated_data['access_token']}"
+            f"https://www.googleapis.com/oauth2/v2/userinfo?access_token={serializer.validated_data['access_token']}",
+            timeout=10,
         )
 
         resp = utils.json.loads(resp_raw.text)
@@ -151,8 +152,8 @@ class LoginGoogleView(views.APIView):
             return response.Response(serializer.data)
 
         except User.DoesNotExist:
-            if not serializer.validated_data["is_register"]:
-                return response.Response(status=status.HTTP_401_UNAUTHORIZED)
+            # if not serializer.validated_data["is_register"]:
+            #     return response.Response(status=status.HTTP_401_UNAUTHORIZED)
 
             serializer = RegisterGoogleSerializer(
                 data=resp, context={"request": request}

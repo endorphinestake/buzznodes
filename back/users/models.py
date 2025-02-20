@@ -39,6 +39,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     class RegisterType(models.TextChoices):
         BASIC = "basic", "Basic"
+        GOOGLE = "google", "Google"
 
     username = None
     email = models.EmailField(unique=True)

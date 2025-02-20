@@ -230,7 +230,7 @@ const LoginPage = () => {
             </form>
 
             <Divider sx={{ mb: 5, "& .MuiDivider-wrapper": { px: 4 } }}>
-              {t(`or Log in using social networks`)}:
+              {t(`or log in using social networks`)}:
             </Divider>
 
             <SocialAuthComponent isRegister={false} />

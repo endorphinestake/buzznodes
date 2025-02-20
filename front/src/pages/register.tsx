@@ -290,13 +290,11 @@ const RegisterPage = () => {
               >
                 {t(`Create an account`)}
               </LoadingButton>
-              {/* <Divider
-              sx={{ mb: 5, '& .MuiDivider-wrapper': { px: 4 } }}
-            >
-              {t(`or register using social networks`)}:
-            </Divider> */}
+              <Divider sx={{ mb: 5, "& .MuiDivider-wrapper": { px: 4 } }}>
+                {t(`or register using social networks`)}:
+              </Divider>
 
-              {/* <SocialAuthComponent isRegister={true} /> */}
+              <SocialAuthComponent isRegister={true} />
 
               <Box
                 sx={{
