@@ -385,11 +385,11 @@ def check_alerts(
 
                     print("SUBMIT ALERT SYNC_STATUS DECREASED: ", alert_text)
 
-                    _send_alert(
-                        user_alert_setting=user_alert_setting,
-                        alert_text=alert_text,
-                        alert_type=AlertSettingBase.AlertType.SYNC_STATUS,
-                    )
+                    # _send_alert(
+                    #     user_alert_setting=user_alert_setting,
+                    #     alert_text=alert_text,
+                    #     alert_type=AlertSettingBase.AlertType.SYNC_STATUS,
+                    # )
 
     # Bridge Otel Update
     for bridge_id, values in bridges_from_to_update_alerts[
@@ -415,8 +415,8 @@ def check_alerts(
 
                 print("SUBMIT ALERT OTEL_UPDATED INCREASED: ", alert_text)
 
-                _send_alert(
-                    user_alert_setting=user_alert_setting,
-                    alert_text=alert_text,
-                    alert_type=AlertSettingBase.AlertType.OTEL_UPDATE,
-                )
+                # _send_alert(
+                #     user_alert_setting=user_alert_setting,
+                #     alert_text=alert_text,
+                #     alert_type=AlertSettingBase.AlertType.OTEL_UPDATE,
+                # )

@@ -521,6 +521,7 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
             if user_setting_instance:
                 user_setting_instance.setting = setting_instance
                 user_setting_instance.channels = validated_data["channel"]
+                user_setting_instance.moniker = validated_data["moniker"]
                 user_setting_instance.current_value = blockchain_bridge.node_height_diff
                 user_setting_instance.save()
                 return user_setting_instance
@@ -543,6 +544,7 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
             return UserAlertSettingSyncStatus.objects.create(
                 user=user,
                 channels=validated_data["channel"],
+                moniker=validated_data["moniker"],
                 blockchain_validator=blockchain_bridge,
                 setting=setting_instance,
                 current_value=blockchain_bridge.node_height_diff,
