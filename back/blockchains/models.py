@@ -8,6 +8,10 @@ class Blockchain(models.Model):
     class Type(models.TextChoices):
         COSMOS = "cosmos", "Cosmos"
 
+    class NetworkType(models.TextChoices):
+        CELESTIA_TESTNET = "CELESTIA_TESTNET", _("Celestia Testnet")
+        CELESTIA_MAINNET = "CELESTIA_MAINNET", _("Celestia Mainnet")
+
     class ChartType(models.TextChoices):
         COSMOS_UPTIME = "cosmos_validator_uptime", "Cosmos Uptime"
         COSMOS_VOTING_POWER = "cosmos_validator_voting_power", "Cosmos Voting Power"
@@ -21,6 +25,11 @@ class Blockchain(models.Model):
 
     btype = models.SlugField(
         choices=Type.choices, default=Type.COSMOS, verbose_name=_("Type")
+    )
+    ntype = models.SlugField(
+        choices=NetworkType.choices,
+        default=NetworkType.CELESTIA_TESTNET,
+        verbose_name=_("Network Type"),
     )
     name = models.CharField(
         max_length=256, default="Celestia Mainnet", verbose_name=_("Blockchain Name")

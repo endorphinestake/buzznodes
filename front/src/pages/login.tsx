@@ -229,11 +229,11 @@ const LoginPage = () => {
               </LoadingButton>
             </form>
 
-            {/* <Divider sx={{ mb: 5, "& .MuiDivider-wrapper": { px: 4 } }}>
+            <Divider sx={{ mb: 5, "& .MuiDivider-wrapper": { px: 4 } }}>
               {t(`or Log in using social networks`)}:
             </Divider>
 
-            <SocialAuthComponent isRegister={false} /> */}
+            <SocialAuthComponent isRegister={false} />
 
             <Box
               sx={{
