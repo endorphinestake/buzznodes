@@ -45,36 +45,75 @@ export const getGSM7Length = (text: string): number => {
 };
 
 export const formatPingTime = (seconds: number): string => {
-  if (seconds < 3) return "Right now";
-
-  const thresholds = [
-    { limit: 3, text: "3 Seconds ago" },
-    { limit: 6, text: "6 Seconds ago" },
-    { limit: 9, text: "9 Seconds ago" },
-    { limit: 15, text: "15 Seconds ago" },
-    { limit: 30, text: "30 Seconds ago" },
-    { limit: 60, text: "more 1 minutes ago" },
-    { limit: 300, text: "more 5 minutes ago" },
-    { limit: 600, text: "more 10 minutes ago" },
-    { limit: 900, text: "more 15 minutes ago" },
-    { limit: 1800, text: "more 30 minutes ago" },
-    { limit: 3600, text: "more 1 hour ago" },
-    { limit: 7200, text: "more 2 hours ago" },
-    { limit: 10800, text: "more 3 hours ago" },
-    { limit: 14400, text: "more 4 hours ago" },
-    { limit: 18000, text: "more 5 hours ago" },
-    { limit: 36000, text: "more 10 hours ago" },
-    { limit: 54000, text: "more 15 hours ago" },
-    { limit: 72000, text: "more 20 hours ago" },
-    { limit: 86400, text: "more 1 day ago" },
-  ];
-
-  for (let i = 2; i <= 100; i++) {
-    thresholds.push({ limit: i * 86400, text: `more ${i} days ago` });
+  if (seconds < 3) {
+    return "Right now";
   }
 
-  for (const t of thresholds) {
-    if (seconds <= t.limit) return t.text;
+  if (seconds < 60) {
+    const thresholds: Array<[number, string]> = [
+      [3, "3 Seconds ago"],
+      [6, "6 Seconds ago"],
+      [9, "9 Seconds ago"],
+      [15, "15 Seconds ago"],
+      [30, "30 Seconds ago"],
+    ];
+    for (const [limit, text] of thresholds) {
+      if (seconds <= limit) {
+        return text;
+      }
+    }
+    return "30 Seconds ago";
+  }
+
+  if (seconds < 300) {
+    return "more 1 minutes ago"; // [60, 300)
+  }
+  if (seconds < 600) {
+    return "more 5 minutes ago"; // [300, 600)
+  }
+  if (seconds < 900) {
+    return "more 10 minutes ago"; // [600, 900)
+  }
+  if (seconds < 1800) {
+    return "more 15 minutes ago"; // [900, 1800)
+  }
+  if (seconds < 3600) {
+    return "more 30 minutes ago"; // [1800, 3600)
+  }
+  if (seconds < 7200) {
+    return "more 1 hour ago"; // [3600, 7200)
+  }
+  if (seconds < 10800) {
+    return "more 2 hours ago"; // [7200, 10800)
+  }
+  if (seconds < 14400) {
+    return "more 3 hours ago"; // [10800, 14400)
+  }
+  if (seconds < 18000) {
+    return "more 4 hours ago"; // [14400, 18000)
+  }
+  if (seconds < 36000) {
+    return "more 5 hours ago"; // [18000, 36000)
+  }
+  if (seconds < 54000) {
+    return "more 10 hours ago"; // [36000, 54000)
+  }
+  if (seconds < 72000) {
+    return "more 15 hours ago"; // [54000, 72000)
+  }
+  if (seconds < 86400) {
+    return "more 20 hours ago"; // [72000, 86400)
+  }
+
+  if (seconds < 2 * 86400) {
+    return "more 1 day ago";
+  }
+
+  // For days from 2 up to 100:
+  for (let i = 2; i <= 100; i++) {
+    if (seconds < (i + 1) * 86400) {
+      return `more ${i} days ago`;
+    }
   }
 
   return "more than 100 days ago";

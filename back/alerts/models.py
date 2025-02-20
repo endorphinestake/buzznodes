@@ -158,7 +158,7 @@ class AlertSettingOtelUpdate(AlertSettingBase):
     value = models.IntegerField(
         validators=[
             MinValueValidator(3),
-            MaxValueValidator(10000),
+            MaxValueValidator(100000),
         ],
         verbose_name=_("Value"),
         help_text=_("Number of seconds"),

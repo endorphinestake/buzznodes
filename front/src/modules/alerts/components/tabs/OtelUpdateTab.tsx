@@ -4,7 +4,6 @@ import { memo, useState, useEffect, Fragment, ChangeEvent } from "react";
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
 import { useAlertService } from "@hooks/useAlertService";
-import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces & Enums Imports
 import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
@@ -54,17 +53,16 @@ const OtelUpdateTab = (props: IManageBridgeUserAlertsTabProps) => {
 
   // ** Hooks
   const { t } = useTranslation();
-  const { symbol } = useDomain();
   const { dispatch, manageUserAlertSetting, alertSettings, userAlertSettings } =
     useAlertService();
 
   // ** Vars
   const less1MOtelUpdateSettings = alertSettings[EAlertType.OTEL_UPDATE]
-    .filter((item) => item.value <= 60)
+    .filter((item) => item.value <= 1800)
     .sort((a, b) => a.value - b.value);
 
   const more1MOtelUpdateSettings = alertSettings[EAlertType.OTEL_UPDATE]
-    .filter((item) => item.value > 60)
+    .filter((item) => item.value > 1800)
     .sort((a, b) => a.value - b.value);
 
   const otelUpdateLess1MUserSetting = getUserSettingBySettings(
