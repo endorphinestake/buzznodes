@@ -113,7 +113,7 @@ const BridgesPage = () => {
     );
   }, [bridgeStatus]);
 
-  var filteredBridges: TBlockchainBridge[] = blockchainBridges;
+  var filteredBridges: TBlockchainBridge[] = blockchainBridges.bridges;
 
   // filter by Search
   if (search.length > 0) {
@@ -144,10 +144,9 @@ const BridgesPage = () => {
               <CardHeader
                 title={t(`Bridges`)}
                 subheader={t(`Network Height: {{height}}`, {
-                  height:
-                    Intl.NumberFormat("ru-RU").format(
-                      blockchainBridges[0]?.network_height
-                    ) || "-",
+                  height: Intl.NumberFormat("ru-RU").format(
+                    blockchainBridges.network_height
+                  ),
                 })}
               />
               <Box

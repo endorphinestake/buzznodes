@@ -113,10 +113,11 @@ const HomePage = () => {
     );
   }, [validatorStatus]);
 
-  var filteredValidators: TBlockchainValidator[] = blockchainValidators;
+  var filteredValidators: TBlockchainValidator[] =
+    blockchainValidators.validators;
 
   // filter by Status
-  if (blockchainValidators.length > 0) {
+  if (blockchainValidators.validators.length > 0) {
     filteredValidators = filteredValidators.filter((item) => {
       switch (validatorStatus) {
         case EBlockchainValidatorStatus.BOND_STATUS_BONDED:
@@ -128,7 +129,7 @@ const HomePage = () => {
   }
 
   // filter by AlertType
-  if (blockchainValidators.length > 0 && userAlertSettings) {
+  if (blockchainValidators.validators.length > 0 && userAlertSettings) {
     filteredValidators = filteredValidators.filter((item) => {
       switch (alertType) {
         case EAlertType.VOTING_POWER:
@@ -192,20 +193,11 @@ const HomePage = () => {
             <Card>
               <CardHeader
                 title={t(`Validators`)}
-                subheader={t(`Blockchain Monitoring`)}
-                // action={
-                //   <Button
-                //     color="primary"
-                //     size="medium"
-                //     variant="contained"
-                //     onClick={() => {
-                //       console.log("click");
-                //     }}
-                //   >
-                //     <BellCog fontSize="small" sx={{ mb: 1, mr: 2 }} />
-                //     {t(`Manage Alerts`)}
-                //   </Button>
-                // }
+                subheader={t(`Network Height: {{height}}`, {
+                  height: Intl.NumberFormat("ru-RU").format(
+                    blockchainValidators.network_height
+                  ),
+                })}
               />
 
               <Box

@@ -6,9 +6,9 @@ import { BlockchainService } from "@modules/blockchains/services";
 
 // ** Types & Interfaces
 import {
-  TBlockchainValidator,
+  TBlockchainValidators,
   TBlockchainValidatorDetail,
-  TBlockchainBridge,
+  TBlockchainBridges,
   TValidatorChart,
 } from "@modules/blockchains/types";
 import { EValidatorChartPeriod } from "@modules/blockchains/enums";
@@ -22,7 +22,7 @@ export type TBlockchainValidatorState = {
   isBlockchainValidatorsLoading: boolean;
   isBlockchainValidatorsLoaded: boolean;
   isBlockchainValidatorsError: any;
-  blockchainValidators: TBlockchainValidator[];
+  blockchainValidators: TBlockchainValidators;
 
   isBlockchainValidatorDetailLoading: boolean;
   isBlockchainValidatorDetailLoaded: boolean;
@@ -32,7 +32,7 @@ export type TBlockchainValidatorState = {
   isBlockchainBridgesLoading: boolean;
   isBlockchainBridgesLoaded: boolean;
   isBlockchainBridgesError: any;
-  blockchainBridges: TBlockchainBridge[];
+  blockchainBridges: TBlockchainBridges;
 
   isValidatorChartsLoading: boolean;
   isValidatorChartsLoaded: boolean;
@@ -52,7 +52,10 @@ const initialState: TBlockchainValidatorState = {
   isBlockchainValidatorsLoading: false,
   isBlockchainValidatorsLoaded: false,
   isBlockchainValidatorsError: null,
-  blockchainValidators: [],
+  blockchainValidators: {
+    network_height: 0,
+    validators: [],
+  } as TBlockchainValidators,
 
   isBlockchainValidatorDetailLoading: false,
   isBlockchainValidatorDetailLoaded: false,
@@ -62,7 +65,7 @@ const initialState: TBlockchainValidatorState = {
   isBlockchainBridgesLoading: false,
   isBlockchainBridgesLoaded: false,
   isBlockchainBridgesError: null,
-  blockchainBridges: [],
+  blockchainBridges: { bridges: [], network_height: 0 } as TBlockchainBridges,
 
   isValidatorChartsLoading: false,
   isValidatorChartsLoaded: false,
@@ -119,7 +122,10 @@ export const BlockchainValidatorSlice = createSlice({
       (state, action) => {
         state.isBlockchainValidatorsLoading = false;
         state.isBlockchainValidatorsError = action.payload;
-        state.blockchainValidators = [];
+        state.blockchainValidators = {
+          network_height: 0,
+          validators: [],
+        } as TBlockchainValidators;
       }
     );
 
@@ -171,7 +177,10 @@ export const BlockchainValidatorSlice = createSlice({
       (state, action) => {
         state.isBlockchainBridgesLoading = false;
         state.isBlockchainBridgesError = action.payload;
-        state.blockchainBridges = [];
+        state.blockchainBridges = {
+          bridges: [],
+          network_height: 0,
+        } as TBlockchainBridges;
       }
     );
 

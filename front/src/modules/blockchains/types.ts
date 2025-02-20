@@ -14,10 +14,14 @@ export type TBlockchainValidator = {
   uptime: number;
   tombstoned: boolean;
   status: EBlockchainValidatorStatus;
-
   updated: Date;
   rank: number;
   voting_power_percentage: number;
+};
+
+export type TBlockchainValidators = {
+  network_height: number;
+  validators: TBlockchainValidator[];
 };
 
 export type TBlockchainValidatorDetail = TBlockchainValidator & {
@@ -46,7 +50,6 @@ export type TValidatorChart = {
 export type TBlockchainBridge = {
   id: number;
   blockchain_id: number;
-  network_height: number;
   node_id: string;
   version: string;
   system_version: string;
@@ -55,4 +58,9 @@ export type TBlockchainBridge = {
   last_timestamp: number;
   last_timestamp_diff: number;
   rank: number;
+};
+
+export type TBlockchainBridges = {
+  network_height: number;
+  bridges: TBlockchainBridge[];
 };

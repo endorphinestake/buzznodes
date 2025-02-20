@@ -71,7 +71,7 @@ const ValidatorDetailsPage = () => {
     const { validator_id } = router.query;
 
     if (validator_id && !isBlockchainValidatorDetailLoading) {
-      const selectedValidator = blockchainValidators.find(
+      const selectedValidator = blockchainValidators.validators.find(
         (validator) => validator.id === +validator_id
       );
 

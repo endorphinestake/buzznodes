@@ -32,16 +32,11 @@ class BlockchainValidatorModelSerializer(serializers.ModelSerializer):
 
 
 class BlockchainBridgeModelSerializer(serializers.ModelSerializer):
-    network_height = serializers.IntegerField(
-        source="blockchain.network_height", read_only=True
-    )
-
     class Meta:
         model = BlockchainBridge
         fields = (
             "id",
             "blockchain_id",
-            "network_height",
             "node_id",
             "version",
             "system_version",

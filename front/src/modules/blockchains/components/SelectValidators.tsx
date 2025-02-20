@@ -93,7 +93,7 @@ const SelectValidators = (props: ISelectValidatorsProps) => {
       onChange={handleChange}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       getOptionLabel={(option) => option.moniker ?? "Unknown"}
-      options={blockchainValidators}
+      options={blockchainValidators.validators || []}
       loading={isBlockchainValidatorsLoading}
       renderOption={(params, option) => (
         <Box

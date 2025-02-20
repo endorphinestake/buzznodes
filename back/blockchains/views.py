@@ -473,7 +473,13 @@ class BlockchainValidatorsView(views.APIView):
             for index, item in enumerate(serializer.data)
         ]
 
-        return response.Response(data_with_rank, status=status.HTTP_200_OK)
+        return response.Response(
+            {
+                "network_height": blockchain.network_height,
+                "validators": data_with_rank,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class BlockchainBridgesView(views.APIView):
@@ -502,7 +508,13 @@ class BlockchainBridgesView(views.APIView):
             {**item, "rank": index + 1} for index, item in enumerate(serializer.data)
         ]
 
-        return response.Response(data_with_rank, status=status.HTTP_200_OK)
+        return response.Response(
+            {
+                "network_height": blockchain.network_height,
+                "bridges": data_with_rank,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class BlockchainValidatorView(views.APIView):
