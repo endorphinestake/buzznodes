@@ -101,7 +101,7 @@ class CosmosBlockchainMetricsView(views.APIView):
             *blockchain_urls.values_list("rpc_url", "validators_url", "infos_url")
         )
 
-        print(f"get data from db: {time.perf_counter() - start:.6f}")
+        # print(f"get data from db: {time.perf_counter() - start:.6f}")
 
         results = asyncio.run(
             self._process_urls(
@@ -118,7 +118,7 @@ class CosmosBlockchainMetricsView(views.APIView):
                 Log.error(f"Can't fetching {urls_types[idx]}: {result}")
                 return response.Response(status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-        print(f"got API data: {time.perf_counter() - start:.6f}")
+        # print(f"got API data: {time.perf_counter() - start:.6f}")
 
         # Validate Data
         rpc_serializer = RpcValidatorSerializer(data=results[0], many=True)
@@ -151,7 +151,7 @@ class CosmosBlockchainMetricsView(views.APIView):
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
 
-        print(f"validated serializers: {time.perf_counter() - start:.6f}")
+        # print(f"validated serializers: {time.perf_counter() - start:.6f}")
 
         # Format Data
         rpc_data = {
@@ -170,7 +170,7 @@ class CosmosBlockchainMetricsView(views.APIView):
             item.node_id: item for item in blockchain.blockchain_bridges.iterator()
         }
 
-        print(f"got local validators and bridges: {time.perf_counter() - start:.6f}")
+        # print(f"got local validators and bridges: {time.perf_counter() - start:.6f}")
 
         # Update Validators
         validators_to_update = []
@@ -317,7 +317,7 @@ class CosmosBlockchainMetricsView(views.APIView):
                         updated=now(),
                     )
 
-        print(f"updated validators: {time.perf_counter() - start:.6f}")
+        # print(f"updated validators: {time.perf_counter() - start:.6f}")
 
         # Bridges
         now_timestamp = int(now().timestamp())
@@ -339,7 +339,7 @@ class CosmosBlockchainMetricsView(views.APIView):
                     last_timestamp=bridge.get("last_timestamp", now_timestamp),
                 )
 
-        print(f"created bridges: {time.perf_counter() - start:.6f}")
+        # print(f"created bridges: {time.perf_counter() - start:.6f}")
 
         # Update Bridges
         for node_id, bridge in bridges_local.items():
@@ -407,7 +407,7 @@ class CosmosBlockchainMetricsView(views.APIView):
                 ]
             )
 
-        print(f"updated bridges: {time.perf_counter() - start:.6f}")
+        # print(f"updated bridges: {time.perf_counter() - start:.6f}")
 
         # Alerts
         job = check_alerts.delay(
@@ -416,9 +416,9 @@ class CosmosBlockchainMetricsView(views.APIView):
             bridges_from_to_update_alerts=bridges_from_to_update_alerts,
         )
 
-        print(f"before response: {time.perf_counter() - start:.6f}")
+        # print(f"before response: {time.perf_counter() - start:.6f}")
 
-        print("bridges_from_to_update_alerts: ", bridges_from_to_update_alerts)
+        # print("bridges_from_to_update_alerts: ", bridges_from_to_update_alerts)
 
         return HttpResponse(
             self.cached_metrics.get_latest(),
