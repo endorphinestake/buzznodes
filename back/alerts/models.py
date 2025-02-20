@@ -227,28 +227,29 @@ class UserAlertSettingBase(AlertSettingBase):
             to_value=to_value,
         )
 
-    def generate_bridge_alert_text(
-        self, from_value: str, to_value: str, text_suffix: str = ""
-    ) -> str:
+    def generate_bridge_alert_text(self, from_value: str, to_value: str) -> str:
         if not self.setting.template:
             return ""
 
         def clean_ascii(text):
             return re.sub(r"[^\x20-\x7E]", "", text)[:140]
 
+        template = self.setting.template
         name = clean_ascii(self.user.first_name or "Client")
         network = clean_ascii(self.blockchain_bridge.blockchain.name or "")
         moniker = clean_ascii(self.moniker or "")
 
-        text = self.setting.template.format(
+        if self.channels == AlertSettingBase.Channels.VOICE:
+            template = template.replace("{bridge_id} node", "")
+
+        return template.format(
             name=name,
             network=network,
             moniker=moniker,
             from_value=from_value,
             to_value=to_value,
-        )
-
-        return f"{text}{text_suffix}"
+            bridge_id=self.blockchain_validator.node_id,
+        ).strip()
 
     class Meta:
         abstract = True

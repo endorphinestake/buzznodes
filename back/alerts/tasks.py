@@ -359,11 +359,6 @@ def check_alerts(
             "blockchain_validator",
         ).filter(blockchain_validator_id=bridge_id, setting__status=True):
             level_value = user_alert_setting.setting.value
-            text_suffix = (
-                f"{user_alert_setting.blockchain_validator.node_id} node"
-                if user_alert_setting.channels == AlertSettingBase.Channels.SMS
-                else ""
-            )
 
             # Increased NodeHeight Different (Warning)
             if level_value > 0:
@@ -371,7 +366,6 @@ def check_alerts(
                     alert_text = user_alert_setting.generate_bridge_alert_text(
                         from_value=str(prev_value),
                         to_value=str(next_value),
-                        text_suffix=text_suffix,
                     )
 
                     print("SUBMIT ALERT SYNC_STATUS INCREASED: ", alert_text)
@@ -388,7 +382,6 @@ def check_alerts(
                     alert_text = user_alert_setting.generate_bridge_alert_text(
                         from_value=str(prev_value),
                         to_value=str(next_value),
-                        text_suffix=text_suffix,
                     )
 
                     print("SUBMIT ALERT SYNC_STATUS DECREASED: ", alert_text)
@@ -414,18 +407,12 @@ def check_alerts(
             "blockchain_validator",
         ).filter(blockchain_validator_id=bridge_id, setting__status=True):
             level_value = user_alert_setting.setting.value
-            text_suffix = (
-                f"{user_alert_setting.blockchain_validator.node_id} node"
-                if user_alert_setting.channels == AlertSettingBase.Channels.SMS
-                else ""
-            )
 
             # Increased OtelUpdate Different (Warning)
             if prev_value < level_value and next_value >= level_value:
                 alert_text = user_alert_setting.generate_bridge_alert_text(
                     from_value=str(prev_value),
                     to_value=str(next_value),
-                    text_suffix=text_suffix,
                 )
 
                 print("SUBMIT ALERT OTEL_UPDATED INCREASED: ", alert_text)
