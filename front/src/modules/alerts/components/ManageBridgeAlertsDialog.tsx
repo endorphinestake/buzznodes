@@ -58,14 +58,8 @@ const ManageBridgeAlertsDialog = (props: IProps) => {
   const [currentTab, setCurrentTab] = useState<EAlertType>(
     EAlertType.OTEL_UPDATE
   );
-  const [moniker, setMoniker] = useState<string>(
-    userAlertSettings[blockchainBridge.id]?.[EAlertType.OTEL_UPDATE]?.[0]
-      ?.moniker ||
-      userAlertSettings[blockchainBridge.id]?.[EAlertType.SYNC_STATUS]?.[0]
-        ?.moniker ||
-      ""
-  );
-  const [monikerError, setMonikerError] = useState<boolean>(!Boolean(moniker));
+  const [moniker, setMoniker] = useState<string>("");
+  const [monikerError, setMonikerError] = useState<boolean>(true);
 
   // ** Handlers
   const handleTabChange = (event: SyntheticEvent, newValue: EAlertType) => {
@@ -116,6 +110,18 @@ const ManageBridgeAlertsDialog = (props: IProps) => {
       dispatch(resetManageUserAlertSettingState());
     }
   }, [isManageUserAlertSettingLoaded, isManageUserAlertSettingError]);
+
+  // Event on Show Popup
+  useEffect(() => {
+    const moniker =
+      userAlertSettings[blockchainBridge.id]?.[EAlertType.OTEL_UPDATE]?.[0]
+        ?.moniker ||
+      userAlertSettings[blockchainBridge.id]?.[EAlertType.SYNC_STATUS]?.[0]
+        ?.moniker ||
+      "";
+    setMoniker(moniker);
+    setMonikerError(!Boolean(moniker));
+  }, [blockchainBridge]);
 
   return (
     <DialogComponent

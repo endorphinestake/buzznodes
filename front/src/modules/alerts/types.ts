@@ -67,10 +67,10 @@ export type TUserAlertSettingJailedStatus = TUserAlertSettingBase & {};
 export type TUserAlertSettingTombstonedStatus = TUserAlertSettingBase & {};
 export type TUserAlertSettingBondedStatus = TUserAlertSettingBase & {};
 export type TUserAlertSettingOtelUpdate = TUserAlertSettingBase & {
-  moniker: string;
+  moniker?: string;
 };
 export type TUserAlertSettingSyncStatus = TUserAlertSettingBase & {
-  moniker: string;
+  moniker?: string;
 };
 
 export type TUserAlertSettingsResponse = {

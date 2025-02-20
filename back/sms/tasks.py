@@ -13,6 +13,8 @@ from sms.models import (
     SMSAlertJailedStatus,
     SMSAlertTombstonedStatus,
     SMSAlertBondedStatus,
+    SMSAlertOtelUpdate,
+    SMSAlertSyncStatus,
     SMSConfirm,
 )
 from sms.providers.hicell.utils import hicell_submit_sms  # SMS Main channel
@@ -89,6 +91,8 @@ def submit_sms_alert(
         AlertSettingBase.AlertType.JAILED: SMSAlertJailedStatus,
         AlertSettingBase.AlertType.TOMBSTONED: SMSAlertTombstonedStatus,
         AlertSettingBase.AlertType.BONDED: SMSAlertBondedStatus,
+        AlertSettingBase.AlertType.OTEL_UPDATE: SMSAlertOtelUpdate,
+        AlertSettingBase.AlertType.SYNC_STATUS: SMSAlertSyncStatus,
     }
 
     model_class = alert_model_map.get(atype)

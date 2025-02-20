@@ -227,6 +227,29 @@ class UserAlertSettingBase(AlertSettingBase):
             to_value=to_value,
         )
 
+    def generate_bridge_alert_text(
+        self, from_value: str, to_value: str, text_suffix: str = ""
+    ) -> str:
+        if not self.setting.template:
+            return ""
+
+        def clean_ascii(text):
+            return re.sub(r"[^\x20-\x7E]", "", text)[:140]
+
+        name = clean_ascii(self.user.first_name or "Client")
+        network = clean_ascii(self.blockchain_bridge.blockchain.name or "")
+        moniker = clean_ascii(self.moniker or "")
+
+        text = self.setting.template.format(
+            name=name,
+            network=network,
+            moniker=moniker,
+            from_value=from_value,
+            to_value=to_value,
+        )
+
+        return f"{text}{text_suffix}"
+
     class Meta:
         abstract = True
 

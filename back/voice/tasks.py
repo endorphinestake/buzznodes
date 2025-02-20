@@ -11,6 +11,8 @@ from voice.models import (
     VoiceAlertJailedStatus,
     VoiceAlertTombstonedStatus,
     VoiceAlertBondedStatus,
+    VoiceAlertOtelUpdate,
+    VoiceAlertSyncStatus,
 )
 from logs.models import Log
 from voice.providers.unitalk.utils import unitalk_submit_voice
@@ -43,6 +45,8 @@ def submit_voice_alert(
         AlertSettingBase.AlertType.JAILED: VoiceAlertJailedStatus,
         AlertSettingBase.AlertType.TOMBSTONED: VoiceAlertTombstonedStatus,
         AlertSettingBase.AlertType.BONDED: VoiceAlertBondedStatus,
+        AlertSettingBase.AlertType.OTEL_UPDATE: VoiceAlertOtelUpdate,
+        AlertSettingBase.AlertType.SYNC_STATUS: VoiceAlertSyncStatus,
     }
 
     model_class = alert_model_map.get(atype)
