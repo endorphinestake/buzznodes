@@ -4,7 +4,6 @@ import { memo, useState, useEffect, Fragment, ChangeEvent } from "react";
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
 import { useAlertService } from "@hooks/useAlertService";
-import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces & Enums Imports
 import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
@@ -40,39 +39,38 @@ const SyncStatusTab = (props: IManageBridgeUserAlertsTabProps) => {
   const { blockchainBridge, moniker } = props;
 
   // ** State
-  const [syncStatusIncreasedSetting, setSyncStatusIncreasedSetting] = useState<
+  const [syncStatusLess300Setting, setSyncStatusLess300Setting] = useState<
     TAlertSettingSyncStatus | undefined
   >(undefined);
-  const [syncStatusDecreasedSetting, setSyncStatusDecreasedSetting] = useState<
+  const [syncStatusMore300Setting, setSyncStatusMore300Setting] = useState<
     TAlertSettingSyncStatus | undefined
   >(undefined);
-  const [syncStatusIncreasedChannel, setSyncStatusIncreasedChannel] =
+  const [syncStatusLess300Channel, setSyncStatusLess300Channel] =
     useState<EAlertChannel>(EAlertChannel.SMS);
-  const [syncStatusDecreasedChannel, setSyncStatusDecreasedChannel] =
+  const [syncStatusMore300Channel, setSyncStatusMore300Channel] =
     useState<EAlertChannel>(EAlertChannel.SMS);
 
   // ** Hooks
   const { t } = useTranslation();
-  const { symbol } = useDomain();
   const { dispatch, manageUserAlertSetting, alertSettings, userAlertSettings } =
     useAlertService();
 
   // ** Vars
-  const increasedSyncStatusSettings = alertSettings[EAlertType.SYNC_STATUS]
-    .filter((item) => item.value > 0)
+  const less300SyncStatusSettings = alertSettings[EAlertType.SYNC_STATUS]
+    .filter((item) => item.value <= 300)
     .sort((a, b) => a.value - b.value);
 
-  const decreasedSyncStatusSettings = alertSettings[EAlertType.SYNC_STATUS]
-    .filter((item) => item.value < 0)
-    .sort((a, b) => b.value - a.value);
+  const more300SyncStatusSettings = alertSettings[EAlertType.SYNC_STATUS]
+    .filter((item) => item.value > 300)
+    .sort((a, b) => a.value - b.value);
 
-  const syncStatusIncreasedUserSetting = getUserSettingBySettings(
-    increasedSyncStatusSettings,
+  const syncStatusLess300UserSetting = getUserSettingBySettings(
+    less300SyncStatusSettings,
     userAlertSettings[blockchainBridge.id]?.[EAlertType.SYNC_STATUS] || []
   );
 
-  const syncStatusDecreasedUserSetting = getUserSettingBySettings(
-    decreasedSyncStatusSettings,
+  const syncStatusMore300UserSetting = getUserSettingBySettings(
+    more300SyncStatusSettings,
     userAlertSettings[blockchainBridge.id]?.[EAlertType.SYNC_STATUS] || []
   );
 
@@ -80,45 +78,45 @@ const SyncStatusTab = (props: IManageBridgeUserAlertsTabProps) => {
   const handleSaveAlerts = () => {
     let payload = [];
     // Update or Create Increase
-    if (syncStatusIncreasedSetting) {
+    if (syncStatusLess300Setting) {
       payload.push({
         blockchain_bridge_id: blockchainBridge.id,
         setting_type: EAlertType.SYNC_STATUS,
-        setting_id: syncStatusIncreasedSetting.id,
-        user_setting_id: syncStatusIncreasedUserSetting?.id,
-        channel: syncStatusIncreasedChannel,
+        setting_id: syncStatusLess300Setting.id,
+        user_setting_id: syncStatusLess300UserSetting?.id,
+        channel: syncStatusLess300Channel,
         moniker: moniker,
       });
       // Delete Increase
-    } else if (syncStatusIncreasedUserSetting) {
+    } else if (syncStatusLess300UserSetting) {
       payload.push({
         blockchain_bridge_id: blockchainBridge.id,
         setting_type: EAlertType.SYNC_STATUS,
-        setting_id: syncStatusIncreasedUserSetting.setting_id,
-        user_setting_id: syncStatusIncreasedUserSetting.id,
-        channel: syncStatusIncreasedUserSetting.channels,
+        setting_id: syncStatusLess300UserSetting.setting_id,
+        user_setting_id: syncStatusLess300UserSetting.id,
+        channel: syncStatusLess300UserSetting.channels,
         is_delete: true,
       });
     }
 
-    // Update or Create Decreased
-    if (syncStatusDecreasedSetting) {
+    // Update or Create More300
+    if (syncStatusMore300Setting) {
       payload.push({
         blockchain_bridge_id: blockchainBridge.id,
         setting_type: EAlertType.SYNC_STATUS,
-        setting_id: syncStatusDecreasedSetting.id,
-        user_setting_id: syncStatusDecreasedUserSetting?.id,
-        channel: syncStatusDecreasedChannel,
+        setting_id: syncStatusMore300Setting.id,
+        user_setting_id: syncStatusMore300UserSetting?.id,
+        channel: syncStatusMore300Channel,
         moniker: moniker,
       });
       // Delete Increase
-    } else if (syncStatusDecreasedUserSetting) {
+    } else if (syncStatusMore300UserSetting) {
       payload.push({
         blockchain_bridge_id: blockchainBridge.id,
         setting_type: EAlertType.SYNC_STATUS,
-        setting_id: syncStatusDecreasedUserSetting.setting_id,
-        user_setting_id: syncStatusDecreasedUserSetting.id,
-        channel: syncStatusDecreasedUserSetting.channels,
+        setting_id: syncStatusMore300UserSetting.setting_id,
+        user_setting_id: syncStatusMore300UserSetting.id,
+        channel: syncStatusMore300UserSetting.channels,
         is_delete: true,
       });
     }
@@ -131,26 +129,26 @@ const SyncStatusTab = (props: IManageBridgeUserAlertsTabProps) => {
   };
 
   const handleClearAlerts = () => {
-    setSyncStatusIncreasedSetting(undefined);
-    setSyncStatusDecreasedSetting(undefined);
+    setSyncStatusLess300Setting(undefined);
+    setSyncStatusMore300Setting(undefined);
   };
 
   const handleDeleteAlerts = () => {
     let payload = [
-      syncStatusIncreasedUserSetting && {
+      syncStatusLess300UserSetting && {
         blockchain_bridge_id: blockchainBridge.id,
         setting_type: EAlertType.SYNC_STATUS,
-        setting_id: syncStatusIncreasedUserSetting.setting_id,
-        user_setting_id: syncStatusIncreasedUserSetting.id,
-        channel: syncStatusIncreasedUserSetting.channels,
+        setting_id: syncStatusLess300UserSetting.setting_id,
+        user_setting_id: syncStatusLess300UserSetting.id,
+        channel: syncStatusLess300UserSetting.channels,
         is_delete: true,
       },
-      syncStatusDecreasedUserSetting && {
+      syncStatusMore300UserSetting && {
         blockchain_bridge_id: blockchainBridge.id,
         setting_type: EAlertType.SYNC_STATUS,
-        setting_id: syncStatusDecreasedUserSetting.setting_id,
-        user_setting_id: syncStatusDecreasedUserSetting.id,
-        channel: syncStatusDecreasedUserSetting.channels,
+        setting_id: syncStatusMore300UserSetting.setting_id,
+        user_setting_id: syncStatusMore300UserSetting.id,
+        channel: syncStatusMore300UserSetting.channels,
         is_delete: true,
       },
     ].filter(Boolean);
@@ -165,27 +163,27 @@ const SyncStatusTab = (props: IManageBridgeUserAlertsTabProps) => {
 
   // Event on BlockchainChanged
   useEffect(() => {
-    const increasedSetting = getSettingByUserSettings(
-      increasedSyncStatusSettings,
-      syncStatusIncreasedUserSetting ? [syncStatusIncreasedUserSetting] : []
+    const less300Setting = getSettingByUserSettings(
+      less300SyncStatusSettings,
+      syncStatusLess300UserSetting ? [syncStatusLess300UserSetting] : []
     );
-    setSyncStatusIncreasedSetting(increasedSetting);
+    setSyncStatusLess300Setting(less300Setting);
 
-    const decreasedSetting = getSettingByUserSettings(
-      decreasedSyncStatusSettings,
-      syncStatusDecreasedUserSetting ? [syncStatusDecreasedUserSetting] : []
+    const more300Setting = getSettingByUserSettings(
+      more300SyncStatusSettings,
+      syncStatusMore300UserSetting ? [syncStatusMore300UserSetting] : []
     );
-    setSyncStatusDecreasedSetting(decreasedSetting);
+    setSyncStatusMore300Setting(more300Setting);
 
-    setSyncStatusIncreasedChannel(
-      syncStatusIncreasedUserSetting?.channels ||
-        increasedSetting?.channels?.[0] ||
+    setSyncStatusLess300Channel(
+      syncStatusLess300UserSetting?.channels ||
+        less300Setting?.channels?.[0] ||
         EAlertChannel.SMS
     );
 
-    setSyncStatusDecreasedChannel(
-      syncStatusDecreasedUserSetting?.channels ||
-        decreasedSetting?.channels?.[0] ||
+    setSyncStatusMore300Channel(
+      syncStatusMore300UserSetting?.channels ||
+        more300Setting?.channels?.[0] ||
         EAlertChannel.SMS
     );
   }, [blockchainBridge]);
@@ -195,22 +193,22 @@ const SyncStatusTab = (props: IManageBridgeUserAlertsTabProps) => {
       <Grid item xs={6}>
         <Card>
           <CardHeader
-            title={t(`When the value increases`)}
+            title={t(`Behind`)}
             titleTypographyProps={{ variant: "h6" }}
           />
           <CardContent>
             <FormControl>
               <RadioGroup
                 value={
-                  syncStatusIncreasedSetting
-                    ? JSON.stringify(syncStatusIncreasedSetting)
+                  syncStatusLess300Setting
+                    ? JSON.stringify(syncStatusLess300Setting)
                     : ""
                 }
                 onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                  setSyncStatusIncreasedSetting(JSON.parse(event.target.value));
+                  setSyncStatusLess300Setting(JSON.parse(event.target.value));
                 }}
               >
-                {increasedSyncStatusSettings.map((alertSetting) => (
+                {less300SyncStatusSettings.map((alertSetting) => (
                   <FormControlLabel
                     key={alertSetting.id}
                     value={JSON.stringify(alertSetting)}
@@ -227,9 +225,9 @@ const SyncStatusTab = (props: IManageBridgeUserAlertsTabProps) => {
             </FormControl>
 
             <ManageAlertsChannels
-              channel={syncStatusIncreasedChannel}
-              setChannel={setSyncStatusIncreasedChannel}
-              channels={syncStatusIncreasedSetting?.channels || []}
+              channel={syncStatusLess300Channel}
+              setChannel={setSyncStatusLess300Channel}
+              channels={syncStatusLess300Setting?.channels || []}
             />
           </CardContent>
         </Card>
@@ -237,18 +235,18 @@ const SyncStatusTab = (props: IManageBridgeUserAlertsTabProps) => {
       <Grid item xs={6}>
         <Card>
           <CardHeader
-            title={t(`When the value decreases`)}
+            title={t(`Behind`)}
             titleTypographyProps={{ variant: "h6" }}
           />
           <CardContent>
             <FormControl>
               <RadioGroup
-                value={JSON.stringify(syncStatusDecreasedSetting) || ""}
+                value={JSON.stringify(syncStatusMore300Setting) || ""}
                 onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                  setSyncStatusDecreasedSetting(JSON.parse(event.target.value));
+                  setSyncStatusMore300Setting(JSON.parse(event.target.value));
                 }}
               >
-                {decreasedSyncStatusSettings.map((alertSetting) => (
+                {more300SyncStatusSettings.map((alertSetting) => (
                   <FormControlLabel
                     key={alertSetting.id}
                     value={JSON.stringify(alertSetting)}
@@ -267,9 +265,9 @@ const SyncStatusTab = (props: IManageBridgeUserAlertsTabProps) => {
             </FormControl>
 
             <ManageAlertsChannels
-              channel={syncStatusDecreasedChannel}
-              setChannel={setSyncStatusDecreasedChannel}
-              channels={syncStatusDecreasedSetting?.channels || []}
+              channel={syncStatusMore300Channel}
+              setChannel={setSyncStatusMore300Channel}
+              channels={syncStatusMore300Setting?.channels || []}
             />
           </CardContent>
         </Card>
@@ -279,12 +277,10 @@ const SyncStatusTab = (props: IManageBridgeUserAlertsTabProps) => {
         handleSaveAlerts={handleSaveAlerts}
         handleClearAlerts={handleClearAlerts}
         handleDeleteAlerts={handleDeleteAlerts}
-        isDisabledSave={
-          !syncStatusIncreasedSetting && !syncStatusDecreasedSetting
-        }
+        isDisabledSave={!syncStatusLess300Setting && !syncStatusMore300Setting}
         isCanDelete={
-          Boolean(syncStatusIncreasedUserSetting) ||
-          Boolean(syncStatusDecreasedUserSetting)
+          Boolean(syncStatusLess300UserSetting) ||
+          Boolean(syncStatusMore300UserSetting)
         }
       />
     </Grid>

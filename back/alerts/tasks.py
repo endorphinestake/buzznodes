@@ -378,20 +378,20 @@ def check_alerts(
                     )
 
             # Decreased NodeHeight Different (Recovering)
-            else:
-                if prev_value > level_value and next_value <= level_value:
-                    alert_text = user_alert_setting.generate_bridge_alert_text(
-                        from_value=str(prev_value),
-                        to_value=get_sync_status(next_value),
-                    )
+            # else:
+            #     if prev_value > level_value and next_value <= level_value:
+            #         alert_text = user_alert_setting.generate_bridge_alert_text(
+            #             from_value=str(prev_value),
+            #             to_value=get_sync_status(next_value),
+            #         )
 
-                    print("SUBMIT ALERT SYNC_STATUS DECREASED: ", alert_text)
+            #         print("SUBMIT ALERT SYNC_STATUS DECREASED: ", alert_text)
 
-                    _send_alert(
-                        user_alert_setting=user_alert_setting,
-                        alert_text=alert_text,
-                        alert_type=AlertSettingBase.AlertType.SYNC_STATUS,
-                    )
+            #         _send_alert(
+            #             user_alert_setting=user_alert_setting,
+            #             alert_text=alert_text,
+            #             alert_type=AlertSettingBase.AlertType.SYNC_STATUS,
+            #         )
 
     # Bridge Otel Update
     for bridge_id, values in bridges_from_to_update_alerts[

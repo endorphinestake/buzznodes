@@ -172,11 +172,11 @@ class AlertSettingOtelUpdate(AlertSettingBase):
 class AlertSettingSyncStatus(AlertSettingBase):
     value = models.IntegerField(
         validators=[
-            MinValueValidator(-10000),
-            MaxValueValidator(10000),
+            MinValueValidator(10),
+            MaxValueValidator(100000),
         ],
         verbose_name=_("Value"),
-        help_text=_("Positive number to increase, negative to decrease"),
+        help_text=_("Number of blocks"),
     )
 
     class Meta:
