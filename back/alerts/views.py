@@ -1,6 +1,7 @@
 from rest_framework import views, permissions, response, status, exceptions
 from django.utils.translation import gettext_lazy as _
 from django.db import transaction
+from django.shortcuts import get_object_or_404
 
 from alerts.models import (
     AlertSettingBase,
@@ -32,6 +33,7 @@ from alerts.serializers import (
     UserAlertSettingSyncStatusSerializer,
     ManageUserAlertSettingSerializer,
 )
+from blockchains.models import Blockchain
 
 
 class AlertSettingsView(views.APIView):
@@ -90,39 +92,59 @@ class AlertSettingsView(views.APIView):
 class UserAlertSettingsView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get(self, request):
-        voting_power_settings = request.user.user_alert_settings_voting_power.all()
+    def get(self, request, blockchain_id):
+        blockchain = get_object_or_404(
+            Blockchain, pk=blockchain_id, btype=Blockchain.Type.COSMOS, status=True
+        )
+
+        voting_power_settings = request.user.user_alert_settings_voting_power.filter(
+            blockchain_validator__blockchain_id=blockchain.id
+        )
         voting_power_serializer = UserAlertSettingVotingPowerSerializer(
             voting_power_settings, many=True
         )
 
-        uptime_settings = request.user.user_alert_settings_uptime.all()
+        uptime_settings = request.user.user_alert_settings_uptime.filter(
+            blockchain_validator__blockchain_id=blockchain.id
+        )
         uptime_serializer = UserAlertSettingUptimeSerializer(uptime_settings, many=True)
 
-        comission_settings = request.user.user_alert_settings_comission.all()
+        comission_settings = request.user.user_alert_settings_comission.filter(
+            blockchain_validator__blockchain_id=blockchain.id
+        )
         comission_serializer = UserAlertSettingComissionSerializer(
             comission_settings, many=True
         )
 
-        jailed_settings = request.user.user_alert_settings_jailed_status.all()
+        jailed_settings = request.user.user_alert_settings_jailed_status.filter(
+            blockchain_validator__blockchain_id=blockchain.id
+        )
         jailed_serializer = UserAlertSettingJailedStatusSerializer(
             jailed_settings, many=True
         )
 
-        tombstoned_settings = request.user.user_alert_settings_tombstoned_status.all()
+        tombstoned_settings = request.user.user_alert_settings_tombstoned_status.filter(
+            blockchain_validator__blockchain_id=blockchain.id
+        )
         tombstoned_serializer = UserAlertSettingTombstonedStatusSerializer(
             tombstoned_settings, many=True
         )
 
-        bonded_settings = request.user.user_alert_settings_bonded_status.all()
+        bonded_settings = request.user.user_alert_settings_bonded_status.filter(
+            blockchain_validator__blockchain_id=blockchain.id
+        )
         bonded_serializer = UserAlertSettingBondedStatusSerializer(
             bonded_settings, many=True
         )
 
-        otel_settings = request.user.user_alert_settings_otel_update.all()
+        otel_settings = request.user.user_alert_settings_otel_update.filter(
+            blockchain_validator__blockchain_id=blockchain.id
+        )
         otel_serializer = UserAlertSettingOtelUpdateSerializer(otel_settings, many=True)
 
-        sync_settings = request.user.user_alert_settings_sync_status.all()
+        sync_settings = request.user.user_alert_settings_sync_status.filter(
+            blockchain_validator__blockchain_id=blockchain.id
+        )
         sync_serializer = UserAlertSettingSyncStatusSerializer(sync_settings, many=True)
 
         return response.Response(

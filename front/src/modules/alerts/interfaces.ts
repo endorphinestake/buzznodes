@@ -8,6 +8,10 @@ import {
   TBlockchainBridge,
 } from "@modules/blockchains/types";
 
+export interface IUserAlertSettingsFilter {
+  blockchainId: number;
+}
+
 export interface IManageUserAlertSetting {
   blockchain_validator_id: number;
   setting_type: EAlertType;

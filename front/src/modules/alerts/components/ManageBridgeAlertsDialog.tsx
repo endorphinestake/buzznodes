@@ -10,6 +10,7 @@ import {
 
 // ** Hooks ImportshandleClose
 import { useTranslation } from "react-i18next";
+import { useDomain } from "@context/DomainContext";
 import { useAlertService } from "@hooks/useAlertService";
 
 // ** Types & Interfaces & Enums Imports
@@ -42,6 +43,7 @@ const ManageBridgeAlertsDialog = (props: IProps) => {
 
   // ** Hooks
   const { t } = useTranslation();
+  const { blockchainId } = useDomain();
   const {
     dispatch,
     fetchUserAlertSettings,
@@ -85,7 +87,11 @@ const ManageBridgeAlertsDialog = (props: IProps) => {
     if (isManageUserAlertSettingLoaded) {
       Notify("info", t(`Alert settings saved successfully!`));
       dispatch(resetManageUserAlertSettingState());
-      dispatch(fetchUserAlertSettings());
+      dispatch(
+        fetchUserAlertSettings({
+          blockchainId: blockchainId,
+        })
+      );
     }
 
     // Error

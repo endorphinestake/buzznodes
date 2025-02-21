@@ -72,7 +72,7 @@ const HomePage = () => {
 
       // Preload UserAlertSettings
       if (!isUserAlertSettingsLoaded) {
-        dispatch(fetchUserAlertSettings());
+        dispatch(fetchUserAlertSettings({ blockchainId: blockchainId }));
       }
     }
   }, []);

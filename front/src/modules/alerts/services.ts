@@ -6,7 +6,10 @@ import axiosInstance from "@configs/axios";
 
 // ** Types & Interfaces
 import { IRedux } from "@modules/shared/interfaces";
-import { IManageUserAlertSetting } from "@modules/alerts/interfaces";
+import {
+  IManageUserAlertSetting,
+  IUserAlertSettingsFilter,
+} from "@modules/alerts/interfaces";
 
 export class AlertService {
   // ** fetchAlertSettings
@@ -29,10 +32,10 @@ export class AlertService {
   // ** fetchUserAlertSettings
   static fetchUserAlertSettings = createAsyncThunk(
     "AlertService/fetchUserAlertSettings",
-    async (_, redux: IRedux) => {
+    async (params: IUserAlertSettingsFilter, redux: IRedux) => {
       try {
         const { data } = await axiosInstance({
-          url: "/api/alerts/user-settings/",
+          url: `/api/alerts/user-settings/${params.blockchainId}/`,
           method: "GET",
         });
 

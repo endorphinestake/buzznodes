@@ -3,6 +3,7 @@ import { memo, useState, useEffect, Fragment, SyntheticEvent } from "react";
 
 // ** Hooks ImportshandleClose
 import { useTranslation } from "react-i18next";
+import { useDomain } from "@context/DomainContext";
 import { useAlertService } from "@hooks/useAlertService";
 
 // ** Types & Interfaces & Enums Imports
@@ -36,6 +37,7 @@ const ManageAlertsDialog = (props: IProps) => {
 
   // ** Hooks
   const { t } = useTranslation();
+  const { blockchainId } = useDomain();
   const {
     dispatch,
     fetchUserAlertSettings,
@@ -66,7 +68,11 @@ const ManageAlertsDialog = (props: IProps) => {
     if (isManageUserAlertSettingLoaded) {
       Notify("info", t(`Alert settings saved successfully!`));
       dispatch(resetManageUserAlertSettingState());
-      dispatch(fetchUserAlertSettings());
+      dispatch(
+        fetchUserAlertSettings({
+          blockchainId: blockchainId,
+        })
+      );
     }
 
     // Error
