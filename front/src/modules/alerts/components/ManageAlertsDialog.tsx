@@ -163,7 +163,7 @@ const ManageAlertsDialog = (props: IProps) => {
                   )
                 }
               />
-              <Tab
+              {/* <Tab
                 value={EAlertType.TOMBSTONED}
                 label={t(`Tombstoned`)}
                 icon={
@@ -175,7 +175,7 @@ const ManageAlertsDialog = (props: IProps) => {
                     <BellPlus />
                   )
                 }
-              />
+              /> */}
               <Tab
                 value={EAlertType.BONDED}
                 label={t(`Bond status`)}
@@ -209,12 +209,12 @@ const ManageAlertsDialog = (props: IProps) => {
             <TabPanel value={EAlertType.JAILED} sx={{ width: "100%", mt: 4 }}>
               <JailedTab blockchainValidator={blockchainValidator} />
             </TabPanel>
-            <TabPanel
+            {/* <TabPanel
               value={EAlertType.TOMBSTONED}
               sx={{ width: "100%", mt: 4 }}
             >
               <TombstonedTab blockchainValidator={blockchainValidator} />
-            </TabPanel>
+            </TabPanel> */}
             <TabPanel value={EAlertType.BONDED} sx={{ width: "100%", mt: 4 }}>
               <BondedTab blockchainValidator={blockchainValidator} />
             </TabPanel>

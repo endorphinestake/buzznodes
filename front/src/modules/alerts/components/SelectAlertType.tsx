@@ -48,9 +48,9 @@ const SelectAlertType = (props: IProps) => {
       <MenuItem value={EAlertType.UPTIME}>{t(`Uptime`)}</MenuItem>
       <MenuItem value={EAlertType.COMISSION}>{t(`Comission`)}</MenuItem>
       <MenuItem value={EAlertType.JAILED}>{t(`Jailed status`)}</MenuItem>
-      <MenuItem value={EAlertType.TOMBSTONED}>
+      {/* <MenuItem value={EAlertType.TOMBSTONED}>
         {t(`Tombstoned status`)}
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem value={EAlertType.BONDED}>{t(`Bonded status`)}</MenuItem>
       <MenuItem value={EAlertType.OTEL_UPDATE}>
         {t(`Latest Otel update`)}

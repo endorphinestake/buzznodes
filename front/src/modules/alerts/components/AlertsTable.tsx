@@ -67,7 +67,7 @@ const AlertsTable = (props: IAlertsTableProps) => {
   const columns = [
     {
       flex: 0.1,
-      minWidth: 190,
+      minWidth: 220,
       field: "moniker",
       sortable: false,
       headerName: t(`Moniker`),
@@ -259,44 +259,44 @@ const AlertsTable = (props: IAlertsTableProps) => {
         );
       },
     },
-    {
-      flex: 0.1,
-      minWidth: 120,
-      field: EAlertType.TOMBSTONED,
-      sortable: false,
-      headerName: t(`Tombstoned`),
-      align: "center" as GridAlignment,
-      headerAlign: "center" as GridAlignment,
-      renderCell: ({ row }: IAlertsTableRow) => {
-        if (
-          !row[EAlertType.TOMBSTONED].length ||
-          !alertSettings[EAlertType.TOMBSTONED]
-        ) {
-          return "—";
-        }
+    // {
+    //   flex: 0.1,
+    //   minWidth: 120,
+    //   field: EAlertType.TOMBSTONED,
+    //   sortable: false,
+    //   headerName: t(`Tombstoned`),
+    //   align: "center" as GridAlignment,
+    //   headerAlign: "center" as GridAlignment,
+    //   renderCell: ({ row }: IAlertsTableRow) => {
+    //     if (
+    //       !row[EAlertType.TOMBSTONED].length ||
+    //       !alertSettings[EAlertType.TOMBSTONED]
+    //     ) {
+    //       return "—";
+    //     }
 
-        return (
-          <>
-            {row[EAlertType.TOMBSTONED].map(
-              (item: TUserAlertSettingBase, index: number) => {
-                const setting = getSettingByUserSettings(
-                  alertSettings[EAlertType.TOMBSTONED],
-                  [item]
-                );
-                return setting ? (
-                  <Tooltip
-                    key={index}
-                    title={`${item.channels} Alert - on tombstoned status change from "False" to "True"`}
-                  >
-                    {RenderAlertIcon(item.channels)}
-                  </Tooltip>
-                ) : null;
-              }
-            )}
-          </>
-        );
-      },
-    },
+    //     return (
+    //       <>
+    //         {row[EAlertType.TOMBSTONED].map(
+    //           (item: TUserAlertSettingBase, index: number) => {
+    //             const setting = getSettingByUserSettings(
+    //               alertSettings[EAlertType.TOMBSTONED],
+    //               [item]
+    //             );
+    //             return setting ? (
+    //               <Tooltip
+    //                 key={index}
+    //                 title={`${item.channels} Alert - on tombstoned status change from "False" to "True"`}
+    //               >
+    //                 {RenderAlertIcon(item.channels)}
+    //               </Tooltip>
+    //             ) : null;
+    //           }
+    //         )}
+    //       </>
+    //     );
+    //   },
+    // },
     {
       flex: 0.1,
       minWidth: 80,
