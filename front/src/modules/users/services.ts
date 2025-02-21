@@ -18,8 +18,7 @@ import {
   IChangePasswordSerializer,
   IUpdateUserSerializer,
   IUserPhoneCreate,
-  IUserPhoneDelete,
-  IResendUserPhone,
+  IUserPhoneID,
   IConfirmUserPhone,
 } from "@modules/users/interfaces";
 
@@ -259,7 +258,7 @@ export class UserService {
   // ** DeleteUserPhoneView
   static deleteUserPhone = createAsyncThunk(
     "UserService/deleteUserPhone",
-    async (payload: IUserPhoneDelete, redux: IRedux) => {
+    async (payload: IUserPhoneID, redux: IRedux) => {
       try {
         const { data } = await axiosInstance({
           url: "/api/users/phone/",
@@ -277,7 +276,7 @@ export class UserService {
   // ** ResendUserPhoneConfirm
   static resendUserPhoneConfirm = createAsyncThunk(
     "UserService/resendUserPhoneConfirm",
-    async (payload: IResendUserPhone, redux: IRedux) => {
+    async (payload: IUserPhoneID, redux: IRedux) => {
       try {
         const { data } = await axiosInstance({
           url: `/api/users/phone/resend/${payload.user_phone_id}/`,
@@ -300,6 +299,23 @@ export class UserService {
           url: "/api/users/phone/confirm/",
           method: "POST",
           data: payload,
+        });
+
+        return data;
+      } catch (error) {
+        return redux.rejectWithValue(error);
+      }
+    }
+  );
+
+  // ** UserPhoneTestVoice
+  static testingUserPhoneVoice = createAsyncThunk(
+    "UserService/testingUserPhoneVoice",
+    async (payload: IUserPhoneID, redux: IRedux) => {
+      try {
+        const { data } = await axiosInstance({
+          url: `/api/users/phone/test-voice/${payload.user_phone_id}/`,
+          method: "POST",
         });
 
         return data;

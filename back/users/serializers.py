@@ -234,6 +234,7 @@ class UserPhoneSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "phone",
+            "is_tested_voice",
             "status",
             "updated",
             "last_sent_confirm",

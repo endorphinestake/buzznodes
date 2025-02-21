@@ -60,11 +60,7 @@ export interface IUserPhoneCreate {
   phone: string;
 }
 
-export interface IUserPhoneDelete {
-  user_phone_id: number;
-}
-
-export interface IResendUserPhone {
+export interface IUserPhoneID {
   user_phone_id: number;
 }
 

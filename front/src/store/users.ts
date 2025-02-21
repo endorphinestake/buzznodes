@@ -24,6 +24,7 @@ export type TUserServiceState = {
   deleteUserPhone: Function;
   resendUserPhoneConfirm: Function;
   confirmUserPhone: Function;
+  testingUserPhoneVoice: Function;
 
   isLoginLoading: boolean;
   isLoginLoaded: boolean;
@@ -89,6 +90,10 @@ export type TUserServiceState = {
   isConfirmUserPhoneLoading: boolean;
   isConfirmUserPhoneLoaded: boolean;
   isConfirmUserPhoneError: any;
+
+  isTestingUserPhoneVoiceLoading: boolean;
+  isTestingUserPhoneVoiceLoaded: boolean;
+  isTestingUserPhoneVoiceError: any;
 };
 
 const initialState: TUserServiceState = {
@@ -108,6 +113,7 @@ const initialState: TUserServiceState = {
   deleteUserPhone: UserService.deleteUserPhone,
   resendUserPhoneConfirm: UserService.resendUserPhoneConfirm,
   confirmUserPhone: UserService.confirmUserPhone,
+  testingUserPhoneVoice: UserService.testingUserPhoneVoice,
 
   isLoginLoading: false,
   isLoginLoaded: false,
@@ -173,6 +179,10 @@ const initialState: TUserServiceState = {
   isConfirmUserPhoneLoading: false,
   isConfirmUserPhoneLoaded: false,
   isConfirmUserPhoneError: null,
+
+  isTestingUserPhoneVoiceLoading: false,
+  isTestingUserPhoneVoiceLoaded: false,
+  isTestingUserPhoneVoiceError: null,
 };
 
 export const UserSlice = createSlice({
@@ -238,6 +248,10 @@ export const UserSlice = createSlice({
     resetConfirmUserPhoneState(state) {
       state.isConfirmUserPhoneLoaded = false;
       state.isConfirmUserPhoneError = null;
+    },
+    resetTestingUserPhoneVoiceState(state) {
+      state.isTestingUserPhoneVoiceLoaded = false;
+      state.isTestingUserPhoneVoiceError = null;
     },
   },
   extraReducers: (builder) => {
@@ -505,6 +519,30 @@ export const UserSlice = createSlice({
       state.isConfirmUserPhoneLoading = false;
       state.isConfirmUserPhoneError = action.payload;
     });
+
+    // ** UserPhoneTestVoice
+    builder.addCase(
+      UserService.testingUserPhoneVoice.pending,
+      (state, action) => {
+        state.isTestingUserPhoneVoiceLoading = true;
+        state.isTestingUserPhoneVoiceLoaded = false;
+        state.isTestingUserPhoneVoiceError = null;
+      }
+    );
+    builder.addCase(
+      UserService.testingUserPhoneVoice.fulfilled,
+      (state, action) => {
+        state.isTestingUserPhoneVoiceLoading = false;
+        state.isTestingUserPhoneVoiceLoaded = true;
+      }
+    );
+    builder.addCase(
+      UserService.testingUserPhoneVoice.rejected,
+      (state, action) => {
+        state.isTestingUserPhoneVoiceLoading = false;
+        state.isTestingUserPhoneVoiceError = action.payload;
+      }
+    );
   },
 });
 

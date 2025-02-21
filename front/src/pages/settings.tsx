@@ -18,6 +18,7 @@ import UserLayout from "@layouts/UserLayout";
 import styles from "@styles/Home.module.css";
 import Notify from "@modules/shared/utils/Notify";
 import UserPhoneField from "@modules/users/components/UserPhoneField";
+import ConfirmDialog from "@modules/shared/components/ConfirmDialog";
 
 // ** Yup Imports
 import * as yup from "yup";
@@ -39,19 +40,21 @@ import {
   TextField,
   InputAdornment,
 } from "@mui/material";
-import { AccountOutline } from "mdi-material-ui";
+import { AccountOutline, PhoneIncoming } from "mdi-material-ui";
 import { LoadingButton } from "@mui/lab";
 
 const SettingsPage = () => {
   // ** State
   const [phone, setPhone] = useState<string>("");
   const [smsCode, setSmsCode] = useState<string>("");
+  const [openTestingCall, setOpenTestingCall] = useState<boolean>(false);
 
   // ** Hooks
   const { t } = useTranslation();
   const {
     dispatch,
     getProfile,
+    testingUserPhoneVoice,
     profileUpdate,
     profile,
     isProfileUpdateLoading,
@@ -60,7 +63,11 @@ const SettingsPage = () => {
     isCreateUserPhoneLoading,
     isResendUserPhoneConfirmLoading,
     isConfirmUserPhoneLoading,
+    isTestingUserPhoneVoiceLoading,
+    isTestingUserPhoneVoiceLoaded,
+    isTestingUserPhoneVoiceError,
     resetProfileUpdateState,
+    resetTestingUserPhoneVoiceState,
   } = useUserService();
 
   const schema = yup.object().shape({
@@ -96,6 +103,16 @@ const SettingsPage = () => {
     }
   };
 
+  const handleTestingCall = () => {
+    if (profile?.phones.length) {
+      dispatch(
+        testingUserPhoneVoice({
+          user_phone_id: profile.phones[0].id,
+        })
+      );
+    }
+  };
+
   // Events UserService.fetchProfile
   useEffect(() => {
     reset();
@@ -128,6 +145,38 @@ const SettingsPage = () => {
     }
   }, [isProfileUpdateLoaded, isProfileUpdateError]);
 
+  // Event on UserService.testingUserPhoneVoice
+  useEffect(() => {
+    // Success
+    if (isTestingUserPhoneVoiceLoaded) {
+      Notify("info", t(`Test call successfully created!`));
+      dispatch(resetTestingUserPhoneVoiceState());
+      dispatch(getProfile());
+    }
+
+    // Error
+    if (
+      isTestingUserPhoneVoiceError &&
+      typeof isTestingUserPhoneVoiceError.response?.data === "object"
+    ) {
+      if (isTestingUserPhoneVoiceError?.response?.data) {
+        Object.entries(isTestingUserPhoneVoiceError.response.data).forEach(
+          ([key, value]) => {
+            if (value) {
+              Notify("error", value.toString());
+            }
+          }
+        );
+      }
+      dispatch(resetTestingUserPhoneVoiceState());
+    } else if (
+      typeof isTestingUserPhoneVoiceError?.response?.data === "string"
+    ) {
+      Notify("error", isTestingUserPhoneVoiceError.response.data.toString());
+      dispatch(resetTestingUserPhoneVoiceState());
+    }
+  }, [isTestingUserPhoneVoiceLoaded, isTestingUserPhoneVoiceError]);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -145,19 +194,6 @@ const SettingsPage = () => {
                   autoComplete="off"
                   onSubmit={handleSubmit(onSubmit)}
                 >
-                  {/* <Box
-                    sx={{
-                      my: 5,
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    <AccountOutline sx={{ fontSize: "1.5rem", mr: 2 }} />
-                    <Typography sx={{ fontWeight: "bold" }}>
-                      {t(`Profile`)}
-                    </Typography>
-                  </Box> */}
-
                   <Grid container spacing={3}>
                     <Grid item md={6} sm={6} xs={12}>
                       {/* First Name Input */}
@@ -202,26 +238,61 @@ const SettingsPage = () => {
                     setSmsCode={setSmsCode}
                   />
 
-                  <Box sx={{ display: "flex", alignItems: "center", mt: 6 }}>
-                    <LoadingButton
-                      loading={
-                        isProfileUpdateLoading ||
-                        isCreateUserPhoneLoading ||
-                        isConfirmUserPhoneLoading
-                      }
-                      size="large"
-                      type="submit"
-                      variant="contained"
-                      sx={{ mb: 7 }}
-                    >
-                      {t(`Save changes`)}
-                    </LoadingButton>
-                  </Box>
+                  <Grid container spacing={3} sx={{ mt: 4 }}>
+                    <Grid item md={6} sm={6} xs={12}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          mt: 6,
+                          mb: 7,
+                        }}
+                      >
+                        <LoadingButton
+                          loading={
+                            isProfileUpdateLoading ||
+                            isCreateUserPhoneLoading ||
+                            isConfirmUserPhoneLoading
+                          }
+                          size="large"
+                          type="submit"
+                          variant="contained"
+                          aria-label={t(`Save changes`)}
+                        >
+                          {t(`Save changes`)}
+                        </LoadingButton>
+
+                        {profile?.phones.length &&
+                        profile.phones[0].status &&
+                        !profile.phones[0].is_tested_voice ? (
+                          <LoadingButton
+                            loading={isTestingUserPhoneVoiceLoading}
+                            size="large"
+                            variant="outlined"
+                            color="info"
+                            onClick={() => setOpenTestingCall(true)}
+                            endIcon={<PhoneIncoming />}
+                            aria-label={t(`Test Call`)}
+                          >
+                            {t(`Test Call`)}
+                          </LoadingButton>
+                        ) : null}
+                      </Box>
+                    </Grid>
+                  </Grid>
                 </form>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
+
+        <ConfirmDialog
+          open={openTestingCall}
+          setOpen={setOpenTestingCall}
+          title={t(`There will be a test call to the phone number indicated`)}
+          onConfirm={handleTestingCall}
+        />
       </main>
     </div>
   );
