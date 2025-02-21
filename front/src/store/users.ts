@@ -21,6 +21,7 @@ export type TUserServiceState = {
   emailChange: Function;
   emailChangeConfirm: Function;
   createUserPhone: Function;
+  deleteUserPhone: Function;
   resendUserPhoneConfirm: Function;
   confirmUserPhone: Function;
 
@@ -77,6 +78,10 @@ export type TUserServiceState = {
   isCreateUserPhoneLoaded: boolean;
   isCreateUserPhoneError: any;
 
+  isDeleteUserPhoneLoading: boolean;
+  isDeleteUserPhoneLoaded: boolean;
+  isDeleteUserPhoneError: any;
+
   isResendUserPhoneConfirmLoading: boolean;
   isResendUserPhoneConfirmLoaded: boolean;
   isResendUserPhoneConfirmError: any;
@@ -100,6 +105,7 @@ const initialState: TUserServiceState = {
   emailChange: UserService.emailChange,
   emailChangeConfirm: UserService.emailChangeConfirm,
   createUserPhone: UserService.createUserPhone,
+  deleteUserPhone: UserService.deleteUserPhone,
   resendUserPhoneConfirm: UserService.resendUserPhoneConfirm,
   confirmUserPhone: UserService.confirmUserPhone,
 
@@ -155,6 +161,10 @@ const initialState: TUserServiceState = {
   isCreateUserPhoneLoading: false,
   isCreateUserPhoneLoaded: false,
   isCreateUserPhoneError: null,
+
+  isDeleteUserPhoneLoading: false,
+  isDeleteUserPhoneLoaded: false,
+  isDeleteUserPhoneError: null,
 
   isResendUserPhoneConfirmLoading: false,
   isResendUserPhoneConfirmLoaded: false,
@@ -216,6 +226,10 @@ export const UserSlice = createSlice({
     resetCreateUserPhoneState(state) {
       state.isCreateUserPhoneLoaded = false;
       state.isCreateUserPhoneError = null;
+    },
+    resetDeleteUserPhoneState(state) {
+      state.isDeleteUserPhoneLoaded = false;
+      state.isDeleteUserPhoneError = null;
     },
     resetResendUserPhoneConfirmState(state) {
       state.isResendUserPhoneConfirmLoaded = false;
@@ -436,6 +450,21 @@ export const UserSlice = createSlice({
     builder.addCase(UserService.createUserPhone.rejected, (state, action) => {
       state.isCreateUserPhoneLoading = false;
       state.isCreateUserPhoneError = action.payload;
+    });
+
+    // ** DeleteUserPhoneView
+    builder.addCase(UserService.deleteUserPhone.pending, (state, action) => {
+      state.isDeleteUserPhoneLoading = true;
+      state.isDeleteUserPhoneLoaded = false;
+      state.isDeleteUserPhoneError = null;
+    });
+    builder.addCase(UserService.deleteUserPhone.fulfilled, (state, action) => {
+      state.isDeleteUserPhoneLoading = false;
+      state.isDeleteUserPhoneLoaded = true;
+    });
+    builder.addCase(UserService.deleteUserPhone.rejected, (state, action) => {
+      state.isDeleteUserPhoneLoading = false;
+      state.isDeleteUserPhoneError = action.payload;
     });
 
     // ** ResendUserPhoneConfirm

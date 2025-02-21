@@ -60,6 +60,10 @@ export interface IUserPhoneCreate {
   phone: string;
 }
 
+export interface IUserPhoneDelete {
+  user_phone_id: number;
+}
+
 export interface IResendUserPhone {
   user_phone_id: number;
 }

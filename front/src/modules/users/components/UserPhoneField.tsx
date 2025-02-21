@@ -13,11 +13,18 @@ import { useUserService } from "@hooks/useUserService";
 
 // ** Shared Components
 import Notify from "@modules/shared/utils/Notify";
-import { LoadingButton } from "@mui/lab";
+import ConfirmDialog from "@modules/shared/components/ConfirmDialog";
 
 // ** Mui Imports
-import { TextField, InputAdornment, Grid, Tooltip } from "@mui/material";
-import { Phone, Cellphone } from "mdi-material-ui";
+import {
+  TextField,
+  InputAdornment,
+  Grid,
+  Tooltip,
+  IconButton,
+} from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { Phone, Cellphone, CloseThick } from "mdi-material-ui";
 
 interface IProps {
   phone: string;
@@ -30,6 +37,7 @@ const UserPhoneField = forwardRef(
   ({ phone, setPhone, smsCode, setSmsCode }: IProps, ref) => {
     // ** State
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
+    const [openDelete, setOpenDelete] = useState<boolean>(false);
 
     // ** Hooks
     const { t } = useTranslation();
@@ -37,12 +45,16 @@ const UserPhoneField = forwardRef(
       dispatch,
       getProfile,
       createUserPhone,
+      deleteUserPhone,
       confirmUserPhone,
       resendUserPhoneConfirm,
       profile,
       isCreateUserPhoneLoading,
       isCreateUserPhoneLoaded,
       isCreateUserPhoneError,
+      isDeleteUserPhoneLoading,
+      isDeleteUserPhoneLoaded,
+      isDeleteUserPhoneError,
       isConfirmUserPhoneLoading,
       isConfirmUserPhoneLoaded,
       isConfirmUserPhoneError,
@@ -51,6 +63,7 @@ const UserPhoneField = forwardRef(
       isResendUserPhoneConfirmError,
       resetConfirmUserPhoneState,
       resetCreateUserPhoneState,
+      resetDeleteUserPhoneState,
       resetResendUserPhoneConfirmState,
     } = useUserService();
 
@@ -93,6 +106,15 @@ const UserPhoneField = forwardRef(
       }
     };
 
+    const handleDelete = () => {
+      dispatch(
+        deleteUserPhone({
+          user_phone_id: profile.phones[0].id,
+        })
+      );
+      dispatch(getProfile());
+    };
+
     // Events for createUserPhone
     useEffect(() => {
       // Success
@@ -120,6 +142,34 @@ const UserPhoneField = forwardRef(
         dispatch(resetCreateUserPhoneState());
       }
     }, [isCreateUserPhoneLoaded, isCreateUserPhoneError]);
+
+    // Events for deleteUserPhone
+    useEffect(() => {
+      // Success
+      if (isDeleteUserPhoneLoaded) {
+        Notify("info", t(`The phone successfully deleted!`));
+        setPhone("");
+        dispatch(resetDeleteUserPhoneState());
+        dispatch(getProfile());
+      }
+
+      // Error
+      if (
+        isDeleteUserPhoneError &&
+        typeof isDeleteUserPhoneError.response?.data === "object"
+      ) {
+        if (isDeleteUserPhoneError?.response?.data) {
+          Object.entries(isDeleteUserPhoneError.response.data).forEach(
+            ([key, value]) => {
+              if (value) {
+                Notify("error", value.toString());
+              }
+            }
+          );
+        }
+        dispatch(resetDeleteUserPhoneState());
+      }
+    }, [isDeleteUserPhoneLoaded, isDeleteUserPhoneError]);
 
     // Events for confirmUserPhone
     useEffect(() => {
@@ -232,6 +282,17 @@ const UserPhoneField = forwardRef(
                     <Phone />
                   </InputAdornment>
                 ),
+                endAdornment: Boolean(profile?.phones.length) ? (
+                  <IconButton edge="end" onClick={() => setOpenDelete(true)}>
+                    <Tooltip
+                      title={t(
+                        "Delete the phone number. After deleting you can add a new phone"
+                      )}
+                    >
+                      <CloseThick fontSize="small" color="error" />
+                    </Tooltip>
+                  </IconButton>
+                ) : null,
               }}
             />
           </Grid>
@@ -288,6 +349,13 @@ const UserPhoneField = forwardRef(
             </Grid>
           </Grid>
         ) : null}
+
+        <ConfirmDialog
+          open={openDelete}
+          setOpen={setOpenDelete}
+          title={t(`Are you sure you want to delete the phone number?`)}
+          onConfirm={handleDelete}
+        />
       </>
     );
   }

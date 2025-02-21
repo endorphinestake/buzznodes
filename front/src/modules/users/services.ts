@@ -18,6 +18,7 @@ import {
   IChangePasswordSerializer,
   IUpdateUserSerializer,
   IUserPhoneCreate,
+  IUserPhoneDelete,
   IResendUserPhone,
   IConfirmUserPhone,
 } from "@modules/users/interfaces";
@@ -243,8 +244,26 @@ export class UserService {
     async (payload: IUserPhoneCreate, redux: IRedux) => {
       try {
         const { data } = await axiosInstance({
-          url: "/api/users/phone/create/",
+          url: "/api/users/phone/",
           method: "POST",
+          data: payload,
+        });
+
+        return data;
+      } catch (error) {
+        return redux.rejectWithValue(error);
+      }
+    }
+  );
+
+  // ** DeleteUserPhoneView
+  static deleteUserPhone = createAsyncThunk(
+    "UserService/deleteUserPhone",
+    async (payload: IUserPhoneDelete, redux: IRedux) => {
+      try {
+        const { data } = await axiosInstance({
+          url: "/api/users/phone/",
+          method: "DELETE",
           data: payload,
         });
 
