@@ -315,6 +315,20 @@ class CreateUserPhoneSerializer(serializers.Serializer):
         return user_phone
 
 
+class DeleteUserPhoneSerializer(serializers.Serializer):
+    user_phone_id = serializers.PrimaryKeyRelatedField(queryset=UserPhone.objects.all())
+
+    def validate_user_phone_id(self, user_phone):
+        if user_phone.user_id != self.context["request"].user.id:
+            raise serializers.ValidationError(_("Unknown phone."))
+        return user_phone
+
+    def delete(self, validated_data):
+        user_phone = validated_data["user_phone_id"]
+        user_phone.delete()
+        return user_phone
+
+
 class ConfirmUserPhoneSerializer(serializers.Serializer):
     code = serializers.CharField(required=True)
 

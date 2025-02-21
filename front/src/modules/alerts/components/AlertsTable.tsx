@@ -67,7 +67,7 @@ const AlertsTable = (props: IAlertsTableProps) => {
   const columns = [
     {
       flex: 0.1,
-      minWidth: 200,
+      minWidth: 190,
       field: "moniker",
       sortable: false,
       headerName: t(`Moniker`),
@@ -425,7 +425,7 @@ const AlertsTable = (props: IAlertsTableProps) => {
     },
     {
       flex: 0.09,
-      minWidth: 25,
+      minWidth: 55,
       field: "actions",
       sortable: false,
       headerName: "",

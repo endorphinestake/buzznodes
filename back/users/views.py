@@ -25,8 +25,10 @@ from users.serializers import (
     ChangeEmailSerializer,
     ChangeEmailConfirmSerializer,
     CreateUserPhoneSerializer,
+    DeleteUserPhoneSerializer,
     ConfirmUserPhoneSerializer,
 )
+from voice.models import VoiceBase
 from sms.models import SMSBase, SMSConfirm
 from mails.tasks import (
     send_verification_mail,
@@ -37,6 +39,7 @@ from mails.tasks import (
 )
 
 from sms.tasks import submit_sms_confirm
+from voice.tasks import submit_voice_test
 
 
 class LoginView(views.APIView):
@@ -331,6 +334,40 @@ class CreateUserPhoneView(views.APIView):
         )
 
         return response.Response("OK", status=status.HTTP_200_OK)
+
+    def delete(self, request):
+        serializer = DeleteUserPhoneSerializer(
+            data=request.data, context={"request": request}
+        )
+        if not serializer.is_valid():
+            return response.Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer.delete(validated_data=serializer.validated_data)
+        return response.Response("OK", status=status.HTTP_200_OK)
+
+
+class UserPhoneTestVoice(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, user_phone_id):
+        user_phone = request.user.user_phones.filter(
+            pk=user_phone_id, is_tested_voice=False
+        ).first()
+        if not user_phone:
+            return response.Response(status=status.HTTP_404_NOT_FOUND)
+
+        user_phone.is_tested_voice = True
+        user_phone.save()
+
+        job = submit_voice_test.delay(
+            provider=VoiceBase.Provider.MAIN,
+            phone_number_id=user_phone.id,
+            text=settings.USER_PHONE_VOICE_TEST_TEXT,
+        )
+
+        return response.Response("OK")
 
 
 class ResendUserPhoneConfirm(views.APIView):

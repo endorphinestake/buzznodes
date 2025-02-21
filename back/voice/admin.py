@@ -10,6 +10,7 @@ from voice.models import (
     VoiceAlertBondedStatus,
     VoiceAlertOtelUpdate,
     VoiceAlertSyncStatus,
+    VoicePhoneTest,
 )
 
 
@@ -46,3 +47,4 @@ admin.site.register(VoiceAlertTombstonedStatus, VoiceAdmin)
 admin.site.register(VoiceAlertBondedStatus, VoiceAdmin)
 admin.site.register(VoiceAlertOtelUpdate, VoiceAdmin)
 admin.site.register(VoiceAlertSyncStatus, VoiceAdmin)
+admin.site.register(VoicePhoneTest, VoiceAdmin)

@@ -196,3 +196,9 @@ class VoiceAlertSyncStatus(VoiceBase):
     class Meta:
         verbose_name = _("Sync Status Voice Alert")
         verbose_name_plural = _("Sync Status Voice Alerts")
+
+
+class VoicePhoneTest(VoiceBase):
+    class Meta:
+        verbose_name = _("Voice Phone Test")
+        verbose_name_plural = _("Voice Phone Tests")

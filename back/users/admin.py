@@ -76,6 +76,7 @@ class UserPhoneInline(admin.TabularInline):
     extra = 0
     fields = (
         "phone",
+        "is_tested_voice",
         "status",
         "updated",
         "created",
