@@ -15,7 +15,6 @@ import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces
 import { TBlockchainValidator } from "@modules/blockchains/types";
-import { EAlertType } from "@modules/alerts/enums";
 import { EBlockchainValidatorStatus } from "@modules/blockchains/enums";
 
 // ** Layouts
@@ -27,7 +26,6 @@ import TextSearchOutline from "@modules/shared/components/TextSearchOutline";
 import SelectValidatorStatus from "@modules/blockchains/components/SelectValidatorStatus";
 import ValidatorsTable from "@modules/blockchains/components/ValidatorsTable";
 import SelectAutorefresh from "@modules/shared/components/SelectAutorefresh";
-import SelectAlertType from "@modules/alerts/components/SelectAlertType";
 
 // ** Mui Imports
 import { Grid, Card, Box, CardHeader, Typography } from "@mui/material";
@@ -53,7 +51,6 @@ const HomePage = () => {
     useState<EBlockchainValidatorStatus>(
       EBlockchainValidatorStatus.BOND_STATUS_BONDED
     );
-  const [alertType, setAlertType] = useState<EAlertType>(EAlertType.ANY);
   const [search, setSearch] = useState<string>("");
 
   // Event onInit
@@ -127,49 +124,6 @@ const HomePage = () => {
     });
   }
 
-  // filter by AlertType
-  if (blockchainValidators.validators.length > 0 && userAlertSettings) {
-    filteredValidators = filteredValidators.filter((item) => {
-      switch (alertType) {
-        case EAlertType.VOTING_POWER:
-          return (
-            Array.isArray(
-              userAlertSettings[item.id]?.[EAlertType.VOTING_POWER]
-            ) &&
-            userAlertSettings[item.id]![EAlertType.VOTING_POWER]!.length > 0
-          );
-        case EAlertType.UPTIME:
-          return (
-            Array.isArray(userAlertSettings[item.id]?.[EAlertType.UPTIME]) &&
-            userAlertSettings[item.id]![EAlertType.UPTIME]!.length > 0
-          );
-        case EAlertType.COMISSION:
-          return (
-            Array.isArray(userAlertSettings[item.id]?.[EAlertType.COMISSION]) &&
-            userAlertSettings[item.id]![EAlertType.COMISSION]!.length > 0
-          );
-        case EAlertType.JAILED:
-          return (
-            Array.isArray(userAlertSettings[item.id]?.[EAlertType.JAILED]) &&
-            userAlertSettings[item.id]![EAlertType.JAILED]!.length > 0
-          );
-        case EAlertType.TOMBSTONED:
-          return (
-            Array.isArray(
-              userAlertSettings[item.id]?.[EAlertType.TOMBSTONED]
-            ) && userAlertSettings[item.id]![EAlertType.TOMBSTONED]!.length > 0
-          );
-        case EAlertType.BONDED:
-          return (
-            Array.isArray(userAlertSettings[item.id]?.[EAlertType.BONDED]) &&
-            userAlertSettings[item.id]![EAlertType.BONDED]!.length > 0
-          );
-        default:
-          return true;
-      }
-    });
-  }
-
   // filter by Search
   if (search.length > 0) {
     filteredValidators = filteredValidators.filter((item) => {
@@ -218,15 +172,7 @@ const HomePage = () => {
                     />
                   </Grid>
 
-                  <Grid item sm={4} xs={12}>
-                    <SelectAlertType
-                      value={alertType}
-                      setValue={setAlertType}
-                      label={t(`With alerts enabled`)}
-                    />
-                  </Grid>
-
-                  <Grid item sm={4} xs={12}>
+                  <Grid item sm={8} xs={12}>
                     <TextSearchOutline
                       setValue={setSearch}
                       placeholder={t(`Moniker / Valoper`)}

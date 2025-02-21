@@ -56,6 +56,7 @@ class BlockchainAdmin(SortableAdminBase, admin.ModelAdmin):
 @admin.register(BlockchainValidator)
 class BlockchainValidatorAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "moniker",
         "status",
         "voting_power",
@@ -118,8 +119,8 @@ class BlockchainBridgeAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         return False
 
-    # def has_delete_permission(self, request, obj=None):
-    #     return False
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     def has_add_permission(self, request):
         return False

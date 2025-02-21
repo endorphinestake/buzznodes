@@ -14,7 +14,7 @@ type DomainValue = {
 
 const DEV_DOMAINS = {
   "celestia.local.com": {
-    blockchainId: 2,
+    blockchainId: 1,
     logo: CelestiaLogo,
     domain: "celestia.local.com",
     name: "Celestia Mainnet",
@@ -22,7 +22,7 @@ const DEV_DOMAINS = {
     isDaEnabled: true,
   },
   "celestia-testnet.local.com": {
-    blockchainId: 3,
+    blockchainId: 2,
     logo: CelestiaLogo,
     domain: "celestia-testnet.local.com",
     name: "Celestia Testnet",

@@ -2,7 +2,14 @@ export enum EBlockchainType {
   COSMOS = "COSMOS",
 }
 
+export enum EBlockchainValidatorType {
+  ANY = "",
+  VALIDATOR = "VALIDATOR",
+  BRIDGE = "BRIDGE",
+}
+
 export enum EBlockchainValidatorStatus {
+  ANY = "",
   BOND_STATUS_UNSPECIFIED = "BOND_STATUS_UNSPECIFIED",
   BOND_STATUS_BONDED = "BOND_STATUS_BONDED",
   BOND_STATUS_UNBONDED = "BOND_STATUS_UNBONDED",

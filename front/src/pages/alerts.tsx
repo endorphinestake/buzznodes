@@ -14,17 +14,22 @@ import { useAlertService } from "@hooks/useAlertService";
 import { useBlockchainService } from "@hooks/useBlockchainService";
 
 // ** Types & Interfaces
-import { TAlertSettingsResponse } from "@modules/alerts/types";
 import { EAlertType } from "@modules/alerts/enums";
-import { EBlockchainValidatorStatus } from "@modules/blockchains/enums";
+import {
+  EBlockchainValidatorStatus,
+  EBlockchainValidatorType,
+} from "@modules/blockchains/enums";
 
 // ** Layouts
 import UserLayout from "@layouts/UserLayout";
 
 // ** Shared Components
 import styles from "@styles/Home.module.css";
-import SelectAutorefresh from "@modules/shared/components/SelectAutorefresh";
 import AlertsTable from "@modules/alerts/components/AlertsTable";
+import SelectValidatorType from "@modules/blockchains/components/SelectValidatorType";
+import SelectValidatorStatus from "@modules/blockchains/components/SelectValidatorStatus";
+import SelectAlertType from "@modules/alerts/components/SelectAlertType";
+import TextSearchOutline from "@modules/shared/components/TextSearchOutline";
 
 // ** MUI Imports
 import { Box, Card, CardHeader, Grid, Typography } from "@mui/material";
@@ -35,8 +40,11 @@ const AlertsPage = () => {
   const { blockchainId } = useDomain();
   const {
     dispatch,
+    fetchAlertSettings,
     fetchUserAlertSettings,
+    isAlertSettingsLoaded,
     isUserAlertSettingsLoaded,
+    alertSettings,
     userAlertSettings,
   } = useAlertService();
   const {
@@ -50,13 +58,24 @@ const AlertsPage = () => {
 
   // ** State
   const [isInit, setIsInit] = useState<boolean>(false);
-  const [autorefresh, setAutorefresh] = useState<number>(10);
+  const [validatorType, setValidatorType] = useState<EBlockchainValidatorType>(
+    EBlockchainValidatorType.ANY
+  );
+  const [validatorStatus, setValidatorStatus] =
+    useState<EBlockchainValidatorStatus>(EBlockchainValidatorStatus.ANY);
+
   const [alertType, setAlertType] = useState<EAlertType>(EAlertType.ANY);
+  const [search, setSearch] = useState<string>("");
 
   // OnInit
   useEffect(() => {
     if (!isInit) {
       setIsInit(true);
+
+      // Preload AlertSettings
+      if (!isAlertSettingsLoaded) {
+        dispatch(fetchAlertSettings());
+      }
 
       // Preload UserAlertSettings
       if (!isUserAlertSettingsLoaded) {
@@ -85,9 +104,107 @@ const AlertsPage = () => {
 
   var filteredUserAlertSettings = userAlertSettings;
 
-  console.log("filteredUserAlertSettings: ", filteredUserAlertSettings);
-  // console.log("blockchainBridges: ", blockchainBridges);
-  // console.log("blockchainValidators: ", blockchainValidators);
+  // Filter by validatorType
+  if (validatorType !== EBlockchainValidatorType.ANY) {
+    filteredUserAlertSettings = Object.fromEntries(
+      Object.entries(filteredUserAlertSettings).filter(([key, value]) => {
+        const hasOtelUpdate = value.OTEL_UPDATE && value.OTEL_UPDATE.length > 0;
+        const hasSyncStatus = value.SYNC_STATUS && value.SYNC_STATUS.length > 0;
+
+        switch (validatorType) {
+          case EBlockchainValidatorType.VALIDATOR:
+            return !hasOtelUpdate && !hasSyncStatus;
+          case EBlockchainValidatorType.BRIDGE:
+            return hasOtelUpdate || hasSyncStatus;
+          default:
+            return true;
+        }
+      })
+    );
+  }
+
+  // Filter by Status
+  if (validatorStatus !== EBlockchainValidatorStatus.ANY) {
+    filteredUserAlertSettings = Object.fromEntries(
+      Object.entries(filteredUserAlertSettings).filter(([key, value]) => {
+        const hasOtelUpdate = value.OTEL_UPDATE && value.OTEL_UPDATE.length > 0;
+        const hasSyncStatus = value.SYNC_STATUS && value.SYNC_STATUS.length > 0;
+
+        if (hasOtelUpdate || hasSyncStatus) {
+          const bridge = blockchainBridges.bridges.find(
+            (item) => item.id === +key
+          );
+          if (!bridge) return false;
+          if (
+            validatorStatus === EBlockchainValidatorStatus.BOND_STATUS_BONDED
+          ) {
+            return bridge.last_timestamp_diff < 36000;
+          } else {
+            return bridge.last_timestamp_diff > 36000;
+          }
+        } else {
+          const validator = blockchainValidators.validators.find(
+            (item) => item.id === +key
+          );
+          if (!validator) return false;
+          if (
+            validatorStatus === EBlockchainValidatorStatus.BOND_STATUS_BONDED
+          ) {
+            return (
+              validator.status === EBlockchainValidatorStatus.BOND_STATUS_BONDED
+            );
+          } else {
+            return (
+              validator.status !== EBlockchainValidatorStatus.BOND_STATUS_BONDED
+            );
+          }
+        }
+      })
+    );
+  }
+
+  // filter by AlertType
+  if (alertType !== EAlertType.ANY) {
+    filteredUserAlertSettings = Object.fromEntries(
+      Object.entries(filteredUserAlertSettings).filter(([key, value]) => {
+        return value[alertType]?.length || false;
+      })
+    );
+  }
+
+  // filter by Search
+  if (search.length > 0) {
+    filteredUserAlertSettings = Object.fromEntries(
+      Object.entries(filteredUserAlertSettings).filter(([key, value]) => {
+        const hasOtelUpdate = value.OTEL_UPDATE && value.OTEL_UPDATE.length > 0;
+        const hasSyncStatus = value.SYNC_STATUS && value.SYNC_STATUS.length > 0;
+
+        if (hasOtelUpdate || hasSyncStatus) {
+          const bridge = blockchainBridges.bridges.find(
+            (item) => item.id === +key
+          );
+
+          if (hasOtelUpdate) {
+            return (value.OTEL_UPDATE?.[0]?.moniker ?? "")
+              .toLowerCase()
+              .includes(search.toLowerCase());
+          } else {
+            return (value.SYNC_STATUS?.[0]?.moniker ?? "")
+              .toLowerCase()
+              .includes(search.toLowerCase());
+          }
+        } else {
+          const validator = blockchainValidators.validators.find(
+            (item) => item.id === +key
+          );
+
+          return (validator?.moniker ?? "")
+            .toLowerCase()
+            .includes(search.toLowerCase());
+        }
+      })
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -111,21 +228,45 @@ const AlertsPage = () => {
                 }}
               >
                 <Grid container spacing={3}>
-                  <Grid item sm={4} xs={12}>
-                    filter 1
+                  <Grid item sm={3} xs={12}>
+                    <SelectValidatorType
+                      value={validatorType}
+                      setValue={setValidatorType}
+                      label={t(`Type`)}
+                    />
                   </Grid>
 
-                  <Grid item sm={4} xs={12}>
-                    filter 2
+                  <Grid item sm={3} xs={12}>
+                    <SelectValidatorStatus
+                      value={validatorStatus}
+                      setValue={setValidatorStatus}
+                      label={t(`Validator Status`)}
+                    />
                   </Grid>
 
-                  <Grid item sm={4} xs={12}>
-                    filter 3
+                  <Grid item sm={3} xs={12}>
+                    <SelectAlertType
+                      value={alertType}
+                      setValue={setAlertType}
+                      label={t(`With alerts enabled`)}
+                    />
+                  </Grid>
+
+                  <Grid item sm={3} xs={12}>
+                    <TextSearchOutline
+                      setValue={setSearch}
+                      placeholder={t(`Moniker`)}
+                    />
                   </Grid>
                 </Grid>
               </Box>
 
-              <AlertsTable alerts={filteredUserAlertSettings} />
+              <AlertsTable
+                alertSettings={alertSettings}
+                userAlertSettings={filteredUserAlertSettings}
+                validators={blockchainValidators.validators}
+                bridges={blockchainBridges.bridges}
+              />
 
               {!Object.keys(filteredUserAlertSettings).length ? (
                 <Grid

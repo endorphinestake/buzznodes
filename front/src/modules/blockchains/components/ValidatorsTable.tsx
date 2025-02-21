@@ -20,6 +20,7 @@ import { EAlertType } from "@modules/alerts/enums";
 
 // ** Shared Components
 import ManageAlertsDialog from "@modules/alerts/components/ManageAlertsDialog";
+import ValidatorMonikerLabel from "@modules/blockchains/components/labels/ValidatorMonikerLabel";
 
 // ** MUI Imports
 import { Box, Typography, IconButton, Tooltip } from "@mui/material";
@@ -62,35 +63,7 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
       sortable: true,
       headerName: t(`Validator`),
       renderCell: ({ row }: IValidatorsTableRow) => {
-        return (
-          <Fragment>
-            <img
-              loading="lazy"
-              width="25"
-              src={
-                row.picture && row.picture !== "default"
-                  ? row.picture
-                  : "/images/defaultValidatorIcon.webp"
-              }
-              alt="validator icon"
-              style={{
-                borderRadius: "50%",
-                objectFit: "cover",
-              }}
-            />
-            <Typography
-              variant="body2"
-              sx={{
-                color: "text.primary",
-                fontWeight: 500,
-                lineHeight: "22px",
-                ml: 2,
-              }}
-            >
-              {row.moniker ?? "-----"}
-            </Typography>
-          </Fragment>
-        );
+        return <ValidatorMonikerLabel validator={row} />;
       },
     },
     {

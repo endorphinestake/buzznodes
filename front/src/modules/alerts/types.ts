@@ -53,7 +53,7 @@ export type TAlertSettingsResponse = {
   [EAlertType.SYNC_STATUS]: TAlertSettingSyncStatus[];
 };
 
-type TUserAlertSettingBase = {
+export type TUserAlertSettingBase = {
   id: number;
   setting_id: number;
   blockchain_validator_id: number;

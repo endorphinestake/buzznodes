@@ -52,6 +52,32 @@ export const groupByValidatorId = (data: TUserAlertSettingsResponse) => {
   return result;
 };
 
+export const getRowsFromAlerts = (
+  data: Record<number, Partial<TUserAlertSettingsResponse>>
+): Array<{
+  id: string;
+  VOTING_POWER: TUserAlertSettingBase[];
+  UPTIME: TUserAlertSettingBase[];
+  COMISSION: TUserAlertSettingBase[];
+  JAILED: TUserAlertSettingBase[];
+  TOMBSTONED: TUserAlertSettingBase[];
+  BONDED: TUserAlertSettingBase[];
+  OTEL_UPDATE: TUserAlertSettingBase[];
+  SYNC_STATUS: TUserAlertSettingBase[];
+}> => {
+  return Object.entries(data).map(([validatorId, alerts]) => ({
+    id: validatorId,
+    VOTING_POWER: alerts.VOTING_POWER ?? [],
+    UPTIME: alerts.UPTIME ?? [],
+    COMISSION: alerts.COMISSION ?? [],
+    JAILED: alerts.JAILED ?? [],
+    TOMBSTONED: alerts.TOMBSTONED ?? [],
+    BONDED: alerts.BONDED ?? [],
+    OTEL_UPDATE: alerts.OTEL_UPDATE ?? [],
+    SYNC_STATUS: alerts.SYNC_STATUS ?? [],
+  }));
+};
+
 export const getSettingByUserSettings = <
   TSetting extends { id: number },
   TUserSetting extends { setting_id: number }

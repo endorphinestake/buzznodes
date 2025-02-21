@@ -52,6 +52,12 @@ const SelectAlertType = (props: IProps) => {
         {t(`Tombstoned status`)}
       </MenuItem>
       <MenuItem value={EAlertType.BONDED}>{t(`Bonded status`)}</MenuItem>
+      <MenuItem value={EAlertType.OTEL_UPDATE}>
+        {t(`Latest Otel update`)}
+      </MenuItem>
+      <MenuItem value={EAlertType.SYNC_STATUS}>
+        {t(`Synchronization Status`)}
+      </MenuItem>
     </TextField>
   );
 };
