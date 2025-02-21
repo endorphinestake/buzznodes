@@ -240,7 +240,7 @@ const AlertsPage = () => {
                     <SelectValidatorStatus
                       value={validatorStatus}
                       setValue={setValidatorStatus}
-                      label={t(`Validator Status`)}
+                      label={t(`Status`)}
                     />
                   </Grid>
 

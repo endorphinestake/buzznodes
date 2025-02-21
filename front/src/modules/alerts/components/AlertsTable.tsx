@@ -31,10 +31,9 @@ import BridgeMonikerLabel from "@modules/blockchains/components/labels/BridgeMon
 import ValidatorMonikerLabel from "@modules/blockchains/components/labels/ValidatorMonikerLabel";
 
 // ** MUI Imports
-import { IconButton, Tooltip } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { Box, IconButton, Tooltip } from "@mui/material";
+import { DataGrid, GridAlignment } from "@mui/x-data-grid";
 import { BellCog, Phone, Cellphone } from "mdi-material-ui";
-import { GridAlignment } from "@mui/x-data-grid";
 
 const RenderAlertIcon = (channel: EAlertChannel) => {
   return channel === EAlertChannel.SMS ? (
@@ -68,7 +67,7 @@ const AlertsTable = (props: IAlertsTableProps) => {
   const columns = [
     {
       flex: 0.1,
-      minWidth: 160,
+      minWidth: 200,
       field: "moniker",
       sortable: false,
       headerName: t(`Moniker`),
@@ -96,7 +95,7 @@ const AlertsTable = (props: IAlertsTableProps) => {
     },
     {
       flex: 0.1,
-      minWidth: 100,
+      minWidth: 95,
       field: EAlertType.VOTING_POWER,
       sortable: false,
       headerName: t(`V-Power`),
@@ -138,7 +137,7 @@ const AlertsTable = (props: IAlertsTableProps) => {
     },
     {
       flex: 0.1,
-      minWidth: 100,
+      minWidth: 90,
       field: EAlertType.UPTIME,
       sortable: false,
       headerName: t(`Uptime`),
@@ -218,7 +217,7 @@ const AlertsTable = (props: IAlertsTableProps) => {
     },
     {
       flex: 0.1,
-      minWidth: 100,
+      minWidth: 90,
       field: EAlertType.JAILED,
       sortable: false,
       headerName: t(`Jailed`),
@@ -300,7 +299,7 @@ const AlertsTable = (props: IAlertsTableProps) => {
     },
     {
       flex: 0.1,
-      minWidth: 100,
+      minWidth: 80,
       field: EAlertType.BONDED,
       sortable: false,
       headerName: t(`Bond`),
@@ -350,6 +349,7 @@ const AlertsTable = (props: IAlertsTableProps) => {
       headerName: t(`Otel Update`),
       align: "center" as GridAlignment,
       headerAlign: "center" as GridAlignment,
+      cellClassName: "bridge-cell",
       renderCell: ({ row }: IAlertsTableRow) => {
         if (
           !row[EAlertType.OTEL_UPDATE].length ||
@@ -384,12 +384,13 @@ const AlertsTable = (props: IAlertsTableProps) => {
     },
     {
       flex: 0.1,
-      minWidth: 100,
+      minWidth: 120,
       field: EAlertType.SYNC_STATUS,
       sortable: false,
-      headerName: t(`Status`),
+      headerName: t(`Sync Status`),
       align: "center" as GridAlignment,
       headerAlign: "center" as GridAlignment,
+      cellClassName: "bridge-cell",
       renderCell: ({ row }: IAlertsTableRow) => {
         if (
           !row[EAlertType.SYNC_STATUS].length ||
@@ -424,7 +425,7 @@ const AlertsTable = (props: IAlertsTableProps) => {
     },
     {
       flex: 0.09,
-      minWidth: 55,
+      minWidth: 25,
       field: "actions",
       sortable: false,
       headerName: "",
