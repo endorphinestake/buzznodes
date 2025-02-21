@@ -107,12 +107,14 @@ const UserPhoneField = forwardRef(
     };
 
     const handleDelete = () => {
-      dispatch(
-        deleteUserPhone({
-          user_phone_id: profile.phones[0].id,
-        })
-      );
-      dispatch(getProfile());
+      if (profile?.phones.length) {
+        dispatch(
+          deleteUserPhone({
+            user_phone_id: profile.phones[0].id,
+          })
+        );
+        dispatch(getProfile());
+      }
     };
 
     // Events for createUserPhone
