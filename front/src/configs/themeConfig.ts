@@ -94,7 +94,7 @@ const themeConfig: ThemeConfig = {
   // ** Other Configs
   responsiveFontSizes: true /* true | false */,
   disableRipple: false /* true | false */,
-  disableCustomizer: true /* true | false */,
+  disableCustomizer: false /* true | false */,
   toastPosition:
     "top-right" /* top-left | top-center | top-right | bottom-left | bottom-center | bottom-right */,
   themeColor: "primary",
