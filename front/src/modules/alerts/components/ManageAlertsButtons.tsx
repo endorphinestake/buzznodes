@@ -57,13 +57,15 @@ const ManageAlertsButtons = (props: IManageUserAlertsButtonProps) => {
             variant="contained"
             color="primary"
             onClick={() => {
-              if (profile?.phones.length) {
-                handleSaveAlerts();
-              } else {
+              if (!profile?.phones.length) {
                 Notify(
                   "warning",
                   t(`Please add your phone number in the settings`)
                 );
+              } else if (!profile.phones[0].status) {
+                Notify("warning", t(`Please confirm your phone via SMS code`));
+              } else {
+                handleSaveAlerts();
               }
             }}
             endIcon={<BellCheck />}
