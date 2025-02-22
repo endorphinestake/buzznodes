@@ -483,7 +483,9 @@ const AlertsTable = (props: IAlertsTableProps) => {
         disableColumnMenu
         getRowId={(row) => Math.floor(Math.random() * 1000000)}
         localeText={{
-          noRowsLabel: t(`No rows`),
+          noRowsLabel: t(
+            `No enabled alerts. Enable them on the Validators or Bridges page`
+          ),
         }}
         initialState={{
           sorting: {
