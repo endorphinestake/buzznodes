@@ -12,6 +12,8 @@ from sms.models import (
     SMSAlertJailedStatus,
     SMSAlertTombstonedStatus,
     SMSAlertBondedStatus,
+    SMSAlertOtelUpdate,
+    SMSAlertSyncStatus,
 )
 from alerts.models import AlertSettingBase
 
@@ -50,6 +52,8 @@ class Command(BaseCommand):
             AlertSettingBase.AlertType.JAILED: SMSAlertJailedStatus,
             AlertSettingBase.AlertType.TOMBSTONED: SMSAlertTombstonedStatus,
             AlertSettingBase.AlertType.BONDED: SMSAlertBondedStatus,
+            AlertSettingBase.AlertType.OTEL_UPDATE: SMSAlertOtelUpdate,
+            AlertSettingBase.AlertType.SYNC_STATUS: SMSAlertSyncStatus,
         }
 
         # SMSAlerts

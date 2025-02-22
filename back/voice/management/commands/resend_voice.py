@@ -11,6 +11,8 @@ from voice.models import (
     VoiceAlertJailedStatus,
     VoiceAlertTombstonedStatus,
     VoiceAlertBondedStatus,
+    VoiceAlertOtelUpdate,
+    VoiceAlertSyncStatus,
 )
 from alerts.models import AlertSettingBase
 
@@ -32,6 +34,8 @@ class Command(BaseCommand):
             AlertSettingBase.AlertType.JAILED: VoiceAlertJailedStatus,
             AlertSettingBase.AlertType.TOMBSTONED: VoiceAlertTombstonedStatus,
             AlertSettingBase.AlertType.BONDED: VoiceAlertBondedStatus,
+            AlertSettingBase.AlertType.OTEL_UPDATE: VoiceAlertOtelUpdate,
+            AlertSettingBase.AlertType.SYNC_STATUS: VoiceAlertSyncStatus,
         }
 
         # VoiceAlerts
