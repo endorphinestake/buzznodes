@@ -8,3 +8,93 @@
 {% block description %}
 {% translate 'Real-Time Monitoring of Tendermint Network Nodes with IP Telephony Integration.'%}
 {% endblock %}
+
+{% block content %}
+<section id="a1">
+    <div>
+        <h1>
+            {% blocktrans %}
+            Real-Time <bold>Monitoring</bold>
+            of Tendermint Network Nodes with <bold>IP Telephony Integration</bold>.
+            {% endblocktrans %}
+        </h1>
+
+        <a class="a21 openPopup" href="{% url 'home' %}#.">
+            <i class="fa-regular fa-envelope"></i><span>{% translate 'Get a quote' %}</span>
+        </a>
+        <p>
+            {% blocktrans %}
+            Specifically designed to monitor the Consensus and DA nodes of <a href="https://celestia.org/"
+                target="blank">Celestia</a> &#8212; the <strong>first modular blockchain</strong>, we aim to be the
+            <strong>first validator monitoring tool with IP telephony</strong> integration.
+            {% endblocktrans %}
+        </p>
+        <div class="ramka">
+            <div class="x4">
+                <p>
+                    <a href="https://celestia.buzznodes.com" target="blank">{% translate 'Connect' %}</a>
+                </p>
+                <p>
+                    <a href="https://celestia.buzznodes.com" target="blank">
+                        <img decoding="async"
+                            src="{% static 'wp-content/uploads/dF3R-QjVg_Cw83prBHgny-300x77.png' %}"></a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div>
+            <h3>{% translate 'Notification channels' %}</h3>
+            <div class="x2">
+                <p>
+                    <i class="fa-solid fa-comment-sms"></i> {% translate 'SMS Alert' %} &nbsp;&nbsp;<i
+                        class="fa-solid fa-phone-volume"></i> {% translate 'VoIP Call Alert' %}
+                </p>
+            </div>
+        </div>
+
+        <div>
+            <h3>{% translate 'Management' %}</h3>
+            <div class="x4">
+                <p><i class="fa-solid fa-earth-europe"></i> Web </p>
+                <p class="blur"><i class="fa-brands fa-android"></i> Android</p>
+                <p class="blur"><i class="fa-brands fa-apple"></i> Ios</p>
+                <p class="blur"><i class="fa-brands fa-discord"></i> Discord</p>
+                <p class="blur"><i class="fa-brands fa-telegram"></i> Telegram</p>
+            </div>
+        </div>
+
+        <div class="invert">
+            <h3>{% translate 'Benefits' %}</h3>
+            <div class="x2">
+                <p>{% translate 'Plaftorma continues to be developed and we welcome your ideas and feedback.' %}</p>
+                <p>{% translate 'All call charges are financed by our fund.' %}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="kkey">
+    <div class="x3">
+        {% blocktrans %}
+        <p>Receive immediate notifications via automated calls and messages whenever critical events occur, such as
+            missed blocks, commission changes or changes voting power.</p>
+        <p>Access detailed node performance metrics, uptime statistics, and network health insights, manage your
+            notifications, all in one intuitive dashboard.</p>
+        <p>Whether you&#8217;re a validator or delegator, our platform is your reliable partner for maintaining
+            optimal node performance and ensuring network stability — proudly supported by the <a target="blank"
+                href="https://endorphinestake.com/">endorphinestake team.</a> </p>
+        {% endblocktrans %}
+    </div>
+</section>
+
+<section id="a3">
+    <center>
+        <h2>{% translate 'Coverage map' %}</h2>
+    </center>
+    <br><br>
+    <img decoding="async" src="{% static 'wp-content/uploads/map.png' %}">
+</section>
+
+{% endblock %}

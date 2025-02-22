@@ -29,6 +29,16 @@ urlpatterns += i18n_patterns(
     path("django-rq/", include("django_rq.urls")),
     path("rosetta/", include("rosetta.urls")),
     path("ckeditor5/", include("django_ckeditor_5.urls")),
+    path(
+        "privacy-policy/",
+        TemplateView.as_view(template_name="privacy-policy.html"),
+        name="privacy-policy",
+    ),
+    path(
+        "terms-and-conditions/",
+        TemplateView.as_view(template_name="terms-and-conditions.html"),
+        name="terms-and-conditions",
+    ),
     prefix_default_language=True,
 )
 
