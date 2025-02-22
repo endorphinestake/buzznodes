@@ -62,11 +62,23 @@ const SocialAuthComponent = (props: IProps) => {
 
   // Events on UserService.loginUserGoogle
   useEffect(() => {
-    if (isLoginGoogleError) {
-      Notify(
-        "error",
-        t(`{{social}}: authentication failed!`, { social: "Google" })
-      );
+    // Error
+    if (
+      isLoginGoogleError &&
+      typeof isLoginGoogleError.response?.data === "object"
+    ) {
+      if (isLoginGoogleError?.response?.data) {
+        Object.entries(isLoginGoogleError.response.data).forEach(
+          ([key, value]) => {
+            if (value) {
+              Notify("warning", value.toString());
+            }
+          }
+        );
+      }
+      dispatch(resetLoginGoogleState());
+    } else if (typeof isLoginGoogleError?.response?.data === "string") {
+      Notify("warning", isLoginGoogleError.response.data.toString());
       dispatch(resetLoginGoogleState());
     }
 

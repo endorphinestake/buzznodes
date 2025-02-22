@@ -155,8 +155,11 @@ class LoginGoogleView(views.APIView):
             return response.Response(serializer.data)
 
         except User.DoesNotExist:
-            # if not serializer.validated_data["is_register"]:
-            #     return response.Response(status=status.HTTP_401_UNAUTHORIZED)
+            if not serializer.validated_data["is_register"]:
+                return response.Response(
+                    _("Email is not registered. Please sign up."),
+                    status=status.HTTP_401_UNAUTHORIZED,
+                )
 
             serializer = RegisterGoogleSerializer(
                 data=resp, context={"request": request}
