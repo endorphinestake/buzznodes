@@ -40,8 +40,6 @@ import SocialAuthComponent from "@modules/shared/components/SocialAuth";
 // ** Shared Components Imports
 import PasswordInput from "@modules/shared/components/PasswordInput";
 import TermsConditionsModalEn from "@modules/shared/components/TermsConditionsModalEn";
-import TermsConditionsModalRu from "@modules/shared/components/TermsConditionsModalRu";
-import TermsConditionsModalUk from "@modules/shared/components/TermsConditionsModalUk";
 import Notify from "@modules/shared/utils/Notify";
 
 // ** Yup Imports
@@ -325,13 +323,11 @@ const RegisterPage = () => {
         </Card>
       </main>
 
-      {i18n.language.split("-")[0] === "ru" ? (
-        <TermsConditionsModalRu open={showTerms} setOpen={setShowTerms} />
-      ) : i18n.language.split("-")[0] === "uk" ? (
-        <TermsConditionsModalUk open={showTerms} setOpen={setShowTerms} />
-      ) : (
-        <TermsConditionsModalEn open={showTerms} setOpen={setShowTerms} />
-      )}
+      <TermsConditionsModalEn
+        open={showTerms}
+        setOpen={setShowTerms}
+        onConfirm={() => {}}
+      />
 
       {/* <FooterIllustrationsV1
         image={`/images/pages/auth-v1-register-mask-${theme.palette.mode}.png`}

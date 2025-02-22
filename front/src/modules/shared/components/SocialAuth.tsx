@@ -1,5 +1,5 @@
 // ** React Imports
-import { useEffect, MouseEvent } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 // ** Next Imports
 import { useRouter } from "next/router";
@@ -11,6 +11,7 @@ import { useUserService } from "@hooks/useUserService";
 
 // ** Components
 import Notify from "@modules/shared/utils/Notify";
+import TermsConditionsModalEn from "@modules/shared/components/TermsConditionsModalEn";
 import { GoogleLoginButton } from "react-social-login-buttons";
 
 // ** MUI Imports
@@ -23,6 +24,9 @@ interface IProps {
 const SocialAuthComponent = (props: IProps) => {
   // ** Props
   const { isRegister } = props;
+
+  // ** State
+  const [showTerms, setShowTerms] = useState<boolean>(false);
 
   // ** Hooks
   const router = useRouter();
@@ -75,17 +79,35 @@ const SocialAuthComponent = (props: IProps) => {
     }
   }, [isLoginGoogleError, isLoginGoogleLoaded]);
 
+  const onConfirmAgree = () => {
+    loginUserGoogle();
+  };
+
   return (
-    <Grid container justifyContent="center">
-      <Grid item xs={12} md={3}>
-        <GoogleLoginButton
-          // align="center"
-          text="Google"
-          size="45px"
-          onClick={() => loginUserGoogle()}
-        />
+    <Fragment>
+      <Grid container justifyContent="center">
+        <Grid item xs={12} md={3}>
+          <GoogleLoginButton
+            // align="center"
+            text="Google"
+            size="45px"
+            onClick={() => {
+              if (isRegister) {
+                setShowTerms(true);
+              } else {
+                loginUserGoogle();
+              }
+            }}
+          />
+        </Grid>
       </Grid>
-    </Grid>
+
+      <TermsConditionsModalEn
+        open={showTerms}
+        setOpen={setShowTerms}
+        onConfirm={onConfirmAgree}
+      />
+    </Fragment>
   );
 };
 
