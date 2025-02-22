@@ -67,7 +67,7 @@ const UserPhoneField = forwardRef(
       resetResendUserPhoneConfirmState,
     } = useUserService();
 
-    const handleSubmit = () => {
+    const handleSubmitSettings = () => {
       if (phone.length && !profile?.phones.length) {
         dispatch(
           createUserPhone({
@@ -84,7 +84,7 @@ const UserPhoneField = forwardRef(
     };
 
     useImperativeHandle(ref, () => ({
-      handleSubmit,
+      handleSubmitSettings,
     }));
 
     const handleChangePhone = (event: ChangeEvent<HTMLInputElement>) => {
