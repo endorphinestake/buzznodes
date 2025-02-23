@@ -26,6 +26,7 @@ import TextSearchOutline from "@modules/shared/components/TextSearchOutline";
 import SelectValidatorStatus from "@modules/blockchains/components/SelectValidatorStatus";
 import ValidatorsTable from "@modules/blockchains/components/ValidatorsTable";
 import SelectAutorefresh from "@modules/shared/components/SelectAutorefresh";
+import TawkMessengerReact from "@tawk.to/tawk-messenger-react";
 
 // ** Mui Imports
 import { Grid, Card, Box, CardHeader, Typography } from "@mui/material";
@@ -228,6 +229,11 @@ const HomePage = () => {
             </Card>
           </Grid>
         </Grid>
+
+        <TawkMessengerReact
+          propertyId={process.env.TAWK_PROPERY_ID || ""}
+          widgetId={process.env.TAWK_WIDGET_ID || ""}
+        />
       </main>
     </div>
   );
