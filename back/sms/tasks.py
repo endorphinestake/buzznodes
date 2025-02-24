@@ -47,21 +47,21 @@ def submit_sms_confirm(
         expire_code=now() + settings.PHONE_NUMBER_CODE_EXPIRED,
     )
 
-    if provider == SMSBase.Provider.MAIN:
-        err, sms_id = hicell_submit_sms(phone=phone_number.phone, text=text)
-    elif provider == SMSBase.Provider.RESERVE1:
-        err, sms_id = bird_submit_sms(phone=phone_number.phone, text=text)
-    else:
-        err, sms_id = f"Unknown SMS provider: {provider}", None
+    # if provider == SMSBase.Provider.MAIN:
+    #     err, sms_id = hicell_submit_sms(phone=phone_number.phone, text=text)
+    # elif provider == SMSBase.Provider.RESERVE1:
+    #     err, sms_id = bird_submit_sms(phone=phone_number.phone, text=text)
+    # else:
+    #     err, sms_id = f"Unknown SMS provider: {provider}", None
 
-    if err is None:
-        sms_instance.sms_id = sms_id
-        sms_instance.status = SMSBase.Status.SENT
-        sms_instance.save()
-    else:
-        sms_instance.err = err
-        sms_instance.status = SMSBase.Status.ERROR
-        sms_instance.save()
+    # if err is None:
+    #     sms_instance.sms_id = sms_id
+    #     sms_instance.status = SMSBase.Status.SENT
+    #     sms_instance.save()
+    # else:
+    #     sms_instance.err = err
+    #     sms_instance.status = SMSBase.Status.ERROR
+    #     sms_instance.save()
 
 
 @job("submit_sms")
