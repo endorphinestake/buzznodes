@@ -62,6 +62,9 @@ class User(AbstractUser):
         db_index=True, max_length=100, null=True, blank=True, verbose_name=_("Token")
     )
     tmp_email = models.EmailField(null=True, blank=True)
+    phones_count = models.PositiveIntegerField(
+        default=0, verbose_name=_("Total mumber of phones")
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ()

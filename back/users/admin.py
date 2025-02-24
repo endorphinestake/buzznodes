@@ -142,6 +142,7 @@ class UserAdmin(DjangoUserAdmin):
         "locale",
         "is_active",
         "display_user_phones",
+        "phones_count",
         "count_voting_power_alerts",
         "count_uptime_alerts",
         "count_commission_alerts",

@@ -1,7 +1,7 @@
 import phonenumbers
 
+from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
-
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.crypto import get_random_string
@@ -306,6 +306,14 @@ class CreateUserPhoneSerializer(serializers.Serializer):
             )
 
         # Fix spam
+        if (
+            self.context["request"].user.phones_count
+            >= settings.MAX_RETRIES_USER_PHONE_CREATE
+        ):
+            raise serializers.ValidationError(
+                _("This phone number is already registered")
+            )
+
         if self.context["request"].user.user_phones.all().count() >= 1:
             raise serializers.ValidationError(
                 _("This phone number is already registered")
@@ -314,6 +322,9 @@ class CreateUserPhoneSerializer(serializers.Serializer):
         return new_phone
 
     def create(self, validated_data: dict) -> UserPhone:
+        self.context["request"].user.phones_count += 1
+        self.context["request"].user.save()
+
         user_phone = UserPhone.objects.create(
             user=self.context["request"].user,
             phone=validated_data["phone"],
