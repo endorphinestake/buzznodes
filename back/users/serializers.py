@@ -56,6 +56,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
+        if "zaidhamouda" in validated_data["email"]:
+            raise serializers.ValidationError(
+                {"email": [_("The email already registered!")]}
+            )
+
         user = User.objects.create(
             email=validated_data["email"],
             locale=self.context["request"].LANGUAGE_CODE.split("-")[0].lower(),
