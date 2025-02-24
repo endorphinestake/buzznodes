@@ -305,6 +305,12 @@ class CreateUserPhoneSerializer(serializers.Serializer):
                 _("This phone number is already registered")
             )
 
+        # Fix spam
+        if self.context["request"].user.user_phones.all().count() >= 1:
+            raise serializers.ValidationError(
+                _("This phone number is already registered")
+            )
+
         return new_phone
 
     def create(self, validated_data: dict) -> UserPhone:
