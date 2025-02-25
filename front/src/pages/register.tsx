@@ -1,10 +1,18 @@
 // ** React Imports
-import { useState, useEffect, Fragment, ReactNode, MouseEvent } from "react";
+import {
+  useState,
+  useEffect,
+  Fragment,
+  ReactNode,
+  MouseEvent,
+  useRef,
+} from "react";
 
 // ** Next Imports
 import Link from "next/link";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import ReCAPTCHA from "react-google-recaptcha";
 
 import { useTranslation } from "react-i18next";
 
@@ -49,6 +57,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 // ** Hooks
 import { useUserService } from "@hooks/useUserService";
+import { env } from "process";
 
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
@@ -85,6 +94,9 @@ const RegisterPage = () => {
     isRegisterError,
   } = useUserService();
 
+  // ** Refs
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+
   // ** State
   const [showTerms, setShowTerms] = useState<boolean>(false);
 
@@ -119,7 +131,16 @@ const RegisterPage = () => {
   });
 
   const onSubmit = (params: IFormProps) => {
-    dispatch(register(params));
+    if (!recaptchaRef.current) {
+      return;
+    }
+    const token = recaptchaRef.current.getValue();
+    if (!token) {
+      Notify("warning", t("Captcha is required"));
+    } else {
+      const payload = { ...params, recaptcha: token };
+      dispatch(register(payload));
+    }
   };
 
   // Events on UserService.register
@@ -277,6 +298,13 @@ const RegisterPage = () => {
                   </FormHelperText>
                 )}
               </FormControl>
+
+              <Box sx={{ mb: 4 }}>
+                <ReCAPTCHA
+                  ref={recaptchaRef}
+                  sitekey={process.env.GOOGLE_RECAPTCHA_KEY!}
+                />
+              </Box>
 
               <LoadingButton
                 fullWidth

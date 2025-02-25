@@ -1,4 +1,5 @@
 import phonenumbers
+import requests
 
 from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
@@ -47,20 +48,32 @@ class RegisterSerializer(serializers.ModelSerializer):
         ],
     )
     password = serializers.CharField(required=True, validators=[validate_password])
+    recaptcha = serializers.CharField(required=True)
 
     class Meta:
         model = User
         fields = (
             "email",
             "password",
+            "recaptcha",
         )
 
-    def create(self, validated_data):
-        if "zaidhamouda" in validated_data["email"]:
-            raise serializers.ValidationError(
-                {"email": [_("The email already registered!")]}
-            )
+    def validate_recaptcha(self, value):
+        print("value: ", value)
+        recaptcha_response = requests.post(
+            "https://www.google.com/recaptcha/api/siteverify",
+            data={"secret": settings.GOOGLE_RECAPTCHA_SECRET, "response": value},
+            timeout=10,
+        )
+        result = recaptcha_response.json()
 
+        print("result: ", result)
+
+        if not result.get("success"):
+            raise serializers.ValidationError(_("reCAPTCHA validation failed."))
+        return value
+
+    def create(self, validated_data):
         user = User.objects.create(
             email=validated_data["email"],
             locale=self.context["request"].LANGUAGE_CODE.split("-")[0].lower(),

@@ -254,6 +254,8 @@ UNITALK_VOICE_API_KEY = env.str("UNITALK_VOICE_API_KEY")
 
 USER_PHONE_VOICE_TEST_TEXT = """<speak>Hi!<break time="300ms"></break> I'm your BuzzNodes assistant. This is a test call.</speak>"""
 
+GOOGLE_RECAPTCHA_SECRET = env.str("GOOGLE_RECAPTCHA_SECRET")
+
 CKEDITOR_5_CONFIGS = {
     "default": {
         "toolbar": [
