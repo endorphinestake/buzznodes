@@ -11,6 +11,8 @@ class Blockchain(models.Model):
     class NetworkType(models.TextChoices):
         CELESTIA_TESTNET = "CELESTIA_TESTNET", _("Celestia Testnet")
         CELESTIA_MAINNET = "CELESTIA_MAINNET", _("Celestia Mainnet")
+        OG_TESTNET = "OG_TESTNET", _("0g Testnet")
+        OG_MAINNET = "OG_MAINNET", _("0g Mainnet")
 
     class ChartType(models.TextChoices):
         COSMOS_UPTIME = "cosmos_validator_uptime", "Cosmos Uptime"

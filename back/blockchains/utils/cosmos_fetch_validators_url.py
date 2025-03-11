@@ -1,4 +1,5 @@
 import httpx
+import urllib.parse
 
 from logs.models import Log
 
@@ -9,14 +10,15 @@ async def cosmos_fetch_validators_url(urls, timeout):
             results = []
             page = 1
             page_key = ""
-            per_page = 500
-            max_pages = 10
+            per_page = 10000
+            max_pages = 100
 
             async with httpx.AsyncClient(timeout=timeout) as client:
                 while True:
                     page_url = (
                         f"{url}?pagination.limit={per_page}&pagination.key={page_key}"
                     )
+                    print("page_url: ", page_url)
                     resp = await client.get(page_url)
                     resp.raise_for_status()
 
@@ -25,7 +27,12 @@ async def cosmos_fetch_validators_url(urls, timeout):
                         raise ValueError(f"Invalid response format for {page_url}")
 
                     page += 1
-                    page_key = data["pagination"]["next_key"]
+
+                    page_key = None
+                    if data["pagination"]["next_key"]:
+                        page_key = urllib.parse.quote(
+                            data["pagination"]["next_key"], safe=""
+                        )
                     results.extend(data["validators"])
 
                     if not page_key or page > max_pages:
