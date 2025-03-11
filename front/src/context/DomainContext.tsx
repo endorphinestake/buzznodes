@@ -53,7 +53,7 @@ const PROD_DOMAINS = {
     logo: CelestiaLogo,
     domain: "0g.buzznodes.com",
     name: "0G Testnet",
-    symbol: "0G",
+    symbol: "A0GI",
     isDaEnabled: false,
   },
 } as const as Record<string, DomainValue>;
