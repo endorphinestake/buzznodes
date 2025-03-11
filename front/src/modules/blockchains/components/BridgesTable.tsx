@@ -153,7 +153,7 @@ const BridgesTable = (props: IBridgesTableProps) => {
         disableSelectionOnClick
         columns={columns}
         pageSize={pageSize}
-        rowsPerPageOptions={[25, 50, 100, 500]}
+        rowsPerPageOptions={[25, 50, 100]}
         loading={isBlockchainBridgesLoading}
         rows={bridges}
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}

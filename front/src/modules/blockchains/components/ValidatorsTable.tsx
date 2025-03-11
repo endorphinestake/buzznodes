@@ -152,7 +152,7 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
         disableSelectionOnClick
         columns={columns}
         pageSize={pageSize}
-        rowsPerPageOptions={[25, 50, 100, 500]}
+        rowsPerPageOptions={[25, 50, 100]}
         loading={isBlockchainValidatorsLoading}
         rows={validators}
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
