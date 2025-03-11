@@ -42,6 +42,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://buzznodes.com",
     "https://celestia.buzznodes.com",
     "https://celestia-testnet.buzznodes.com",
+    "https://0g.buzznodes.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://celestia.local.com:3000",
@@ -49,6 +50,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://buzznodes.com",
     "https://celestia.buzznodes.com",
     "https://celestia-testnet.buzznodes.com",
+    "https://0g.buzznodes.com",
 ]
 
 INSTALLED_APPS = [

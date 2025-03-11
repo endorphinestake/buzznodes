@@ -18,7 +18,6 @@ async def cosmos_fetch_validators_url(urls, timeout):
                     page_url = (
                         f"{url}?pagination.limit={per_page}&pagination.key={page_key}"
                     )
-                    print("page_url: ", page_url)
                     resp = await client.get(page_url)
                     resp.raise_for_status()
 
