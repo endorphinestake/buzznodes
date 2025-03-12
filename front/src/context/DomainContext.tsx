@@ -2,6 +2,7 @@ import { ComponentType } from "react";
 
 import { createContext, useContext, useEffect, useState } from "react";
 import CelestiaLogo from "@modules/shared/icons/celestia";
+import OGLogo from "@modules/shared/icons/0g";
 
 type DomainValue = {
   blockchainId: number;
@@ -48,14 +49,14 @@ const PROD_DOMAINS = {
     symbol: "TIA",
     isDaEnabled: true,
   },
-  "0g.buzznodes.com": {
-    blockchainId: 3,
-    logo: CelestiaLogo,
-    domain: "0g.buzznodes.com",
-    name: "0G Testnet",
-    symbol: "A0GI",
-    isDaEnabled: false,
-  },
+  // "0g.buzznodes.com": {
+  //   blockchainId: 3,
+  //   logo: OGLogo,
+  //   domain: "0g.buzznodes.com",
+  //   name: "0G Testnet",
+  //   symbol: "A0GI",
+  //   isDaEnabled: false,
+  // },
 } as const as Record<string, DomainValue>;
 
 type DomainConfig = typeof DEV_DOMAINS | typeof PROD_DOMAINS;
