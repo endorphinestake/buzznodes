@@ -6,7 +6,7 @@ from logs.models import Log
 async def cosmos_fetch_rpc_url(urls, timeout):
     for url in urls:
         try:
-            results = []
+            validators = []
             page = 1
             per_page = 100
             max_pages = 10
@@ -26,11 +26,14 @@ async def cosmos_fetch_rpc_url(urls, timeout):
                         raise ValueError(f"Invalid response format for {page_url}")
 
                     page += 1
-                    results.extend(data["result"]["validators"])
+                    validators.extend(data["result"]["validators"])
                     total = int(data["result"]["total"])
 
-                    if len(results) >= total or page > max_pages:
-                        return results
+                    if len(validators) >= total or page > max_pages:
+                        return {
+                            "network_height": int(data["result"]["block_height"]),
+                            "validators": validators,
+                        }
 
         except httpx.TimeoutException as e:
             await Log.awarning(f"Timeout for fetching data from {url}: {str(e)}")

@@ -21,7 +21,6 @@ from blockchains.serilazers import (
     RpcValidatorSerializer,
     BlockchainValidatorSerializer,
     InfosValidatorSerializer,
-    RpcStatusValidatorSerializer,
     ValidatorChartsSerializer,
     GrafanaChartSerializer,
 )
@@ -30,7 +29,6 @@ from blockchains.filters import BlockchainValidatorFilter, BlockchainBridgeFilte
 from blockchains.utils.cosmos_fetch_rpc_url import cosmos_fetch_rpc_url
 from blockchains.utils.cosmos_fetch_validators_url import cosmos_fetch_validators_url
 from blockchains.utils.cosmos_fetch_infos_url import cosmos_fetch_infos_url
-from blockchains.utils.cosmos_fetch_rpc_status_url import cosmos_fetch_rpc_status_url
 from blockchains.utils.cosmos_fetch_da_url import cosmos_fetch_da_url
 from blockchains.utils.hex_to_celestiavalcons import hex_to_celestiavalcons
 from blockchains.utils.convert_valoper_to_wallet import convert_valoper_to_wallet
@@ -77,10 +75,6 @@ class CosmosBlockchainMetricsView(views.APIView):
                 urls=infos_urls,
                 timeout=settings.METRICS_TIMEOUT_SECONDS,
             ),
-            cosmos_fetch_rpc_status_url(
-                urls=rpc_urls,
-                timeout=settings.METRICS_TIMEOUT_SECONDS,
-            ),
             cosmos_fetch_da_url(
                 ntype,
                 urls=da_urls,
@@ -124,8 +118,12 @@ class CosmosBlockchainMetricsView(views.APIView):
 
         # print(f"got API data: {time.perf_counter() - start:.6f}")
 
+        network_height = results[0]["network_height"]
+
         # Validate Data
-        rpc_serializer = RpcValidatorSerializer(data=results[0], many=True)
+        rpc_serializer = RpcValidatorSerializer(
+            data=results[0]["validators"], many=True
+        )
         if not rpc_serializer.is_valid():
             return response.Response(
                 rpc_serializer.errors,
@@ -145,13 +143,6 @@ class CosmosBlockchainMetricsView(views.APIView):
         if not infos_serializer.is_valid():
             return response.Response(
                 infos_serializer.errors,
-                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            )
-
-        status_serializer = RpcStatusValidatorSerializer(data=results[3])
-        if not status_serializer.is_valid():
-            return response.Response(
-                status_serializer.errors,
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
             )
 
@@ -332,7 +323,7 @@ class CosmosBlockchainMetricsView(views.APIView):
         }
 
         # Create Bridges
-        for node_id, bridge in results[4].items():
+        for node_id, bridge in results[3].items():
             if not bridges_local.get(node_id):
                 bridges_local[node_id] = BlockchainBridge.objects.create(
                     blockchain=blockchain,
@@ -347,7 +338,7 @@ class CosmosBlockchainMetricsView(views.APIView):
 
         # Update Bridges
         for node_id, bridge in bridges_local.items():
-            updated_data = results[4].get(node_id, {})
+            updated_data = results[3].get(node_id, {})
 
             semantic_version = updated_data.get("semantic_version", bridge.version)
             system_version = updated_data.get("system_version", bridge.system_version)
@@ -359,11 +350,7 @@ class CosmosBlockchainMetricsView(views.APIView):
                 bridge.last_timestamp,
             )
             last_timestamp_diff = int(now_timestamp - last_timestamp)
-            node_height_diff = max(
-                0,
-                status_serializer.validated_data["sync_info"]["latest_block_height"]
-                - node_height,
-            )
+            node_height_diff = max(0, network_height - node_height)
 
             updated_fields = {}
             if bridge.version != semantic_version:
@@ -404,12 +391,10 @@ class CosmosBlockchainMetricsView(views.APIView):
                         updated=now(),
                     )
 
-            # Update blockchain status info (latest_block_height)
-            Blockchain.objects.filter(pk=blockchain.id).update(
-                network_height=status_serializer.validated_data["sync_info"][
-                    "latest_block_height"
-                ]
-            )
+        # Update blockchain status info (latest_block_height)
+        Blockchain.objects.filter(pk=blockchain.id).update(
+            network_height=network_height
+        )
 
         # print(f"updated bridges: {time.perf_counter() - start:.6f}")
 

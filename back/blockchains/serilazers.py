@@ -132,14 +132,6 @@ class InfosValidatorSerializer(serializers.Serializer):
     missed_blocks_counter = serializers.IntegerField()
 
 
-class RpcStatusSyncInfoSerializer(serializers.Serializer):
-    latest_block_height = serializers.IntegerField(required=True)
-
-
-class RpcStatusValidatorSerializer(serializers.Serializer):
-    sync_info = RpcStatusSyncInfoSerializer()
-
-
 class PrimaryPictureSerializer(serializers.Serializer):
     url = serializers.URLField()
     source = serializers.CharField(allow_null=True, required=False)
