@@ -55,21 +55,28 @@ const DomainDropdown = () => {
           horizontal: "center",
         }}
       >
-        {Object.entries(domains).map(([domainName, domainData]) =>
-          domainName !== domain ? (
-            <MenuItem
-              key={domainName}
-              onClick={() => {
-                window.location.href = `https://${domainData.domain}`;
-              }}
-            >
-              <ListItemIcon>
-                <domainData.logo fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary={domainData.name} />
-            </MenuItem>
-          ) : null
-        )}
+        {Object.entries(domains)
+          .filter(
+            ([domainName]) =>
+              (domain.includes("celestia") &&
+                domainName.includes("celestia")) ||
+              (domain.includes("0g") && domainName.includes("0g"))
+          )
+          .map(([domainName, domainData]) =>
+            domainName !== domain ? (
+              <MenuItem
+                key={domainName}
+                onClick={() => {
+                  window.location.href = `https://${domainData.domain}`;
+                }}
+              >
+                <ListItemIcon>
+                  <domainData.logo fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary={domainData.name} />
+              </MenuItem>
+            ) : null
+          )}
       </Menu>
     </div>
   );

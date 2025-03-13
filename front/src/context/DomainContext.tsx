@@ -16,7 +16,7 @@ type DomainValue = {
 const DEV_DOMAINS = {
   "celestia.local.com": {
     blockchainId: 1,
-    logo: CelestiaLogo,
+    logo: OGLogo,
     domain: "celestia.local.com",
     name: "Celestia Mainnet",
     symbol: "TIA",
@@ -49,14 +49,14 @@ const PROD_DOMAINS = {
     symbol: "TIA",
     isDaEnabled: true,
   },
-  // "0g.buzznodes.com": {
-  //   blockchainId: 3,
-  //   logo: OGLogo,
-  //   domain: "0g.buzznodes.com",
-  //   name: "0G Testnet",
-  //   symbol: "A0GI",
-  //   isDaEnabled: false,
-  // },
+  "0g.buzznodes.com": {
+    blockchainId: 3,
+    logo: OGLogo,
+    domain: "0g.buzznodes.com",
+    name: "0G Testnet",
+    symbol: "A0GI",
+    isDaEnabled: false,
+  },
 } as const as Record<string, DomainValue>;
 
 type DomainConfig = typeof DEV_DOMAINS | typeof PROD_DOMAINS;
