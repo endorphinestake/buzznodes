@@ -15,6 +15,7 @@ export interface ILoginSerializer {
 export interface IRegisterSerializer {
   email: string;
   password: string;
+  domain: string;
 }
 
 export interface IRegisterConfirmSerializer {

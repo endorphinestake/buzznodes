@@ -13,13 +13,18 @@ context = settings_vars(None)
 
 
 @job("submit_email")
-def send_verification_mail(email: str, password: str, token: str):
+def send_verification_mail(email: str, password: str, token: str, domain: str | None):
+    if domain:
+        domain = f"https://{domain}"
+    else:
+        domain = settings.FRONTEND_URL
+
     html_message = render_to_string(
         "emails/email_verification.html",
         {
             "email": email,
             "password": password,
-            "confirm_link": f"{settings.FRONTEND_URL}/register-confirm?{urlencode({'token': token})}",
+            "confirm_link": f"{domain}/register-confirm?{urlencode({'token': token})}",
             **context,
         },
     )

@@ -57,7 +57,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 // ** Hooks
 import { useUserService } from "@hooks/useUserService";
-import { env } from "process";
+import { useDomain } from "@context/DomainContext";
 
 // ** Styled Components
 const Card = styled(MuiCard)<CardProps>(({ theme }) => ({
@@ -78,11 +78,13 @@ interface IFormProps {
   email: string;
   password: string;
   agree: boolean;
+  domain: string;
 }
 
 const RegisterPage = () => {
   // ** Hook
   const router = useRouter();
+  const { domain } = useDomain();
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const {
@@ -125,6 +127,7 @@ const RegisterPage = () => {
       email: "",
       password: "",
       agree: false,
+      domain: domain,
     },
     mode: "onBlur",
     resolver: yupResolver(schema),

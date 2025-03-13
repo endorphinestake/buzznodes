@@ -97,6 +97,7 @@ class RegisterView(views.APIView):
             email=user.email,
             password=serializer.validated_data["password"],
             token=user.token,
+            domain=serializer.validated_data.get("domain"),
         )
 
         user_serializer = UserSerializer(user)

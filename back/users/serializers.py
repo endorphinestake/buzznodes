@@ -49,6 +49,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     )
     password = serializers.CharField(required=True, validators=[validate_password])
     recaptcha = serializers.CharField(required=True)
+    domain = serializers.CharField(required=False)
 
     class Meta:
         model = User
@@ -56,6 +57,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             "email",
             "password",
             "recaptcha",
+            "domain",
         )
 
     def validate_recaptcha(self, value):
