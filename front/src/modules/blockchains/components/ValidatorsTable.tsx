@@ -25,12 +25,7 @@ import ValidatorMonikerLabel from "@modules/blockchains/components/labels/Valida
 // ** MUI Imports
 import { Box, Typography, IconButton, Tooltip } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import {
-  BellPlus,
-  BellCheck,
-  BellAlert,
-  ChartAreaspline,
-} from "mdi-material-ui";
+import { BellPlus, BellCheck, ChartAreaspline } from "mdi-material-ui";
 
 const ValidatorsTable = (props: IValidatorsTableProps) => {
   // ** Props

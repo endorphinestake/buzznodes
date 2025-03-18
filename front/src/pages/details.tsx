@@ -22,6 +22,9 @@ import { TBlockchainValidator } from "@modules/blockchains/types";
 // ** Shared Components
 import styles from "@styles/Home.module.css";
 import SelectValidators from "@modules/blockchains/components/SelectValidators";
+import ValidatorButtons from "@modules/blockchains/components/details/ValidatorButtons";
+import ValidatorStatus from "@modules/blockchains/components/details/ValidatorStatus";
+import ValidatorJailedStatus from "@modules/blockchains/components/details/ValidatorJailedStatus";
 
 // ** MUI Imports
 import {
@@ -29,25 +32,11 @@ import {
   CardHeader,
   Grid,
   CircularProgress,
-  Typography,
   CardContent,
   Divider,
 } from "@mui/material";
 import Box, { BoxProps } from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
-import {
-  LockOpenOutline,
-  AccountOutline,
-  StarOutline,
-  TrendingUp,
-} from "mdi-material-ui";
-
-// Styled Box component
-const StyledBox = styled(Box)<BoxProps>(({ theme }) => ({
-  [theme.breakpoints.up("sm")]: {
-    borderRight: `1px solid ${theme.palette.divider}`,
-  },
-}));
 
 const ValidatorDetailsPage = () => {
   // ** Hooks
@@ -135,7 +124,7 @@ const ValidatorDetailsPage = () => {
 
               <Divider />
 
-              {isBlockchainValidatorDetailLoading ? (
+              {isBlockchainValidatorDetailLoading || !validator ? (
                 <Box
                   sx={{
                     display: "flex",
@@ -147,88 +136,26 @@ const ValidatorDetailsPage = () => {
                   <CircularProgress />
                 </Box>
               ) : (
-                <Grid item xs={12} sm={7}>
-                  <CardContent
-                    sx={{
-                      p: (theme) =>
-                        `${theme.spacing(3.25, 5.75, 6.25)} !important`,
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ mb: 2 }}>
-                      {blockchainValidator?.moniker}
-                    </Typography>
-                    <Typography variant="body2">
-                      {blockchainValidator?.details}
-                    </Typography>
-                    <Divider sx={{ my: 7 }} />
-                    <Grid container spacing={4}>
-                      <Grid item xs={12} sm={5}>
-                        <StyledBox>
-                          <Box
-                            sx={{
-                              py: 1.25,
-                              mb: 4,
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            <LockOpenOutline
-                              sx={{ color: "primary.main", mr: 2.5 }}
-                              fontSize="small"
-                            />
-                            <Typography variant="body2">Full Access</Typography>
-                          </Box>
-                          <Box
-                            sx={{
-                              py: 1.25,
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            <AccountOutline
-                              sx={{ color: "primary.main", mr: 2.5 }}
-                              fontSize="small"
-                            />
-                            <Typography variant="body2">15 Members</Typography>
-                          </Box>
-                        </StyledBox>
-                      </Grid>
-                      <Grid item xs={12} sm={7}>
-                        <Box
-                          sx={{
-                            py: 1.25,
-                            mb: 4,
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
-                          <StarOutline
-                            sx={{ color: "primary.main", mr: 2.5 }}
-                            fontSize="small"
-                          />
-                          <Typography variant="body2">
-                            Access all Features
-                          </Typography>
-                        </Box>
-                        <Box
-                          sx={{
-                            py: 1.25,
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
-                          <TrendingUp
-                            sx={{ color: "primary.main", mr: 2.5 }}
-                            fontSize="small"
-                          />
-                          <Typography variant="body2">
-                            Lifetime Free Update
-                          </Typography>
-                        </Box>
-                      </Grid>
+                <CardContent>
+                  <Grid container spacing={4}>
+                    {/* Validator Buttons */}
+                    <Grid item xs={12} sm={6}>
+                      <ValidatorButtons validator={validator} />
                     </Grid>
-                  </CardContent>
-                </Grid>
+
+                    {/* <Grid item xs={12} sm={1}></Grid> */}
+
+                    {/* Validator Status */}
+                    <Grid item xs={12} sm={3}>
+                      <ValidatorStatus validator={validator} />
+                    </Grid>
+
+                    {/* Validator Jailed Status */}
+                    <Grid item xs={12} sm={3}>
+                      <ValidatorJailedStatus validator={validator} />
+                    </Grid>
+                  </Grid>
+                </CardContent>
               )}
             </Card>
           </Grid>
