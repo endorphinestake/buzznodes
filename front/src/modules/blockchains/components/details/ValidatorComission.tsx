@@ -8,6 +8,9 @@ import { hexToRGBA } from "src/@core/utils/hex-to-rgba";
 // ** Types & Interfaces Imports
 import { TBlockchainValidatorDetail } from "@modules/blockchains/types";
 
+// ** Third Party Imports
+import { ApexOptions } from "apexcharts";
+
 // ** Shared Components Imports
 import ReactApexcharts from "src/@core/components/react-apexcharts";
 
@@ -85,7 +88,7 @@ const ValidatorComission = ({
         style: {
           fontSize: "13px",
           fontWeight: 600,
-          color: "text.primary",
+          colors: "text.primary",
         },
         align: theme.direction === "rtl" ? "right" : "left",
       },

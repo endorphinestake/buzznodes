@@ -172,69 +172,87 @@ const ValidatorDetailsPage = () => {
 
               <Divider />
 
-              {isBlockchainValidatorDetailLoading && !blockchainValidator ? (
-                <CircularLoader />
-              ) : (
-                <CardContent>
-                  <Grid container spacing={4}>
-                    {/* Validator Buttons */}
-                    <Grid item xs={12} sm={6}>
+              <CardContent>
+                <Grid container spacing={4}>
+                  {/* Validator Buttons */}
+                  <Grid item xs={12} sm={6}>
+                    {!blockchainValidator ? (
+                      <CircularLoader />
+                    ) : (
                       <ValidatorButtons validator={blockchainValidator} />
-                    </Grid>
-
-                    {/* <Grid item xs={12} sm={1}></Grid> */}
-
-                    {/* Validator Status */}
-                    <Grid item xs={12} sm={3}>
-                      <ValidatorStatus validator={blockchainValidator} />
-                    </Grid>
-
-                    {/* Validator Jailed Status */}
-                    <Grid item xs={12} sm={3}>
-                      <ValidatorJailedStatus validator={blockchainValidator} />
-                    </Grid>
-
-                    {/* Validator Moniker Infos */}
-                    <Grid item xs={12} sm={6} sx={{ mt: 4 }}>
-                      <ValidatorMoniker validator={blockchainValidator} />
-                    </Grid>
-
-                    {/* Validator Voting Power */}
-                    <Grid item xs={12} sm={3} sx={{ mt: 4 }}>
-                      {isValidatorChartsLoading ? (
-                        <CircularLoader />
-                      ) : (
-                        <ValidatorVotingPower
-                          validator={blockchainValidator}
-                          charts={chartsVotingPower}
-                        />
-                      )}
-                    </Grid>
-
-                    {/* Validator Uptime */}
-                    <Grid item xs={12} sm={3} sx={{ mt: 4 }}>
-                      {isValidatorChartsLoading ? (
-                        <CircularLoader />
-                      ) : (
-                        <ValidatorUptime
-                          validator={blockchainValidator}
-                          charts={chartsUptime}
-                        />
-                      )}
-                    </Grid>
-
-                    {/* Validator Hashes */}
-                    <Grid item xs={12} sm={6}>
-                      <ValidatorHashes validator={blockchainValidator} />
-                    </Grid>
-
-                    {/* Validator Comission */}
-                    <Grid item xs={12} sm={6}>
-                      <ValidatorComission validator={blockchainValidator} />
-                    </Grid>
+                    )}
                   </Grid>
-                </CardContent>
-              )}
+
+                  {/* Validator Status */}
+                  <Grid item xs={12} sm={3}>
+                    {!blockchainValidator ? (
+                      <CircularLoader />
+                    ) : (
+                      <ValidatorStatus validator={blockchainValidator} />
+                    )}
+                  </Grid>
+
+                  {/* Validator Jailed Status */}
+                  <Grid item xs={12} sm={3}>
+                    {!blockchainValidator ? (
+                      <CircularLoader />
+                    ) : (
+                      <ValidatorJailedStatus validator={blockchainValidator} />
+                    )}
+                  </Grid>
+
+                  {/* Validator Moniker Infos */}
+                  <Grid item xs={12} sm={6} sx={{ mt: 4 }}>
+                    {isValidatorChartsLoading || !blockchainValidator ? (
+                      <CircularLoader />
+                    ) : (
+                      <ValidatorMoniker validator={blockchainValidator} />
+                    )}
+                  </Grid>
+
+                  {/* Validator Voting Power */}
+                  <Grid item xs={12} sm={3} sx={{ mt: 4 }}>
+                    {isValidatorChartsLoading || !blockchainValidator ? (
+                      <CircularLoader />
+                    ) : (
+                      <ValidatorVotingPower
+                        validator={blockchainValidator}
+                        charts={chartsVotingPower}
+                      />
+                    )}
+                  </Grid>
+
+                  {/* Validator Uptime */}
+                  <Grid item xs={12} sm={3} sx={{ mt: 4 }}>
+                    {isValidatorChartsLoading || !blockchainValidator ? (
+                      <CircularLoader />
+                    ) : (
+                      <ValidatorUptime
+                        validator={blockchainValidator}
+                        charts={chartsUptime}
+                      />
+                    )}
+                  </Grid>
+
+                  {/* Validator Hashes */}
+                  <Grid item xs={12} sm={6}>
+                    {isValidatorChartsLoading || !blockchainValidator ? (
+                      <CircularLoader />
+                    ) : (
+                      <ValidatorHashes validator={blockchainValidator} />
+                    )}
+                  </Grid>
+
+                  {/* Validator Comission */}
+                  <Grid item xs={12} sm={6}>
+                    {isValidatorChartsLoading || !blockchainValidator ? (
+                      <CircularLoader />
+                    ) : (
+                      <ValidatorComission validator={blockchainValidator} />
+                    )}
+                  </Grid>
+                </Grid>
+              </CardContent>
             </Card>
           </Grid>
         </Grid>
