@@ -42,6 +42,7 @@ import ValidatorMoniker from "@modules/blockchains/components/details/ValidatorM
 import ValidatorVotingPower from "@modules/blockchains/components/details/ValidatorVotingPower";
 import ValidatorUptime from "@modules/blockchains/components/details/ValidatorUptime";
 import ValidatorHashes from "@modules/blockchains/components/details/ValidatorHashes";
+import ValidatorComission from "@modules/blockchains/components/details/ValidatorComission";
 
 // ** MUI Imports
 import {
@@ -225,6 +226,11 @@ const ValidatorDetailsPage = () => {
                     {/* Validator Hashes */}
                     <Grid item xs={12} sm={6}>
                       <ValidatorHashes validator={blockchainValidator} />
+                    </Grid>
+
+                    {/* Validator Comission */}
+                    <Grid item xs={12} sm={6}>
+                      <ValidatorComission validator={blockchainValidator} />
                     </Grid>
                   </Grid>
                 </CardContent>
