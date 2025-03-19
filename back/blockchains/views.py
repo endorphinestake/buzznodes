@@ -579,7 +579,9 @@ class BlockchainChartView(views.APIView):
         results = asyncio.run(
             self._process_urls(
                 validator_ids=serializer.validated_data["validator_ids"],
-                step=CHART_PERIODS[serializer.validated_data["period"]]["step"],
+                step=serializer.validated_data.get(
+                    "step", CHART_PERIODS[serializer.validated_data["period"]]["step"]
+                ),
                 start_time=int(start_time),
                 end_time=int(end_time),
             )

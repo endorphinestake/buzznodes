@@ -25,6 +25,12 @@ class Blockchain(models.Model):
         D7 = "7d", _("7 Days")
         D30 = "30d", _("1 Month")
 
+    class ChartStep(models.TextChoices):
+        S25 = "25s", "25s"
+        M10 = "10m", "10m"
+        H1 = "1h", "1h"
+        H4 = "4h", "4h"
+
     btype = models.SlugField(
         choices=Type.choices, default=Type.COSMOS, verbose_name=_("Type")
     )

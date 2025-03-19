@@ -151,6 +151,7 @@ class ValidatorChartsSerializer(serializers.Serializer):
         child=serializers.IntegerField(), required=True, max_length=5
     )
     period = serializers.ChoiceField(choices=Blockchain.ChartPeriod.choices)
+    step = serializers.ChoiceField(choices=Blockchain.ChartStep.choices, required=False)
     date_start = serializers.DateTimeField(required=False)
     date_end = serializers.DateTimeField(required=False)
 

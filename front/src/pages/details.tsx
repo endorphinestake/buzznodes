@@ -22,6 +22,7 @@ import {
 import {
   EValidatorChartType,
   EValidatorChartPeriod,
+  EValidatorChartStep,
 } from "@modules/blockchains/enums";
 
 // ** Utils Imports
@@ -75,6 +76,7 @@ const ValidatorDetailsPage = () => {
   const [period, setPeriod] = useState<EValidatorChartPeriod>(
     EValidatorChartPeriod.H24
   );
+  const [step, setStep] = useState<EValidatorChartStep>(EValidatorChartStep.H4);
   const [validator, setValidator] = useState<TBlockchainValidator>();
 
   // ** Vars
@@ -117,6 +119,7 @@ const ValidatorDetailsPage = () => {
         fetchValidatorCharts({
           validator_ids: [validator.id],
           period: period,
+          step: step,
         })
       );
     }

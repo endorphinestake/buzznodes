@@ -28,3 +28,10 @@ export enum EValidatorChartPeriod {
   D7 = "7d",
   D30 = "30d",
 }
+
+export enum EValidatorChartStep {
+  S25 = "25s",
+  M10 = "10m",
+  H1 = "1h",
+  H4 = "4h",
+}

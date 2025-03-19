@@ -1,4 +1,7 @@
-import { EBlockchainValidatorStatus } from "@modules/blockchains/enums";
+import {
+  EBlockchainValidatorStatus,
+  EValidatorChartStep,
+} from "@modules/blockchains/enums";
 import {
   TBlockchainValidator,
   TBlockchainBridge,
@@ -23,6 +26,7 @@ export interface IValidatorChartsFilter {
   validator_ids: number[];
   date_start?: Date;
   date_end?: Date;
+  step?: EValidatorChartStep;
 }
 
 export interface IValidatorsTableRow {
