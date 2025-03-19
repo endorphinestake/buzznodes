@@ -23,6 +23,7 @@ import {
 
 // ** Utils Imports
 import { hexToRGBA } from "src/@core/utils/hex-to-rgba";
+import { calculatePercentageChange } from "@modules/shared/utils/mathlib";
 
 // ** MUI Imports
 import { Card, CardContent, Typography, Box } from "@mui/material";
@@ -95,22 +96,34 @@ const ValidatorVotingPower = ({
       },
     },
   };
+  const vpPercent = calculatePercentageChange(
+    series[0].data[0],
+    validator.voting_power
+  );
 
   return (
     <Card>
       <CardContent>
         <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}>
           <Typography variant="h6" sx={{ mr: 1.5 }}>
-            $42.5k
+            {Intl.NumberFormat("ru-RU").format(validator.voting_power)}
           </Typography>
-          <Typography variant="subtitle2" sx={{ color: "error.main" }}>
-            -22%
+          <Typography
+            variant="subtitle2"
+            sx={{ color: vpPercent >= 0 ? "success.main" : "error.main" }}
+          >
+            {vpPercent > 0
+              ? `+${vpPercent.toFixed(2)}`
+              : vpPercent == 0
+              ? 0
+              : vpPercent.toFixed(2)}
+            %
           </Typography>
         </Box>
         <Typography variant="body2">{t(`Voting Power`)}</Typography>
         <ReactApexcharts
           type="bar"
-          height="95%"
+          height="75%"
           options={options}
           series={series}
         />
