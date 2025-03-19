@@ -76,7 +76,7 @@ const ValidatorHashes = ({
                 <Box sx={{ mr: 2, display: "flex", flexDirection: "column" }}>
                   <Typography
                     variant="body2"
-                    sx={{ fontWeight: 600, color: "black" }}
+                    sx={{ fontWeight: 600, color: "text.primary" }}
                   >
                     {item.title}
                   </Typography>

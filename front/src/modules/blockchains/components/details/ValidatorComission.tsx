@@ -85,7 +85,7 @@ const ValidatorComission = ({
         style: {
           fontSize: "13px",
           fontWeight: 600,
-          color: "black",
+          color: "text.primary",
         },
         align: theme.direction === "rtl" ? "right" : "left",
       },

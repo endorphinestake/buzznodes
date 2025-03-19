@@ -1,6 +1,9 @@
 // ** React Imports
 import { Fragment } from "react";
 
+// ** NextJS Imports
+import Link from "next/link";
+
 // ** Types & Interfaces Imports
 import { TBlockchainValidator } from "@modules/blockchains/types";
 
@@ -28,17 +31,21 @@ const ValidatorMonikerLabel = ({
           objectFit: "cover",
         }}
       />
-      <Typography
-        variant="body2"
-        sx={{
-          color: "text.primary",
-          fontWeight: 500,
-          lineHeight: "22px",
-          ml: 2,
-        }}
-      >
-        {validator.moniker ?? "-----"}
-      </Typography>
+
+      <Link href={`/details?validator_id=${validator.id}`} passHref>
+        <Typography
+          variant="body2"
+          className="link"
+          sx={{
+            color: "primary.main",
+            fontWeight: 500,
+            lineHeight: "22px",
+            ml: 2,
+          }}
+        >
+          {validator.moniker ?? "-----"}
+        </Typography>
+      </Link>
     </Fragment>
   );
 };

@@ -68,10 +68,10 @@ const ValidatorDetailsPage = () => {
     blockchainValidators,
     blockchainValidator,
     fetchValidatorCharts,
-    isBlockchainValidatorsLoading,
+    // isBlockchainValidatorsLoading,
     isValidatorChartsLoading,
-    isValidatorChartsLoaded,
-    isValidatorChartsError,
+    // isValidatorChartsLoaded,
+    // isValidatorChartsError,
     validatorCharts,
   } = useBlockchainService();
 
@@ -172,7 +172,7 @@ const ValidatorDetailsPage = () => {
 
               <Divider />
 
-              {isBlockchainValidatorDetailLoading || !blockchainValidator ? (
+              {isBlockchainValidatorDetailLoading && !blockchainValidator ? (
                 <CircularLoader />
               ) : (
                 <CardContent>
