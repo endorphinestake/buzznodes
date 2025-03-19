@@ -10,7 +10,7 @@ CHART_PERIODS = {
     },
     Blockchain.ChartPeriod.H24: {
         "delta": timedelta(hours=24),
-        "step": "10m",
+        "step": "4h",
     },
     Blockchain.ChartPeriod.D7: {
         "delta": timedelta(days=7),

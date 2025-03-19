@@ -13,18 +13,32 @@ import { useTranslation } from "react-i18next";
 import { useBlockchainService } from "@hooks/useBlockchainService";
 import { useDomain } from "@context/DomainContext";
 
+// ** Types & Interfaces Imports
+import {
+  TBlockchainValidator,
+  TBlockchainValidatorDetail,
+  TValidatorChart,
+} from "@modules/blockchains/types";
+import {
+  EValidatorChartType,
+  EValidatorChartPeriod,
+} from "@modules/blockchains/enums";
+
+// ** Utils Imports
+import { transformValidatorData } from "@modules/shared/utils/charts";
+
 // ** Layouts
 import UserLayout from "@layouts/UserLayout";
 
-// ** Types & Interfaces Imports
-import { TBlockchainValidator } from "@modules/blockchains/types";
-
 // ** Shared Components
 import styles from "@styles/Home.module.css";
+import CircularLoader from "@modules/shared/components/CircularLoader";
 import SelectValidators from "@modules/blockchains/components/SelectValidators";
 import ValidatorButtons from "@modules/blockchains/components/details/ValidatorButtons";
 import ValidatorStatus from "@modules/blockchains/components/details/ValidatorStatus";
 import ValidatorJailedStatus from "@modules/blockchains/components/details/ValidatorJailedStatus";
+import ValidatorMoniker from "@modules/blockchains/components/details/ValidatorMoniker";
+import ValidatorVotingPower from "@modules/blockchains/components/details/ValidatorVotingPower";
 
 // ** MUI Imports
 import {
@@ -43,17 +57,31 @@ const ValidatorDetailsPage = () => {
   const { t } = useTranslation();
   const { blockchainId } = useDomain();
   const router = useRouter();
-  // ** Hooks
   const {
     dispatch,
     fetchBlockchainValidatorDetail,
     isBlockchainValidatorDetailLoading,
     blockchainValidators,
     blockchainValidator,
+    fetchValidatorCharts,
+    isBlockchainValidatorsLoading,
+    isValidatorChartsLoading,
+    isValidatorChartsLoaded,
+    isValidatorChartsError,
+    validatorCharts,
   } = useBlockchainService();
 
   // ** State
+  const [period, setPeriod] = useState<EValidatorChartPeriod>(
+    EValidatorChartPeriod.H24
+  );
   const [validator, setValidator] = useState<TBlockchainValidator>();
+
+  // ** Vars
+  const chartsVotingPower = transformValidatorData(
+    validatorCharts[EValidatorChartType.COSMOS_VOTING_POWER] ?? {},
+    period
+  );
 
   // Autoselect Validator from URL or List
   useEffect(() => {
@@ -82,7 +110,17 @@ const ValidatorDetailsPage = () => {
     }
   }, [validator]);
 
-  console.log("blockchainValidator: ", blockchainValidator);
+  // Fetch Validator Charts
+  useEffect(() => {
+    if (validator && !isValidatorChartsLoading) {
+      dispatch(
+        fetchValidatorCharts({
+          validator_ids: [validator.id],
+          period: period,
+        })
+      );
+    }
+  }, [validator]);
 
   return (
     <div className={styles.container}>
@@ -124,35 +162,43 @@ const ValidatorDetailsPage = () => {
 
               <Divider />
 
-              {isBlockchainValidatorDetailLoading || !validator ? (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100px",
-                  }}
-                >
-                  <CircularProgress />
-                </Box>
+              {isBlockchainValidatorDetailLoading || !blockchainValidator ? (
+                <CircularLoader />
               ) : (
                 <CardContent>
                   <Grid container spacing={4}>
                     {/* Validator Buttons */}
                     <Grid item xs={12} sm={6}>
-                      <ValidatorButtons validator={validator} />
+                      <ValidatorButtons validator={blockchainValidator} />
                     </Grid>
 
                     {/* <Grid item xs={12} sm={1}></Grid> */}
 
                     {/* Validator Status */}
                     <Grid item xs={12} sm={3}>
-                      <ValidatorStatus validator={validator} />
+                      <ValidatorStatus validator={blockchainValidator} />
                     </Grid>
 
                     {/* Validator Jailed Status */}
                     <Grid item xs={12} sm={3}>
-                      <ValidatorJailedStatus validator={validator} />
+                      <ValidatorJailedStatus validator={blockchainValidator} />
+                    </Grid>
+
+                    {/* Validator Moniker Infos */}
+                    <Grid item xs={12} sm={6} sx={{ mt: 4 }}>
+                      <ValidatorMoniker validator={blockchainValidator} />
+                    </Grid>
+
+                    {/* Validator Voting Power */}
+                    <Grid item xs={12} sm={3} sx={{ mt: 4 }}>
+                      {isValidatorChartsLoading ? (
+                        <CircularLoader />
+                      ) : (
+                        <ValidatorVotingPower
+                          validator={blockchainValidator}
+                          charts={chartsVotingPower}
+                        />
+                      )}
                     </Grid>
                   </Grid>
                 </CardContent>
