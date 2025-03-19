@@ -17,9 +17,6 @@ const ValidatorMoniker = ({
 }: {
   validator: TBlockchainValidatorDetail;
 }) => {
-  // ** Hooks
-  const { t } = useTranslation();
-
   return (
     <Card>
       <CardContent

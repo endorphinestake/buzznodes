@@ -1,10 +1,10 @@
-export const formatShortText = (text: string) => {
-  if (text.length <= 5) {
+export const formatShortText = (text: string, maxLen: number = 5) => {
+  if (text.length <= maxLen) {
     return text;
-  } else if (text.length > 5 && text.length <= 10) {
-    return `${text.slice(0, 5)}...${text.slice(5)}`;
+  } else if (text.length > maxLen && text.length <= 10) {
+    return `${text.slice(0, maxLen)}...${text.slice(maxLen)}`;
   } else {
-    return `${text.slice(0, 5)}...${text.slice(-5)}`;
+    return `${text.slice(0, maxLen)}...${text.slice(-maxLen)}`;
   }
 };
 

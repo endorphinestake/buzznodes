@@ -1,6 +1,3 @@
-// ** React Imports
-import { useState, useEffect } from "react";
-
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@mui/material/styles";
@@ -12,14 +9,7 @@ import { ApexOptions } from "apexcharts";
 import ReactApexcharts from "src/@core/components/react-apexcharts";
 
 // ** Types & Interfaces Imports
-import {
-  TBlockchainValidatorDetail,
-  TValidatorChart,
-} from "@modules/blockchains/types";
-import {
-  EValidatorChartType,
-  EValidatorChartPeriod,
-} from "@modules/blockchains/enums";
+import { TBlockchainValidatorDetail } from "@modules/blockchains/types";
 
 // ** Utils Imports
 import { hexToRGBA } from "src/@core/utils/hex-to-rgba";
@@ -97,7 +87,7 @@ const ValidatorVotingPower = ({
     },
   };
   const vpPercent = calculatePercentageChange(
-    series[0].data[0],
+    series[0]?.data?.[0] ?? 0,
     validator.voting_power
   );
 

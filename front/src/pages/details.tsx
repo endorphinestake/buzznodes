@@ -40,6 +40,8 @@ import ValidatorStatus from "@modules/blockchains/components/details/ValidatorSt
 import ValidatorJailedStatus from "@modules/blockchains/components/details/ValidatorJailedStatus";
 import ValidatorMoniker from "@modules/blockchains/components/details/ValidatorMoniker";
 import ValidatorVotingPower from "@modules/blockchains/components/details/ValidatorVotingPower";
+import ValidatorUptime from "@modules/blockchains/components/details/ValidatorUptime";
+import ValidatorHashes from "@modules/blockchains/components/details/ValidatorHashes";
 
 // ** MUI Imports
 import {
@@ -82,6 +84,10 @@ const ValidatorDetailsPage = () => {
   // ** Vars
   const chartsVotingPower = transformValidatorData(
     validatorCharts[EValidatorChartType.COSMOS_VOTING_POWER] ?? {},
+    period
+  );
+  const chartsUptime = transformValidatorData(
+    validatorCharts[EValidatorChartType.COSMOS_UPTIME] ?? {},
     period
   );
 
@@ -202,6 +208,23 @@ const ValidatorDetailsPage = () => {
                           charts={chartsVotingPower}
                         />
                       )}
+                    </Grid>
+
+                    {/* Validator Uptime */}
+                    <Grid item xs={12} sm={3} sx={{ mt: 4 }}>
+                      {isValidatorChartsLoading ? (
+                        <CircularLoader />
+                      ) : (
+                        <ValidatorUptime
+                          validator={blockchainValidator}
+                          charts={chartsUptime}
+                        />
+                      )}
+                    </Grid>
+
+                    {/* Validator Hashes */}
+                    <Grid item xs={12} sm={6}>
+                      <ValidatorHashes validator={blockchainValidator} />
                     </Grid>
                   </Grid>
                 </CardContent>
