@@ -55,6 +55,8 @@ class Command(BaseCommand):
                     text=main_voice.sent_text,
                     atype=atype,
                     setting_id=main_voice.setting_id,
+                    validator_id=main_voice.validator_id,
+                    bridge_id=main_voice.validator_id,
                 )
 
         print(f"{__name__} is Finished: {(time.time() - start_run_time)}")

@@ -68,10 +68,12 @@ def submit_voice_alert(
     text: str,
     atype: AlertSettingBase.AlertType,
     setting_id: int = None,
+    validator_id: int = None,
+    bridge_id: int = None,
 ):
 
     print(
-        f"submit_voice_alert: {provider} -> {phone_number_id} -> {text} -> {atype} -> {setting_id}"
+        f"submit_voice_alert: {provider} -> {phone_number_id} -> {text} -> {atype} -> {setting_id} -> {validator_id} -> {bridge_id}"
     )
 
     try:
@@ -102,6 +104,8 @@ def submit_voice_alert(
         sent_text=text,
         provider=VoiceBase.Provider.MAIN,
         setting_id=setting_id,
+        validator_id=validator_id,
+        bridge_id=bridge_id,
     )
 
     if provider == VoiceBase.Provider.MAIN:

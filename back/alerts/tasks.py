@@ -31,7 +31,11 @@ def check_alerts(
     queue_voice = get_queue("submit_voice")
 
     def _send_alert(
-        user_alert_setting: any, alert_text: str, alert_type: AlertSettingBase.AlertType
+        user_alert_setting: any,
+        alert_text: str,
+        alert_type: AlertSettingBase.AlertType,
+        validator_id: int,
+        bridge_id: int,
     ):
         phone_number = user_alert_setting.user.user_phones.filter(status=True).first()
         if alert_text and phone_number:
@@ -43,6 +47,8 @@ def check_alerts(
                     text=alert_text,
                     atype=alert_type,
                     setting_id=user_alert_setting.setting.id,
+                    validator_id=validator_id,
+                    bridge_id=bridge_id,
                 )
             elif user_alert_setting.channels == AlertSettingBase.Channels.VOICE:
                 queue_voice.enqueue(
@@ -52,6 +58,8 @@ def check_alerts(
                     text=alert_text,
                     atype=alert_type,
                     setting_id=user_alert_setting.setting.id,
+                    validator_id=validator_id,
+                    bridge_id=bridge_id,
                 )
             else:
                 Log.warning(f"Unknown UserAlertChannel: {user_alert_setting.channels}!")
@@ -91,6 +99,8 @@ def check_alerts(
                             user_alert_setting=user_alert_setting,
                             alert_text=alert_text,
                             alert_type=AlertSettingBase.AlertType.VOTING_POWER,
+                            validator_id=validator_id,
+                            bridge_id=None,
                         )
 
                 # Decreased Voting Power
@@ -116,6 +126,8 @@ def check_alerts(
                             user_alert_setting=user_alert_setting,
                             alert_text=alert_text,
                             alert_type=AlertSettingBase.AlertType.VOTING_POWER,
+                            validator_id=validator_id,
+                            bridge_id=None,
                         )
 
         # Uptime
@@ -147,6 +159,8 @@ def check_alerts(
                             user_alert_setting=user_alert_setting,
                             alert_text=alert_text,
                             alert_type=AlertSettingBase.AlertType.UPTIME,
+                            validator_id=validator_id,
+                            bridge_id=None,
                         )
 
                 # Decreased Uptime
@@ -163,6 +177,8 @@ def check_alerts(
                             user_alert_setting=user_alert_setting,
                             alert_text=alert_text,
                             alert_type=AlertSettingBase.AlertType.UPTIME,
+                            validator_id=validator_id,
+                            bridge_id=None,
                         )
 
         # Comission
@@ -197,6 +213,8 @@ def check_alerts(
                             user_alert_setting=user_alert_setting,
                             alert_text=alert_text,
                             alert_type=AlertSettingBase.AlertType.COMISSION,
+                            validator_id=validator_id,
+                            bridge_id=None,
                         )
 
                 # Decreased Comission
@@ -225,6 +243,8 @@ def check_alerts(
                             user_alert_setting=user_alert_setting,
                             alert_text=alert_text,
                             alert_type=AlertSettingBase.AlertType.COMISSION,
+                            validator_id=validator_id,
+                            bridge_id=None,
                         )
 
         # Jailed Status
@@ -254,6 +274,8 @@ def check_alerts(
                         user_alert_setting=user_alert_setting,
                         alert_text=alert_text,
                         alert_type=AlertSettingBase.AlertType.JAILED,
+                        validator_id=validator_id,
+                        bridge_id=None,
                     )
 
                 # True To False
@@ -272,6 +294,8 @@ def check_alerts(
                         user_alert_setting=user_alert_setting,
                         alert_text=alert_text,
                         alert_type=AlertSettingBase.AlertType.JAILED,
+                        validator_id=validator_id,
+                        bridge_id=None,
                     )
 
         # Bond Status
@@ -301,6 +325,8 @@ def check_alerts(
                         user_alert_setting=user_alert_setting,
                         alert_text=alert_text,
                         alert_type=AlertSettingBase.AlertType.BONDED,
+                        validator_id=validator_id,
+                        bridge_id=None,
                     )
 
                 # True To False
@@ -320,6 +346,8 @@ def check_alerts(
                         user_alert_setting=user_alert_setting,
                         alert_text=alert_text,
                         alert_type=AlertSettingBase.AlertType.BONDED,
+                        validator_id=validator_id,
+                        bridge_id=None,
                     )
 
         # Tombstoned Status
@@ -344,6 +372,8 @@ def check_alerts(
                         user_alert_setting=user_alert_setting,
                         alert_text=alert_text,
                         alert_type=AlertSettingBase.AlertType.TOMBSTONED,
+                        validator_id=validator_id,
+                        bridge_id=None,
                     )
                     user_alert_setting.delete()
 
@@ -375,6 +405,8 @@ def check_alerts(
                         user_alert_setting=user_alert_setting,
                         alert_text=alert_text,
                         alert_type=AlertSettingBase.AlertType.SYNC_STATUS,
+                        validator_id=None,
+                        bridge_id=bridge_id,
                     )
 
             # Decreased NodeHeight Different (Recovering)
@@ -391,6 +423,8 @@ def check_alerts(
             #             user_alert_setting=user_alert_setting,
             #             alert_text=alert_text,
             #             alert_type=AlertSettingBase.AlertType.SYNC_STATUS,
+            #             validator_id=None,
+            #             bridge_id=bridge_id,
             #         )
 
     # Bridge Otel Update
@@ -422,4 +456,6 @@ def check_alerts(
                     user_alert_setting=user_alert_setting,
                     alert_text=alert_text,
                     alert_type=AlertSettingBase.AlertType.OTEL_UPDATE,
+                    validator_id=None,
+                    bridge_id=bridge_id,
                 )

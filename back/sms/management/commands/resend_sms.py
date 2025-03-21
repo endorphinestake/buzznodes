@@ -73,6 +73,8 @@ class Command(BaseCommand):
                     text=main_sms.sent_text,
                     atype=atype,
                     setting_id=main_sms.setting_id,
+                    validator_id=main_sms.validator_id,
+                    bridge_id=main_sms.bridge_id,
                 )
 
         print(f"{__name__} is Finished: {(time.time() - start_run_time)}")
