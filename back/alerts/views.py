@@ -1,3 +1,4 @@
+from itertools import chain
 from rest_framework import views, permissions, response, status, exceptions
 from django.utils.translation import gettext_lazy as _
 from django.db import transaction
@@ -32,6 +33,7 @@ from alerts.serializers import (
     UserAlertSettingOtelUpdateSerializer,
     UserAlertSettingSyncStatusSerializer,
     ManageUserAlertSettingSerializer,
+    AlertBaseSerializer,
 )
 from blockchains.models import Blockchain
 from sms.models import (
@@ -219,4 +221,29 @@ class UserAlertsHistoryView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        pass
+        models = [
+            SMSAlertVotingPower,
+            SMSAlertUptime,
+            SMSAlertComission,
+            SMSAlertJailedStatus,
+            SMSAlertTombstonedStatus,
+            SMSAlertBondedStatus,
+            SMSAlertOtelUpdate,
+            SMSAlertSyncStatus,
+            VoiceAlertVotingPower,
+            VoiceAlertUptime,
+            VoiceAlertComission,
+            VoiceAlertJailedStatus,
+            VoiceAlertTombstonedStatus,
+            VoiceAlertBondedStatus,
+            VoiceAlertOtelUpdate,
+            VoiceAlertSyncStatus,
+        ]
+
+        queryset_list = list(
+            chain(*[model.objects.filter(user=request.user) for model in models])
+        )
+        sorted_data = sorted(queryset_list, key=lambda x: x.created, reverse=True)
+        serializer = AlertBaseSerializer(sorted_data, many=True)
+
+        return response.Response(serializer.data)

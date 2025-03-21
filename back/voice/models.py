@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from users.models import User, UserPhone
+from blockchains.models import BlockchainValidator, BlockchainBridge
 from alerts.models import (
     AlertSettingVotingPower,
     AlertSettingUptime,
@@ -34,6 +35,20 @@ class VoiceBase(models.Model):
         ERROR = "ERROR", _("Error")  # Ошибка при создании звонка (final)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("User"))
+    validator = models.ForeignKey(
+        BlockchainValidator,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Validator"),
+    )
+    bridge = models.ForeignKey(
+        BlockchainBridge,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Bridge"),
+    )
     phone = models.ForeignKey(
         UserPhone,
         on_delete=models.SET_NULL,

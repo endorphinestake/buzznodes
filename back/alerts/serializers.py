@@ -22,6 +22,7 @@ from alerts.models import (
     UserAlertSettingSyncStatus,
 )
 from blockchains.models import BlockchainValidator, BlockchainBridge
+from alerts.utils import clean_tags_from_text
 
 
 class AlertSettingBaseSerializer(serializers.ModelSerializer):
@@ -554,3 +555,22 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 {"setting_id": [_("Unknown setting type!")]}
             )
+
+
+class AlertBaseSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    message_type = serializers.SerializerMethodField()
+    setting_id = serializers.IntegerField()
+    message = serializers.SerializerMethodField()
+    user_phone = serializers.SerializerMethodField()
+    status = serializers.CharField()
+    created = serializers.DateTimeField()
+
+    def get_message(self, obj):
+        return clean_tags_from_text(obj.sent_text)
+
+    def get_user_phone(self, obj):
+        return obj.phone.phone if obj.phone else None
+
+    def get_message_type(self, obj):
+        return obj.__class__.__name__
