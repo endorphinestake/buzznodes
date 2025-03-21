@@ -22,6 +22,10 @@ from alerts.models import (
     UserAlertSettingSyncStatus,
 )
 from blockchains.models import BlockchainValidator, BlockchainBridge
+from blockchains.serilazers import (
+    BlockchainValidatorModelSerializer,
+    BlockchainBridgeModelSerializer,
+)
 from alerts.utils import clean_tags_from_text
 
 
@@ -559,6 +563,8 @@ class ManageUserAlertSettingSerializer(serializers.Serializer):
 
 class AlertBaseSerializer(serializers.Serializer):
     id = serializers.IntegerField()
+    validator = BlockchainValidatorModelSerializer(required=False)
+    bridge = BlockchainBridgeModelSerializer(required=False)
     message_type = serializers.SerializerMethodField()
     setting_id = serializers.IntegerField()
     message = serializers.SerializerMethodField()
