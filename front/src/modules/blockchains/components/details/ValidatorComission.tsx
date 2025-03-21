@@ -16,7 +16,6 @@ import ReactApexcharts from "src/@core/components/react-apexcharts";
 
 // ** MUI Imports
 import { Card, CardHeader, CardContent, IconButton } from "@mui/material";
-import { DotsVertical } from "mdi-material-ui";
 
 const ValidatorComission = ({
   validator,
@@ -90,6 +89,7 @@ const ValidatorComission = ({
           fontWeight: 600,
           colors: "text.primary",
         },
+        offsetX: -4,
         align: theme.direction === "rtl" ? "right" : "left",
       },
     },
@@ -107,15 +107,6 @@ const ValidatorComission = ({
         subheader={t("Comission")}
         subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
         titleTypographyProps={{ sx: { letterSpacing: "0.15px" } }}
-        action={
-          <IconButton
-            size="small"
-            aria-label="settings"
-            className="card-more-options"
-          >
-            <DotsVertical />
-          </IconButton>
-        }
       />
       <CardContent
         sx={{
