@@ -12,6 +12,6 @@ from alerts.views import (
 urlpatterns = [
     path("settings/", AlertSettingsView.as_view()),
     path("user-settings/<int:blockchain_id>/", UserAlertSettingsView.as_view()),
+    path("history/<int:blockchain_id>/", UserAlertsHistoryView.as_view()),
     path("user-settings/manage/", UserAlertManageSettingsView.as_view()),
-    path("history/", UserAlertsHistoryView.as_view()),
 ]

@@ -2,6 +2,7 @@ from itertools import chain
 from rest_framework import views, permissions, response, status, exceptions
 from django.utils.translation import gettext_lazy as _
 from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from alerts.models import (
@@ -220,7 +221,11 @@ class UserAlertManageSettingsView(views.APIView):
 class UserAlertsHistoryView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get(self, request):
+    def get(self, request, blockchain_id):
+        blockchain = get_object_or_404(
+            Blockchain, pk=blockchain_id, btype=Blockchain.Type.COSMOS, status=True
+        )
+
         models = [
             SMSAlertVotingPower,
             SMSAlertUptime,
@@ -241,7 +246,15 @@ class UserAlertsHistoryView(views.APIView):
         ]
 
         queryset_list = list(
-            chain(*[model.objects.filter(user=request.user) for model in models])
+            chain(
+                *[
+                    model.objects.filter(user=request.user).filter(
+                        Q(validator__blockchain=blockchain)
+                        | Q(bridge__blockchain=blockchain)
+                    )
+                    for model in models
+                ]
+            )
         )
         sorted_data = sorted(queryset_list, key=lambda x: x.created, reverse=True)
         serializer = AlertBaseSerializer(sorted_data, many=True)

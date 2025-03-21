@@ -476,7 +476,7 @@ const AlertsTable = (props: IAlertsTableProps) => {
         disableSelectionOnClick
         columns={columns}
         pageSize={pageSize}
-        rowsPerPageOptions={[25, 50, 100, 500]}
+        rowsPerPageOptions={[25, 50, 100]}
         loading={isAlertSettingsLoading || isUserAlertSettingsLoading}
         rows={getRowsFromAlerts(userAlertSettings)}
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}

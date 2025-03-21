@@ -1,5 +1,6 @@
 import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
 import {
+  TAlertHistory,
   TAlertSettingsResponse,
   TUserAlertSettingsResponse,
 } from "@modules/alerts/types";
@@ -47,6 +48,14 @@ export interface IAlertsTableProps {
   bridges: TBlockchainBridge[];
 }
 
+export interface IAlertHistoryTableProps {
+  histories: TAlertHistory[];
+}
+
 export interface IAlertsTableRow {
   row: any;
+}
+
+export interface IAlertsHistoryTableRow {
+  row: TAlertHistory;
 }

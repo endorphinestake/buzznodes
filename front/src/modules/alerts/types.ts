@@ -3,6 +3,10 @@ import {
   EAlertChannel,
   EAlertValueStatus,
 } from "@modules/alerts/enums";
+import {
+  TBlockchainBridge,
+  TBlockchainValidator,
+} from "@modules/blockchains/types";
 
 type TAlertSettingBase = {
   id: number;
@@ -40,6 +44,18 @@ export type TAlertSettingOtelUpdate = TAlertSettingBase & {
 
 export type TAlertSettingSyncStatus = TAlertSettingBase & {
   value: number;
+};
+
+export type TAlertHistory = {
+  id: number;
+  setting_id?: number;
+  validator?: TBlockchainValidator;
+  bridge?: TBlockchainBridge;
+  message_type: string;
+  message: string;
+  user_phone?: string;
+  status: string;
+  created: Date;
 };
 
 export type TAlertSettingsResponse = {

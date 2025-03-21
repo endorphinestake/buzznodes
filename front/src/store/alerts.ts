@@ -11,12 +11,14 @@ import { groupByValidatorId } from "@modules/alerts/utils";
 import {
   TAlertSettingsResponse,
   TUserAlertSettingsResponse,
+  TAlertHistory,
 } from "@modules/alerts/types";
 
 export type TAlertState = {
   fetchAlertSettings: Function;
   fetchUserAlertSettings: Function;
   manageUserAlertSetting: Function;
+  fetchAlertHistory: Function;
 
   isAlertSettingsLoading: boolean;
   isAlertSettingsLoaded: boolean;
@@ -31,12 +33,18 @@ export type TAlertState = {
   isManageUserAlertSettingLoading: boolean;
   isManageUserAlertSettingLoaded: boolean;
   isManageUserAlertSettingError: any;
+
+  isAlertHistoryLoading: boolean;
+  isAlertHistoryLoaded: boolean;
+  isAlertHistoryError: any;
+  alertHistory: TAlertHistory[];
 };
 
 const initialState: TAlertState = {
   fetchAlertSettings: AlertService.fetchAlertSettings,
   fetchUserAlertSettings: AlertService.fetchUserAlertSettings,
   manageUserAlertSetting: AlertService.manageUserAlertSetting,
+  fetchAlertHistory: AlertService.fetchAlertHistory,
 
   isAlertSettingsLoading: false,
   isAlertSettingsLoaded: false,
@@ -51,6 +59,11 @@ const initialState: TAlertState = {
   isManageUserAlertSettingLoading: false,
   isManageUserAlertSettingLoaded: false,
   isManageUserAlertSettingError: null,
+
+  isAlertHistoryLoading: false,
+  isAlertHistoryLoaded: false,
+  isAlertHistoryError: null,
+  alertHistory: [],
 };
 
 export const AlertSlice = createSlice({
@@ -68,6 +81,10 @@ export const AlertSlice = createSlice({
     resetManageUserAlertSettingState(state) {
       state.isManageUserAlertSettingLoaded = false;
       state.isManageUserAlertSettingError = null;
+    },
+    resetAlertHistoryState(state) {
+      state.isAlertHistoryLoaded = false;
+      state.isAlertHistoryError = null;
     },
   },
   extraReducers: (builder) => {
@@ -147,6 +164,29 @@ export const AlertSlice = createSlice({
       (state, action) => {
         state.isManageUserAlertSettingLoading = false;
         state.isManageUserAlertSettingError = action.payload;
+      }
+    );
+
+    // ** fetchAlertHistory
+    builder.addCase(AlertService.fetchAlertHistory.pending, (state, action) => {
+      state.isAlertHistoryLoading = true;
+      state.isAlertHistoryLoaded = false;
+      state.isAlertHistoryError = null;
+    });
+    builder.addCase(
+      AlertService.fetchAlertHistory.fulfilled,
+      (state, action) => {
+        state.isAlertHistoryLoading = false;
+        state.isAlertHistoryLoaded = true;
+        state.alertHistory = action.payload;
+      }
+    );
+    builder.addCase(
+      AlertService.fetchAlertHistory.rejected,
+      (state, action) => {
+        state.isAlertHistoryLoading = false;
+        state.isAlertHistoryError = action.payload;
+        state.alertHistory = [];
       }
     );
   },

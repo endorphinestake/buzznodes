@@ -63,4 +63,21 @@ export class AlertService {
       }
     }
   );
+
+  // ** fetchAlertHistory
+  static fetchAlertHistory = createAsyncThunk(
+    "AlertService/fetchAlertHistory",
+    async (params: IUserAlertSettingsFilter, redux: IRedux) => {
+      try {
+        const { data } = await axiosInstance({
+          url: `/api/alerts/history/${params.blockchainId}/`,
+          method: "GET",
+        });
+
+        return data;
+      } catch (error) {
+        return redux.rejectWithValue(error);
+      }
+    }
+  );
 }

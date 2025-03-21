@@ -6,7 +6,7 @@ import { useDomain } from "@context/DomainContext";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { ChartAreaspline } from "mdi-material-ui";
-import { AccountDetails, Bridge, BellCog } from "mdi-material-ui";
+import { AccountDetails, Bridge, BellCog, BellBadge } from "mdi-material-ui";
 
 // ** Types & Interfaces imports
 import { HorizontalNavItemsType } from "src/@core/layouts/types";
@@ -53,6 +53,13 @@ const navigation = (): HorizontalNavItemsType => {
       title: t(`Manage Alerts`),
       icon: BellCog,
       path: "/alerts",
+      action: "read",
+      subject: Permissions.ANY,
+    },
+    {
+      title: t(`Alerts History`),
+      icon: BellBadge,
+      path: "/alerts-history",
       action: "read",
       subject: Permissions.ANY,
     },
