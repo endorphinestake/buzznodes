@@ -34,6 +34,26 @@ from alerts.serializers import (
     ManageUserAlertSettingSerializer,
 )
 from blockchains.models import Blockchain
+from sms.models import (
+    SMSAlertVotingPower,
+    SMSAlertUptime,
+    SMSAlertComission,
+    SMSAlertJailedStatus,
+    SMSAlertTombstonedStatus,
+    SMSAlertBondedStatus,
+    SMSAlertOtelUpdate,
+    SMSAlertSyncStatus,
+)
+from voice.models import (
+    VoiceAlertVotingPower,
+    VoiceAlertUptime,
+    VoiceAlertComission,
+    VoiceAlertJailedStatus,
+    VoiceAlertTombstonedStatus,
+    VoiceAlertBondedStatus,
+    VoiceAlertOtelUpdate,
+    VoiceAlertSyncStatus,
+)
 
 
 class AlertSettingsView(views.APIView):
@@ -193,3 +213,10 @@ class UserAlertManageSettingsView(views.APIView):
                     )
 
         return response.Response("OK", status=status.HTTP_200_OK)
+
+
+class UserAlertsHistoryView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        pass
