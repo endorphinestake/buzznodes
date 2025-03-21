@@ -12,6 +12,7 @@ import {
   IAlertsHistoryTableRow,
 } from "@modules/alerts/interfaces";
 import { EAlertChannel, EAlertType } from "@modules/alerts/enums";
+import { TBlockchainValidator } from "@modules/blockchains/types";
 
 // ** Shared Components
 import BridgeMonikerLabel from "@modules/blockchains/components/labels/BridgeMonikerLabel";
@@ -52,11 +53,13 @@ const AlertsHistoryTable = (props: IAlertHistoryTableProps) => {
       headerAlign: "center" as GridAlignment,
       renderCell: ({ row }: IAlertsHistoryTableRow) => {
         if (row.bridge) {
-          return (
-            <BridgeMonikerLabel bridge={row.bridge} userAlertSettings={row} />
-          );
+          return <BridgeMonikerLabel bridge={row.bridge} />;
         } else {
-          return <ValidatorMonikerLabel validator={row.validator} />;
+          return (
+            <ValidatorMonikerLabel
+              validator={row.validator as TBlockchainValidator}
+            />
+          );
         }
       },
     },
@@ -202,7 +205,7 @@ const AlertsHistoryTable = (props: IAlertHistoryTableProps) => {
       field: "created",
       sortable: true,
       headerName: t(`Created`),
-      renderCell: ({ row }: CellType) => {
+      renderCell: ({ row }: IAlertsHistoryTableRow) => {
         return (
           <Box>
             {format(new Date(row.created), "d MMM, yyyy")}

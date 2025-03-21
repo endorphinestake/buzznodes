@@ -114,7 +114,9 @@ const AlertsHistoryPage = () => {
   if (validatorType !== EBlockchainValidatorType.ANY) {
     filteredAlertHistory = filteredAlertHistory.filter((item) => {
       if (item.validator) {
-        return item.validator.toLowerCase().includes(search.toLowerCase());
+        return (item.validator.moniker ?? "")
+          .toLowerCase()
+          .includes(search.toLowerCase());
       } else if (item.bridge) {
       }
     });
