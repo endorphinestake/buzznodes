@@ -417,7 +417,7 @@ class CosmosBlockchainMetricsView(views.APIView):
 
 
 class BlockchainValidatorsView(views.APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
     filterset_class = BlockchainValidatorFilter
 
     def get(self, request, blockchain_id):
@@ -468,7 +468,7 @@ class BlockchainValidatorsView(views.APIView):
 
 
 class BlockchainBridgesView(views.APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
     filterset_class = BlockchainBridgeFilter
 
     def get(self, request, blockchain_id):
@@ -503,7 +503,7 @@ class BlockchainBridgesView(views.APIView):
 
 
 class BlockchainValidatorView(views.APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, request, blockchain_id, validator_id):
         validator = get_object_or_404(
@@ -518,7 +518,7 @@ class BlockchainValidatorView(views.APIView):
 
 
 class BlockchainChartView(views.APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
 
     async def _process_urls(
         self,
