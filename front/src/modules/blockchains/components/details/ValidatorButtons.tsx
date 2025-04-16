@@ -3,9 +3,11 @@ import { Fragment, useState } from "react";
 
 // ** NextJS Imports
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@hooks/useAuth";
 import { useAlertService } from "@hooks/useAlertService";
 
 // ** Types & Interfaces Imports
@@ -26,10 +28,21 @@ const ValidatorButtons = ({
 }) => {
   // ** Hooks
   const { t } = useTranslation();
+  const router = useRouter();
+  const { user } = useAuth();
   const { userAlertSettings } = useAlertService();
 
   // ** State
   const [isAlertSettingShow, setIsAlertSettingShow] = useState<boolean>(false);
+
+  // ** Callbacks
+  const handleClickBell = () => {
+    if (user) {
+      setIsAlertSettingShow(true);
+    } else {
+      router.push("/login");
+    }
+  };
 
   return (
     <Fragment>
@@ -67,7 +80,7 @@ const ValidatorButtons = ({
             skin="light"
             sx={{ mb: 3, cursor: "pointer" }}
             variant="rounded"
-            onClick={() => setIsAlertSettingShow(true)}
+            onClick={() => handleClickBell()}
           >
             {userAlertSettings[validator.id] ? <BellCheck /> : <BellPlus />}
           </CustomAvatar>

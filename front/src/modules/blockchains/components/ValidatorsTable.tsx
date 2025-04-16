@@ -1,12 +1,13 @@
 // ** React Imports
-import { Fragment, useState, useEffect } from "react";
-import { format } from "date-fns";
+import { Fragment, useState } from "react";
 
 // ** NextJS Imports
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@hooks/useAuth";
 import { useBlockchainService } from "@hooks/useBlockchainService";
 import { useAlertService } from "@hooks/useAlertService";
 
@@ -16,7 +17,6 @@ import {
   IValidatorsTableRow,
 } from "@modules/blockchains/interfaces";
 import { TBlockchainValidator } from "@modules/blockchains/types";
-import { EAlertType } from "@modules/alerts/enums";
 
 // ** Shared Components
 import ManageAlertsDialog from "@modules/alerts/components/ManageAlertsDialog";
@@ -33,6 +33,8 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
 
   // ** Hooks
   const { t } = useTranslation();
+  const router = useRouter();
+  const { user } = useAuth();
   const { isBlockchainValidatorsLoading } = useBlockchainService();
   const { userAlertSettings } = useAlertService();
 
@@ -41,6 +43,16 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
   const [selectedValidator, setSelectedValidator] =
     useState<TBlockchainValidator>();
   const [isAlertSettingShow, setIsAlertSettingShow] = useState<boolean>(false);
+
+  // ** Callbacks
+  const handleClickBell = (row: TBlockchainValidator) => {
+    if (user) {
+      setSelectedValidator(row);
+      setIsAlertSettingShow(true);
+    } else {
+      router.push("/login");
+    }
+  };
 
   // ** Vars
   const columns = [
@@ -121,8 +133,7 @@ const ValidatorsTable = (props: IValidatorsTableProps) => {
               color="primary"
               disabled={row.tombstoned}
               onClick={() => {
-                setSelectedValidator(row);
-                setIsAlertSettingShow(true);
+                handleClickBell(row);
               }}
             >
               {userAlertSettings[row.id] ? (

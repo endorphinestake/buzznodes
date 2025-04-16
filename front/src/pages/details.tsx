@@ -1,24 +1,20 @@
 // ** React Imports
-import { ReactNode, useState, useEffect, useMemo } from "react";
+import { ReactNode, useState, useEffect } from "react";
 
 // ** NextJS Imports
 import Head from "next/head";
+import { useRouter } from "next/router";
 
 // ** Configs
 import { Permissions } from "@configs/acl";
 
 // ** Hooks Imports
-import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { useBlockchainService } from "@hooks/useBlockchainService";
 import { useDomain } from "@context/DomainContext";
 
 // ** Types & Interfaces Imports
-import {
-  TBlockchainValidator,
-  TBlockchainValidatorDetail,
-  TValidatorChart,
-} from "@modules/blockchains/types";
+import { TBlockchainValidator } from "@modules/blockchains/types";
 import {
   EValidatorChartType,
   EValidatorChartPeriod,
@@ -45,20 +41,13 @@ import ValidatorHashes from "@modules/blockchains/components/details/ValidatorHa
 import ValidatorComission from "@modules/blockchains/components/details/ValidatorComission";
 
 // ** MUI Imports
-import {
-  Card,
-  CardHeader,
-  Grid,
-  CircularProgress,
-  CardContent,
-  Divider,
-} from "@mui/material";
+import { Card, CardHeader, Grid, CardContent, Divider } from "@mui/material";
 import Box, { BoxProps } from "@mui/material/Box";
-import { styled } from "@mui/material/styles";
 
 const ValidatorDetailsPage = () => {
   // ** Hooks
   const { t } = useTranslation();
+
   const { blockchainId } = useDomain();
   const router = useRouter();
   const {
@@ -261,8 +250,7 @@ const ValidatorDetailsPage = () => {
   );
 };
 
-ValidatorDetailsPage.authGuard = true;
-ValidatorDetailsPage.guestGuard = true;
+ValidatorDetailsPage.bothGuard = true;
 ValidatorDetailsPage.acl = { action: "read", subject: Permissions.ANY };
 ValidatorDetailsPage.getLayout = (page: ReactNode) => (
   <UserLayout>{page}</UserLayout>

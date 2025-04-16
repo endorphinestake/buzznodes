@@ -195,8 +195,7 @@ const ChartsPage = () => {
   );
 };
 
-ChartsPage.authGuard = true;
-ChartsPage.guestGuard = true;
+ChartsPage.bothGuard = true;
 ChartsPage.acl = { action: "read", subject: Permissions.ANY };
 ChartsPage.getLayout = (page: ReactNode) => <UserLayout>{page}</UserLayout>;
 

@@ -241,8 +241,7 @@ const HomePage = () => {
   );
 };
 
-HomePage.authGuard = true;
-HomePage.guestGuard = true;
+HomePage.bothGuard = true;
 HomePage.acl = { action: "read", subject: Permissions.ANY };
 HomePage.getLayout = (page: ReactNode) => <UserLayout>{page}</UserLayout>;
 

@@ -1,8 +1,12 @@
 // ** React Imports
 import { Fragment, useState, useEffect } from "react";
 
+// ** NextJS Imports
+import { useRouter } from "next/router";
+
 // ** Hooks Imports
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@hooks/useAuth";
 import { useBlockchainService } from "@hooks/useBlockchainService";
 import { useAlertService } from "@hooks/useAlertService";
 
@@ -33,6 +37,8 @@ const BridgesTable = (props: IBridgesTableProps) => {
 
   // ** Hooks
   const { t } = useTranslation();
+  const router = useRouter();
+  const { user } = useAuth();
   const { isBlockchainBridgesLoading } = useBlockchainService();
   const { userAlertSettings } = useAlertService();
 
@@ -40,6 +46,16 @@ const BridgesTable = (props: IBridgesTableProps) => {
   const [pageSize, setPageSize] = useState<number>(100);
   const [selectedBridge, setSelectedBridge] = useState<TBlockchainBridge>();
   const [isAlertSettingShow, setIsAlertSettingShow] = useState<boolean>(false);
+
+  // ** Callbacks
+  const handleClickBell = (row: TBlockchainBridge) => {
+    if (user) {
+      setSelectedBridge(row);
+      setIsAlertSettingShow(true);
+    } else {
+      router.push("/login");
+    }
+  };
 
   // ** Vars
   const columns = [
@@ -128,8 +144,7 @@ const BridgesTable = (props: IBridgesTableProps) => {
             aria-label="capture screenshot"
             color="primary"
             onClick={() => {
-              setSelectedBridge(row);
-              setIsAlertSettingShow(true);
+              handleClickBell(row);
             }}
           >
             {userAlertSettings[row.id] ? (
