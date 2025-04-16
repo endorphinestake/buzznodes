@@ -50,7 +50,7 @@ export const buildGuestAbility = (): AppAbility => {
   can("read", Permissions.ANY);
 
   return new AppAbility(rules, {
-    detectSubjectType: (object) => object!.type,
+    detectSubjectType: (object: any) => object.type,
   });
 };
 

@@ -262,6 +262,7 @@ const ValidatorDetailsPage = () => {
 };
 
 ValidatorDetailsPage.authGuard = true;
+ValidatorDetailsPage.guestGuard = true;
 ValidatorDetailsPage.acl = { action: "read", subject: Permissions.ANY };
 ValidatorDetailsPage.getLayout = (page: ReactNode) => (
   <UserLayout>{page}</UserLayout>
