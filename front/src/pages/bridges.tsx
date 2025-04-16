@@ -233,7 +233,8 @@ const BridgesPage = () => {
   );
 };
 
-BridgesPage.authGuard = true;
+// BridgesPage.authGuard = false;
+// BridgesPage.guestGuard = false;
 BridgesPage.acl = { action: "read", subject: Permissions.ANY };
 BridgesPage.getLayout = (page: ReactNode) => <UserLayout>{page}</UserLayout>;
 

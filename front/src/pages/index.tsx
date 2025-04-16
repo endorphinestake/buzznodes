@@ -230,10 +230,12 @@ const HomePage = () => {
           </Grid>
         </Grid>
 
-        <TawkMessengerReact
-          propertyId={process.env.TAWK_PROPERY_ID || ""}
-          widgetId={process.env.TAWK_WIDGET_ID || ""}
-        />
+        {process.env.DEBUG === "false" ? (
+          <TawkMessengerReact
+            propertyId={process.env.TAWK_PROPERY_ID || ""}
+            widgetId={process.env.TAWK_WIDGET_ID || ""}
+          />
+        ) : null}
       </main>
     </div>
   );
