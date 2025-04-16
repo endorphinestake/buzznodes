@@ -44,6 +44,16 @@ export const buildAbilityFor = (
   });
 };
 
+export const buildGuestAbility = (): AppAbility => {
+  const { can, rules } = new AbilityBuilder(AppAbility);
+
+  can("read", Permissions.ANY);
+
+  return new AppAbility(rules, {
+    detectSubjectType: (object) => object!.type,
+  });
+};
+
 export const defaultACLObj: ACLObj = {
   action: "manage",
   subject: "all",

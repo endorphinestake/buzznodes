@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 
 // ** Next Imports
 import { useRouter } from "next/router";
@@ -11,7 +11,7 @@ import type { ACLObj, AppAbility } from "src/configs/acl";
 import { AbilityContext } from "@layouts/components/acl/Can";
 
 // ** Config Import
-import { buildAbilityFor } from "@configs/acl";
+import { buildAbilityFor, buildGuestAbility } from "@configs/acl";
 
 // ** Component Import
 import NotAuthorized from "@pages/401";
@@ -27,27 +27,24 @@ interface AclGuardProps {
 }
 
 const AclGuard = (props: AclGuardProps) => {
-  // ** Props
   const { aclAbilities, children, guestGuard } = props;
 
-  const [ability, setAbility] = useState<AppAbility | undefined>(undefined);
-
-  // ** Hooks
+  const [ability, setAbility] = useState<AppAbility>();
   const { user } = useAuth();
   const router = useRouter();
 
-  // If guestGuard is true and user is not logged in or its an error page, render the page without checking access
+  useEffect(() => {
+    if (user) {
+      setAbility(buildAbilityFor(user.groups, aclAbilities.subject));
+    } else {
+      setAbility(buildGuestAbility());
+    }
+  }, [user, aclAbilities.subject]);
+
+  // Пока ability не установлен — не рендерим ничего
+  if (!ability) return null;
+
   if (guestGuard || router.route === "/404" || router.route === "/500") {
-    return <>{children}</>;
-  }
-
-  // User is logged in, build ability for the user based on his role
-  if (user && user.groups && !ability) {
-    setAbility(buildAbilityFor(user.groups, aclAbilities.subject));
-  }
-
-  // Check the access of current user and render pages
-  if (ability && ability.can(aclAbilities.action, aclAbilities.subject)) {
     return (
       <AbilityContext.Provider value={ability}>
         {children}
@@ -55,7 +52,14 @@ const AclGuard = (props: AclGuardProps) => {
     );
   }
 
-  // Render Not Authorized component if the current user has limited access
+  if (ability.can(aclAbilities.action, aclAbilities.subject)) {
+    return (
+      <AbilityContext.Provider value={ability}>
+        {children}
+      </AbilityContext.Provider>
+    );
+  }
+
   return (
     <BlankLayout>
       <NotAuthorized />
