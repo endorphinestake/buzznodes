@@ -49,9 +49,6 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 // ** Styled Components
 import ReactHotToast from "src/@core/styles/libs/react-hot-toast";
 
-// ** Hooks Imports
-import { useTranslation } from "react-i18next";
-
 // ** Utils Imports
 import { createEmotionCache } from "src/@core/utils/create-emotion-cache";
 
@@ -109,9 +106,6 @@ const App = (props: ExtendedAppProps) => {
   // ** Proops
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
-  // ** Hooks
-  const { i18n } = useTranslation();
-
   // Variables
   const getLayout =
     Component.getLayout ?? ((page) => <UserLayout>{page}</UserLayout>);
@@ -152,7 +146,6 @@ const App = (props: ExtendedAppProps) => {
                         <Guard authGuard={authGuard} guestGuard={guestGuard}>
                           <AclGuard
                             aclAbilities={aclAbilities}
-                            authGuard={authGuard}
                             guestGuard={guestGuard}
                           >
                             {getLayout(<Component {...pageProps} />)}

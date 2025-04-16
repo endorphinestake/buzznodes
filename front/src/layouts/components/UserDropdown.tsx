@@ -58,7 +58,9 @@ const UserDropdown = (props: Props) => {
   const { direction } = settings;
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
-    setAnchorEl(event.currentTarget);
+    if (user) {
+      setAnchorEl(event.currentTarget);
+    }
   };
 
   const handleDropdownClose = (url?: string) => {
@@ -167,13 +169,6 @@ const UserDropdown = (props: Props) => {
             </Box>
           </Box>
         </Box>
-        {/* <Divider sx={{ mt: 0, mb: 1 }} />
-        <MenuItem sx={{ p: 0 }} onClick={handleProfile}>
-          <Box sx={styles}>
-            <AccountOutline sx={{ mr: 2 }} />
-            {t(`Profile`)}
-          </Box>
-        </MenuItem> */}
 
         <Divider />
         <MenuItem sx={{ p: 0 }} onClick={handleSettings}>

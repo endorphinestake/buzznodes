@@ -22,14 +22,13 @@ import { useAuth } from "@hooks/useAuth";
 
 interface AclGuardProps {
   children: ReactNode;
-  authGuard: boolean;
   guestGuard: boolean;
   aclAbilities: ACLObj;
 }
 
 const AclGuard = (props: AclGuardProps) => {
   // ** Props
-  const { aclAbilities, children, authGuard, guestGuard } = props;
+  const { aclAbilities, children, guestGuard } = props;
 
   const [ability, setAbility] = useState<AppAbility | undefined>(undefined);
 
@@ -38,12 +37,7 @@ const AclGuard = (props: AclGuardProps) => {
   const router = useRouter();
 
   // If guestGuard is true and user is not logged in or its an error page, render the page without checking access
-  if (
-    guestGuard ||
-    (!authGuard && !guestGuard) ||
-    router.route === "/404" ||
-    router.route === "/500"
-  ) {
+  if (guestGuard || router.route === "/404" || router.route === "/500") {
     return <>{children}</>;
   }
 
