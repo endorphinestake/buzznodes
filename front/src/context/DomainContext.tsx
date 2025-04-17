@@ -3,6 +3,7 @@ import { ComponentType } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 import CelestiaLogo from "@modules/shared/icons/celestia";
 import OGLogo from "@modules/shared/icons/0g";
+import XRPLLogo from "@modules/shared/icons/xrpl";
 
 type DomainValue = {
   blockchainId: number;
@@ -16,7 +17,7 @@ type DomainValue = {
 const DEV_DOMAINS = {
   "celestia.local.com": {
     blockchainId: 1,
-    logo: OGLogo,
+    logo: XRPLLogo,
     domain: "celestia.local.com",
     name: "Celestia Mainnet",
     symbol: "TIA",
@@ -55,6 +56,14 @@ const PROD_DOMAINS = {
     domain: "0g.buzznodes.com",
     name: "0G Testnet",
     symbol: "A0GI",
+    isDaEnabled: false,
+  },
+  "xrpl-testnet.buzznodes.com": {
+    blockchainId: 4,
+    logo: XRPLLogo,
+    domain: "xrpl-testnet.buzznodes.com",
+    name: "XRPL Testnet",
+    symbol: "XRP",
     isDaEnabled: false,
   },
 } as const as Record<string, DomainValue>;

@@ -13,6 +13,8 @@ class Blockchain(models.Model):
         CELESTIA_MAINNET = "CELESTIA_MAINNET", _("Celestia Mainnet")
         OG_TESTNET = "OG_TESTNET", _("0g Testnet")
         OG_MAINNET = "OG_MAINNET", _("0g Mainnet")
+        XRPL_TESTNET = "XRPL_TESTNET", _("XRP Ledger Testnet")
+        XRPL_MAINNET = "XRPL_MAINNET", _("XRP Ledger Mainnet")
 
     class ChartType(models.TextChoices):
         COSMOS_UPTIME = "cosmos_validator_uptime", "Cosmos Uptime"

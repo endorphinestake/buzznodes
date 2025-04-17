@@ -51,7 +51,7 @@ const ValidatorComission = ({
     },
     dataLabels: {
       enabled: true,
-      formatter: (val) => `${val}%`,
+      formatter: (val) => `${Math.round(+val)}%`,
     },
     grid: {
       strokeDashArray: 4,
@@ -95,7 +95,7 @@ const ValidatorComission = ({
     },
     tooltip: {
       y: {
-        formatter: (val: number) => `${val}%`,
+        formatter: (val: number) => `${Math.round(+val)}%`,
       },
     },
   };

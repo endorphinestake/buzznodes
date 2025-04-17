@@ -60,7 +60,8 @@ const DomainDropdown = () => {
             ([domainName]) =>
               (domain.includes("celestia") &&
                 domainName.includes("celestia")) ||
-              (domain.includes("0g") && domainName.includes("0g"))
+              (domain.includes("0g") && domainName.includes("0g")) ||
+              (domain.includes("xrpl") && domainName.includes("xrpl"))
           )
           .map(([domainName, domainData]) =>
             domainName !== domain ? (
