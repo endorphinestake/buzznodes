@@ -2,7 +2,7 @@
 
 BuzzNodes is a comprehensive monitoring and alerting platform specifically designed for Celestia validators. It addresses the critical need for real-time observability, reliability tracking, and instant alerting across the Celestia blockchain validator infrastructure.
 
-The system provides a centralized interface to track validator performance, detect failures, receive alerts via SMS, email, or voice, and visualize key metrics through Prometheus and Grafana. Whether you're managing one validator or a fleet, BuzzNodes helps ensure high availability and minimizes slashing risks by enabling proactive responses.
+The system provides a centralized interface to track validator performance, detect failures, receive alerts via SMS, email, or voice, and visualize key metrics through Prometheus and Grafana. BuzzNodes helps ensure high availability and minimizes slashing risks by enabling proactive responses.
 
 ## 🖥️ 1. System Requirements
 
