@@ -172,7 +172,7 @@ GOOGLE_RECAPTCHA_SECRET=...
 
 ---
 
-## 🤝 9. Contacts
+## 🤝 8. Contacts
 
 - **Developer:** VShevtsov  
 - **Email:** vshevtsov17@gmail.com  
