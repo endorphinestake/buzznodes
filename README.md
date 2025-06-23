@@ -93,8 +93,8 @@ cd /var/www/buzznodes/
 | `back`           | Django backend                                                       |
 | `alerts`         | Asynchronous alert delivery tasks                                    |
 | `emails`         | Email tasks (registration confirmation, password reset/change)       |
-| `sms`            | SMS notifications via Bird, Hicell                                   |
-| `voice`          | Voice alerts via Bird, UniTalk                                       |
+| `sms`            | SMS notifications via [Bird](https://bird.com), [Hicell](https://hicell.com)                                   |
+| `voice`          | Voice alerts via [Bird](https://bird.com), [UniTalk](https://unitalk.cloud)                                       |
 | `scheduler`      | Scheduled task runner                                                |
 | `redis`          | Queue broker (RQ used)                                               |
 | `percona/postgres` | Database                                                           |
