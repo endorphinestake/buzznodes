@@ -22,7 +22,7 @@ The system provides a centralized interface to track validator performance, dete
 ### 2.1 Clone the Project and Prepare the Environment
 
 ```bash
-git clone git@github-pixeleng1:pixeleng1/monitoring.git buzznodes
+git clone https://github.com/endorphinestake/buzznodes
 cd buzznodes
 cp back/.env.sample back/.env
 cp front/.env.sample front/.env
