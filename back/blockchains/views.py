@@ -91,9 +91,6 @@ class CosmosBlockchainMetricsView(views.APIView):
         )
         blockchain_urls = blockchain.blockchain_urls.order_by("priority")
 
-        if blockchain.id == 6:
-            print("blockchain_urls: ", blockchain_urls)
-
         if not blockchain_urls.count():
             return response.Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -113,9 +110,6 @@ class CosmosBlockchainMetricsView(views.APIView):
             )
         )
 
-        if blockchain.id == 6:
-            print("RESULTS: ", results)
-
         urls_types = ["RPC", "Validators", "Infos", "Status", "DA"]
         for idx, result in enumerate(results):
             if isinstance(result, Exception):
@@ -125,6 +119,9 @@ class CosmosBlockchainMetricsView(views.APIView):
         # print(f"got API data: {time.perf_counter() - start:.6f}")
 
         network_height = results[0]["network_height"]
+
+        if blockchain.id == 6:
+            print("network_height: ", network_height)
 
         # Validate Data
         rpc_serializer = RpcValidatorSerializer(
@@ -172,6 +169,9 @@ class CosmosBlockchainMetricsView(views.APIView):
         }
 
         # print(f"got local validators and bridges: {time.perf_counter() - start:.6f}")
+
+        if blockchain.id == 6:
+            print("VALIDATORS: ", len(validators_serializer.validated_data))
 
         # Update Validators
         validators_to_update = []
