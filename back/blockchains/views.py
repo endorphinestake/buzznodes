@@ -187,6 +187,12 @@ class CosmosBlockchainMetricsView(views.APIView):
             operator_address = validator_row["operator_address"].lower()
             validator = validators_local.get(operator_address)
 
+            if (
+                "storyvaloper1chqta6kgkdld2tm2va0wy92djf4g3clvqunn6c"
+                in operator_address
+            ):
+                continue
+
             pubkey_type = validator_row["consensus_pubkey"]["type"]
             pubkey_key = validator_row["consensus_pubkey"]["key"]
             moniker = validator_row["description"].get("moniker")
