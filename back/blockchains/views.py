@@ -91,6 +91,9 @@ class CosmosBlockchainMetricsView(views.APIView):
         )
         blockchain_urls = blockchain.blockchain_urls.order_by("priority")
 
+        if blockchain.id == 6:
+            print("blockchain_urls: ", blockchain_urls)
+
         if not blockchain_urls.count():
             return response.Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -109,6 +112,9 @@ class CosmosBlockchainMetricsView(views.APIView):
                 da_urls=[blockchain.da_url] if blockchain.da_url else [],
             )
         )
+
+        if blockchain.id == 6:
+            print("RESULTS: ", results)
 
         urls_types = ["RPC", "Validators", "Infos", "Status", "DA"]
         for idx, result in enumerate(results):
