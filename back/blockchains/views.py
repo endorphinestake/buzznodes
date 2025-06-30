@@ -138,7 +138,7 @@ class CosmosBlockchainMetricsView(views.APIView):
             data=results[1], many=True
         )
         if not validators_serializer.is_valid():
-            print(222, rpc_serializer.errors)
+            print(222, validators_serializer.errors)
             return response.Response(
                 validators_serializer.errors,
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -146,7 +146,7 @@ class CosmosBlockchainMetricsView(views.APIView):
 
         infos_serializer = InfosValidatorSerializer(data=results[2], many=True)
         if not infos_serializer.is_valid():
-            print(333, rpc_serializer.errors)
+            print(333, infos_serializer.errors)
             return response.Response(
                 infos_serializer.errors,
                 status=status.HTTP_422_UNPROCESSABLE_ENTITY,
