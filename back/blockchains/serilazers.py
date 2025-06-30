@@ -105,7 +105,7 @@ class BlockchainValidatorSerializer(serializers.Serializer):
     status = serializers.ChoiceField(
         choices=BlockchainValidator.Status.choices,
         required=False,
-        default=BlockchainValidator.Status.BONDED,
+        default=BlockchainValidator.Status.BOND_STATUS_BONDED,
     )
     tokens = serializers.IntegerField(required=False, default=0)
     delegator_shares = serializers.DecimalField(
