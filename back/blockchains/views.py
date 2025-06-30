@@ -162,7 +162,7 @@ class CosmosBlockchainMetricsView(views.APIView):
 
         # Get local validators data
         validators_local = {
-            item.operator_address: item
+            item.operator_address.lower(): item
             for item in blockchain.blockchain_validators.iterator()
         }
 
@@ -184,7 +184,7 @@ class CosmosBlockchainMetricsView(views.APIView):
             "status": {},
         }
         for validator_row in validators_serializer.validated_data:
-            operator_address = validator_row["operator_address"]
+            operator_address = validator_row["operator_address"].lower()
             validator = validators_local.get(operator_address)
 
             pubkey_type = validator_row["consensus_pubkey"]["type"]
