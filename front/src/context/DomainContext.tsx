@@ -79,7 +79,7 @@ const PROD_DOMAINS = {
   },
   "story-testnet.buzznodes.com": {
     blockchainId: 6,
-    logo: XRPLLogo,
+    logo: StoryLogo,
     domain: "story-testnet.buzznodes.com",
     name: "Story Testnet",
     symbol: "IP",
