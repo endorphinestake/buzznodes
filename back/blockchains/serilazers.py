@@ -125,11 +125,11 @@ class RpcValidatorSerializer(serializers.Serializer):
 
 class InfosValidatorSerializer(serializers.Serializer):
     address = serializers.CharField()
-    start_height = serializers.IntegerField()
-    index_offset = serializers.IntegerField()
-    jailed_until = serializers.DateTimeField()
-    tombstoned = serializers.BooleanField()
-    missed_blocks_counter = serializers.IntegerField()
+    start_height = serializers.IntegerField(required=False, allow_null=True)
+    index_offset = serializers.IntegerField(required=False, allow_null=True)
+    jailed_until = serializers.DateTimeField(required=False, allow_null=True)
+    tombstoned = serializers.BooleanField(required=False, allow_null=True)
+    missed_blocks_counter = serializers.IntegerField(required=False, allow_null=True)
 
 
 class PrimaryPictureSerializer(serializers.Serializer):
