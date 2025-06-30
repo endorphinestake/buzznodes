@@ -15,6 +15,8 @@ class Blockchain(models.Model):
         OG_MAINNET = "OG_MAINNET", _("0g Mainnet")
         XRPL_TESTNET = "XRPL_TESTNET", _("XRP Ledger Testnet")
         XRPL_MAINNET = "XRPL_MAINNET", _("XRP Ledger Mainnet")
+        STORY_TESTNET = "STORY_TESTNET", _("Story Testnet")
+        STORY_MAINNET = "STORY_MAINNET", _("Story Mainnet")
 
     class ChartType(models.TextChoices):
         COSMOS_UPTIME = "cosmos_validator_uptime", "Cosmos Uptime"
