@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.utils.timezone import now, timedelta
+from datetime import datetime
 
 from rest_framework import serializers
 
@@ -100,15 +101,21 @@ class CommissionSerializer(serializers.Serializer):
 class BlockchainValidatorSerializer(serializers.Serializer):
     operator_address = serializers.CharField()
     consensus_pubkey = ConsensusPubKeySerializer()
-    jailed = serializers.BooleanField(required=False, allow_null=True)
-    status = serializers.ChoiceField(choices=BlockchainValidator.Status.choices)
-    tokens = serializers.IntegerField()
-    delegator_shares = serializers.DecimalField(max_digits=50, decimal_places=18)
-    description = DescriptionSerializer()
-    unbonding_height = serializers.IntegerField(required=False, allow_null=True)
-    unbonding_time = serializers.DateTimeField()
-    commission = CommissionSerializer()
-    min_self_delegation = serializers.IntegerField()
+    jailed = serializers.BooleanField(required=False, default=False)
+    status = serializers.ChoiceField(
+        choices=BlockchainValidator.Status.choices,
+        required=False,
+        default=BlockchainValidator.Status.BONDED,
+    )
+    tokens = serializers.IntegerField(required=False, default=0)
+    delegator_shares = serializers.DecimalField(
+        max_digits=50, decimal_places=18, required=False, default=0
+    )
+    description = DescriptionSerializer(required=False)
+    unbonding_height = serializers.IntegerField(required=False, default=0)
+    unbonding_time = serializers.DateTimeField(required=False, default=datetime.min)
+    commission = CommissionSerializer(required=False)
+    min_self_delegation = serializers.IntegerField(required=False, default=0)
 
 
 class RpcPubKeySerializer(serializers.Serializer):
@@ -125,11 +132,11 @@ class RpcValidatorSerializer(serializers.Serializer):
 
 class InfosValidatorSerializer(serializers.Serializer):
     address = serializers.CharField()
-    start_height = serializers.IntegerField(required=False, allow_null=True)
-    index_offset = serializers.IntegerField(required=False, allow_null=True)
-    jailed_until = serializers.DateTimeField(required=False, allow_null=True)
-    tombstoned = serializers.BooleanField(required=False, allow_null=True)
-    missed_blocks_counter = serializers.IntegerField(required=False, allow_null=True)
+    start_height = serializers.IntegerField(required=False, default=0)
+    index_offset = serializers.IntegerField(required=False, default=0)
+    jailed_until = serializers.DateTimeField(required=False, default=datetime.min)
+    tombstoned = serializers.BooleanField(required=False, default=False)
+    missed_blocks_counter = serializers.IntegerField(required=False, default=0)
 
 
 class PrimaryPictureSerializer(serializers.Serializer):
