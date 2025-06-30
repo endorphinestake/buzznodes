@@ -4,6 +4,9 @@ import { createContext, useContext, useEffect, useState } from "react";
 import CelestiaLogo from "@modules/shared/icons/celestia";
 import OGLogo from "@modules/shared/icons/0g";
 import XRPLLogo from "@modules/shared/icons/xrpl";
+import StoryLogo from "@modules/shared/icons/story";
+
+// https://react-svgr.com/playground/
 
 type DomainValue = {
   blockchainId: number;
@@ -17,7 +20,7 @@ type DomainValue = {
 const DEV_DOMAINS = {
   "celestia.local.com": {
     blockchainId: 1,
-    logo: XRPLLogo,
+    logo: StoryLogo,
     domain: "celestia.local.com",
     name: "Celestia Mainnet",
     symbol: "TIA",
@@ -25,7 +28,7 @@ const DEV_DOMAINS = {
   },
   "celestia-testnet.local.com": {
     blockchainId: 2,
-    logo: CelestiaLogo,
+    logo: StoryLogo,
     domain: "celestia-testnet.local.com",
     name: "Celestia Testnet",
     symbol: "TIA",
@@ -64,6 +67,22 @@ const PROD_DOMAINS = {
     domain: "xrpl-testnet.buzznodes.com",
     name: "XRPL Testnet",
     symbol: "XRP",
+    isDaEnabled: false,
+  },
+  "xrpl.buzznodes.com": {
+    blockchainId: 5,
+    logo: XRPLLogo,
+    domain: "xrpl.buzznodes.com",
+    name: "XRPL Mainnet",
+    symbol: "XRP",
+    isDaEnabled: false,
+  },
+  "story-testnet.buzznodes.com": {
+    blockchainId: 6,
+    logo: XRPLLogo,
+    domain: "story-testnet.buzznodes.com",
+    name: "Story Testnet",
+    symbol: "IP",
     isDaEnabled: false,
   },
 } as const as Record<string, DomainValue>;
