@@ -27,7 +27,7 @@ async def cosmos_fetch_infos_url(urls, timeout):
 
                     page += 1
                     page_key = None
-                    if data["pagination"]["next_key"]:
+                    if data["pagination"].get("next_key"):
                         page_key = urllib.parse.quote(
                             data["pagination"]["next_key"], safe=""
                         )
