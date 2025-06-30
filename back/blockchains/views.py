@@ -120,8 +120,11 @@ class CosmosBlockchainMetricsView(views.APIView):
 
         network_height = results[0]["network_height"]
 
-        if blockchain.id == 6:
-            print("network_height: ", network_height)
+        # Update blockchain status info (latest_block_height)
+        print(f"Updating Blockchain {blockchain.id} network height {network_height}")
+        Blockchain.objects.filter(pk=blockchain.id).update(
+            network_height=network_height
+        )
 
         # Validate Data
         rpc_serializer = RpcValidatorSerializer(
@@ -399,12 +402,6 @@ class CosmosBlockchainMetricsView(views.APIView):
                         **updated_fields,
                         updated=now(),
                     )
-
-        # Update blockchain status info (latest_block_height)
-        print(f"Updating Blockchain {blockchain.id} network height {network_height}")
-        Blockchain.objects.filter(pk=blockchain.id).update(
-            network_height=network_height
-        )
 
         # print(f"updated bridges: {time.perf_counter() - start:.6f}")
 
