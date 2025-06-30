@@ -46,6 +46,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://celestia-testnet.buzznodes.com",
     "https://0g.buzznodes.com",
     "https://xrpl-testnet.buzznodes.com",
+    "https://xrpl.buzznodes.com",
+    "https://story-testnet.buzznodes.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
     # DEV
@@ -57,6 +59,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://celestia-testnet.buzznodes.com",
     "https://0g.buzznodes.com",
     "https://xrpl-testnet.buzznodes.com",
+    "https://xrpl.buzznodes.com",
+    "https://story-testnet.buzznodes.com",
 ]
 
 INSTALLED_APPS = [
