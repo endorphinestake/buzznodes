@@ -1,6 +1,6 @@
-import { SvgIcon } from "@mui/material";
+import { SvgIcon, SvgIconProps } from "@mui/material";
 
-const HaqqLogo = (props) => (
+const HaqqLogo = (props: SvgIconProps) => (
   <SvgIcon {...props} viewBox="0 0 244 120">
   <g transform="translate(62 0) scale(1.4)" clipPath="url(#a)">
       <mask

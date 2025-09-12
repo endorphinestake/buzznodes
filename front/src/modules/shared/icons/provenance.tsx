@@ -1,6 +1,6 @@
-import { SvgIcon } from "@mui/material";
+import { SvgIcon, SvgIconProps } from "@mui/material";
 
-const ProvenanceLogo = (props) => (
+const ProvenanceLogo = (props: SvgIconProps) => (
   <SvgIcon {...props} viewBox="0 0 244 120">
   <g transform="translate(62 0) scale(0.6)">
     <path
