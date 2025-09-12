@@ -17,6 +17,12 @@ class Blockchain(models.Model):
         XRPL_MAINNET = "XRPL_MAINNET", _("XRP Ledger Mainnet")
         STORY_TESTNET = "STORY_TESTNET", _("Story Testnet")
         STORY_MAINNET = "STORY_MAINNET", _("Story Mainnet")
+        ALTHEA_TESTNET = "ALTHEA_TESTNET", _("Althea Testnet")
+        ALTHEA_MAINNET = "ALTHEA_MAINNET", _("Althea Mainnet")
+        PROVENANCE_TESTNET = "PROVENANCE_TESTNET", _("Provenance Testnet")
+        PROVENANCE_MAINNET = "PROVENANCE_MAINNET", _("Provenance Mainnet")
+        HAQQ_TESTNET = "HAQQ_TESTNET", _("Haqq Testnet")
+        HAQQ_MAINNET = "HAQQ_MAINNET", _("Haqq Mainnet")
 
     class ChartType(models.TextChoices):
         COSMOS_UPTIME = "cosmos_validator_uptime", "Cosmos Uptime"
