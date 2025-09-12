@@ -6,6 +6,8 @@ import OGLogo from "@modules/shared/icons/0g";
 import XRPLLogo from "@modules/shared/icons/xrpl";
 import StoryLogo from "@modules/shared/icons/story";
 import AltheaLogo from "@modules/shared/icons/althea";
+import HaqqLogo from "@modules/shared/icons/haqq";
+import ProvenanceLogo from "@modules/shared/icons/provenance";
 
 // https://react-svgr.com/playground/
 
@@ -29,7 +31,7 @@ const DEV_DOMAINS = {
   },
   "celestia-testnet.local.com": {
     blockchainId: 2,
-    logo: AltheaLogo,
+    logo: HaqqLogo,
     domain: "celestia-testnet.local.com",
     name: "Celestia Testnet",
     symbol: "TIA",
@@ -88,7 +90,7 @@ const PROD_DOMAINS = {
   },
   "althea.buzznodes.com": {
     blockchainId: 7,
-    logo: StoryLogo,
+    logo: AltheaLogo,
     domain: "althea.buzznodes.com",
     name: "Althea Mainnet",
     symbol: "ALTHEA",
@@ -96,7 +98,7 @@ const PROD_DOMAINS = {
   },
   "haqq.buzznodes.com": {
     blockchainId: 8,
-    logo: StoryLogo,
+    logo: HaqqLogo,
     domain: "haqq.buzznodes.com",
     name: "Haqq Mainnet",
     symbol: "ISLM",
@@ -104,7 +106,7 @@ const PROD_DOMAINS = {
   },
   "provenance.buzznodes.com": {
     blockchainId: 9,
-    logo: StoryLogo,
+    logo: ProvenanceLogo,
     domain: "provenance.buzznodes.com",
     name: "Provenance Mainnet",
     symbol: "HASH",
