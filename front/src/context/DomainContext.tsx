@@ -29,7 +29,7 @@ const DEV_DOMAINS = {
   },
   "celestia-testnet.local.com": {
     blockchainId: 2,
-    logo: StoryLogo,
+    logo: AltheaLogo,
     domain: "celestia-testnet.local.com",
     name: "Celestia Testnet",
     symbol: "TIA",

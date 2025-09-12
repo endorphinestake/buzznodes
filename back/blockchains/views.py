@@ -219,6 +219,15 @@ class CosmosBlockchainMetricsView(views.APIView):
                 validator_status=validator_status,
             )
 
+            # fix voting_power for Story & Provenance
+            if blockchain.ntype in [
+                Blockchain.NetworkType.STORY_TESTNET,
+                Blockchain.NetworkType.STORY_MAINNET,
+                Blockchain.NetworkType.PROVENANCE_TESTNET,
+                Blockchain.NetworkType.PROVENANCE_MAINNET,
+            ]:
+                voting_power = round(voting_power / 1_000)
+
             if validator:
                 updated_fields = {}
                 if validator.pubkey_type != pubkey_type:
