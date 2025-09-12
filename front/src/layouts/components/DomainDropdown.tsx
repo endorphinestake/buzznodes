@@ -62,8 +62,11 @@ const DomainDropdown = () => {
                 domainName.includes("celestia")) ||
               (domain.includes("0g") && domainName.includes("0g")) ||
               (domain.includes("xrpl") && domainName.includes("xrpl")) ||
-              (domain.includes("story") && domainName.includes("story"))
-          )
+              (domain.includes("story") && domainName.includes("story")) ||
+              (domain.includes("althea") && domainName.includes("althea")) ||
+              (domain.includes("haqq") && domainName.includes("haqq")) ||
+              (domain.includes("provenance") && domainName.includes("provenance"))
+            )
           .map(([domainName, domainData]) =>
             domainName !== domain ? (
               <MenuItem

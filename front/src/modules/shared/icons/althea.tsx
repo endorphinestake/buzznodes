@@ -1,6 +1,6 @@
 import { SvgIcon, SvgIconProps } from "@mui/material";
 
-const OGLogo = (props: SvgIconProps) => (
+const AltheaLogo = (props: SvgIconProps) => (
   <SvgIcon {...props} viewBox="0 0 244 120">
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -81,4 +81,4 @@ const OGLogo = (props: SvgIconProps) => (
   </SvgIcon>
 );
 
-export default OGLogo;
+export default AltheaLogo;

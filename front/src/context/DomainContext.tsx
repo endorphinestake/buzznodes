@@ -5,6 +5,7 @@ import CelestiaLogo from "@modules/shared/icons/celestia";
 import OGLogo from "@modules/shared/icons/0g";
 import XRPLLogo from "@modules/shared/icons/xrpl";
 import StoryLogo from "@modules/shared/icons/story";
+import AltheaLogo from "@modules/shared/icons/althea";
 
 // https://react-svgr.com/playground/
 
@@ -20,7 +21,7 @@ type DomainValue = {
 const DEV_DOMAINS = {
   "celestia.local.com": {
     blockchainId: 1,
-    logo: StoryLogo,
+    logo: AltheaLogo,
     domain: "celestia.local.com",
     name: "Celestia Mainnet",
     symbol: "TIA",
@@ -85,6 +86,39 @@ const PROD_DOMAINS = {
     symbol: "IP",
     isDaEnabled: false,
   },
+  "althea.buzznodes.com": {
+    blockchainId: 7,
+    logo: StoryLogo,
+    domain: "althea.buzznodes.com",
+    name: "Althea Mainnet",
+    symbol: "ALTHEA",
+    isDaEnabled: false,
+  },
+  "haqq.buzznodes.com": {
+    blockchainId: 8,
+    logo: StoryLogo,
+    domain: "haqq.buzznodes.com",
+    name: "Haqq Mainnet",
+    symbol: "ISLM",
+    isDaEnabled: false,
+  },
+  "provenance.buzznodes.com": {
+    blockchainId: 9,
+    logo: StoryLogo,
+    domain: "provenance.buzznodes.com",
+    name: "Provenance Mainnet",
+    symbol: "HASH",
+    isDaEnabled: false,
+  },
+  "story.buzznodes.com": {
+    blockchainId: 10,
+    logo: StoryLogo,
+    domain: "story.buzznodes.com",
+    name: "Story Mainnet",
+    symbol: "IP",
+    isDaEnabled: false,
+  },
+  
 } as const as Record<string, DomainValue>;
 
 type DomainConfig = typeof DEV_DOMAINS | typeof PROD_DOMAINS;
