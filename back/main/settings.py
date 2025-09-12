@@ -45,9 +45,16 @@ CORS_ALLOWED_ORIGINS = [
     "https://celestia.buzznodes.com",
     "https://celestia-testnet.buzznodes.com",
     "https://0g.buzznodes.com",
-    "https://xrpl-testnet.buzznodes.com",
     "https://xrpl.buzznodes.com",
+    "https://xrpl-testnet.buzznodes.com",
+    "https://story.buzznodes.com",
     "https://story-testnet.buzznodes.com",
+    "https://althea.buzznodes.com",
+    "https://althea-testnet.buzznodes.com",
+    "https://provenance.buzznodes.com",
+    "https://provenance-testnet.buzznodes.com",
+    "https://haqq.buzznodes.com",
+    "https://haqq-testnet.buzznodes.com",
 ]
 CSRF_TRUSTED_ORIGINS = [
     # DEV
@@ -58,9 +65,16 @@ CSRF_TRUSTED_ORIGINS = [
     "https://celestia.buzznodes.com",
     "https://celestia-testnet.buzznodes.com",
     "https://0g.buzznodes.com",
-    "https://xrpl-testnet.buzznodes.com",
     "https://xrpl.buzznodes.com",
+    "https://xrpl-testnet.buzznodes.com",
+    "https://story.buzznodes.com",
     "https://story-testnet.buzznodes.com",
+    "https://althea.buzznodes.com",
+    "https://althea-testnet.buzznodes.com",
+    "https://provenance.buzznodes.com",
+    "https://provenance-testnet.buzznodes.com",
+    "https://haqq.buzznodes.com",
+    "https://haqq-testnet.buzznodes.com",
 ]
 
 INSTALLED_APPS = [
