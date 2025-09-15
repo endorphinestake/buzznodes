@@ -324,6 +324,28 @@ class CosmosBlockchainMetricsView(views.APIView):
                 moniker=moniker,
             ).set(uptime)
 
+        # Mark local validators that are missing from the staking API response as UNBONDED
+        api_operator_addresses = {
+            v["operator_address"].lower() for v in validators_serializer.validated_data
+        }
+
+        for operator_addr, validator in validators_local.items():
+            if operator_addr not in api_operator_addresses:
+                updated_fields = {}
+                # If previously bonded, mark as unbonded
+                if validator.status != BlockchainValidator.Status.BOND_STATUS_UNBONDED:
+                    updated_fields["status"] = (
+                        BlockchainValidator.Status.BOND_STATUS_UNBONDED
+                    )
+                    # record previous status for alerts
+                    validators_to_update_prev["status"][validator.id] = True
+
+                if validator.voting_power != 0:
+                    updated_fields["voting_power"] = 0
+
+                if updated_fields:
+                    validators_to_update.append((validator.id, updated_fields))
+
         if validators_to_update:
             print("INFO: Updating BlockchainValidator: ", validators_to_update)
             with transaction.atomic():
