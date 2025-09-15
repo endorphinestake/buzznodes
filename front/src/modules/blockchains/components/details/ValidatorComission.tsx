@@ -31,9 +31,9 @@ const ValidatorComission = ({
     {
       name: "",
       data: [
-        validator.commision_rate * 100,
-        validator.commision_max_rate * 100,
-        validator.commision_max_change_rate * 100,
+        Math.round(validator.commision_rate * 100),
+        Math.round(validator.commision_max_rate * 100),
+        Math.round(validator.commision_max_change_rate * 100),
       ],
     },
   ];
@@ -103,7 +103,7 @@ const ValidatorComission = ({
   return (
     <Card>
       <CardHeader
-        title={`${validator.commision_rate * 100}%`}
+        title={`${Math.round(validator.commision_rate * 100)}%`}
         subheader={t("Comission")}
         subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
         titleTypographyProps={{ sx: { letterSpacing: "0.15px" } }}
