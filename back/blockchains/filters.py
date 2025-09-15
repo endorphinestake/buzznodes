@@ -8,12 +8,19 @@ class BlockchainValidatorFilter(django_filters.FilterSet):
     status = django_filters.ChoiceFilter(
         field_name="status",
         choices=BlockchainValidator.Status.choices,
-        lookup_expr="exact",
+        method="filter_status",
     )
 
     class Meta:
         model = BlockchainValidator
         fields = ("status",)
+
+    def filter_status(self, queryset, name, value):
+        if value == BlockchainValidator.Status.BOND_STATUS_UNBONDED:
+            return queryset.exclude(
+                status=BlockchainValidator.Status.BOND_STATUS_BONDED
+            )
+        return queryset.filter(**{name: value})
 
 
 class BlockchainBridgeFilter(django_filters.FilterSet):
